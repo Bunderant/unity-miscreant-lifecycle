@@ -1,0 +1,17 @@
+{
+    "name": "Unity.Miscreant.Lifecycle.Editor",
+    "references": [
+        "GUID:7ce7be4f561d86d4ca8e059386037ba1"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
