@@ -155,7 +155,14 @@ namespace Miscreant.Utilities.Lifecycle
 
 		private void OnEnable()
 		{
+#if UNITY_EDITOR
+			if (Application.isPlaying)
+			{
+				Initialize();
+			}
+#else
 			Initialize();
+#endif
 		}
 
 		private void OnDisable()
