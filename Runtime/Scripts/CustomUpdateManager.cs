@@ -69,7 +69,7 @@ namespace Miscreant.Utilities.Lifecycle
 		}
 
 		[SerializeField]
-		private List<CustomUpdatePriority> _priorities = null;
+		private List<CustomUpdatePriority> _priorities = new List<CustomUpdatePriority>();
 
 		private CustomUpdateBehaviour[] _updateHeads = null;
 		private CustomUpdateBehaviour[] _updateTails = null;
@@ -155,14 +155,7 @@ namespace Miscreant.Utilities.Lifecycle
 
 		private void OnEnable()
 		{
-#if UNITY_EDITOR
-			if (Application.isPlaying)
-			{
-				Initialize();
-			}
-#else
 			Initialize();
-#endif
 		}
 
 		private void OnDisable()
