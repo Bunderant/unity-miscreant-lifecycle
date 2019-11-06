@@ -38,6 +38,27 @@ namespace Miscreant.Utilities.Lifecycle
 		[NonSerialized]
 		internal bool fixedUpdateActive;
 
+		public static T Create<T>(
+			CustomUpdateManager.Config config, bool gameObjectActive, bool componentEnabled, Transform parent = null
+			) where T : CustomUpdateBehaviour
+		{
+			var gameObject = new GameObject();
+			gameObject.transform.SetParent(parent);
+
+			// Disable the GameObject until everything is initialized to prevent interaction with the update system
+			gameObject.SetActive(false);
+			
+			var component = gameObject.AddComponent<T>();
+			component.enabled = componentEnabled;
+
+			component.updateConfig = config;
+
+			// Finally, set the GameObject's active state to the passed in flag
+			gameObject.SetActive(gameObjectActive);
+
+			return component;
+		}
+
 		#region MonoBehaviour
 
 		/// <summary>

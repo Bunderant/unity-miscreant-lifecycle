@@ -51,6 +51,17 @@ namespace Miscreant.Utilities.Lifecycle
 				this.valueEnabledAction = null;
 			}
 
+			public Config(CustomUpdateManager manager, CustomUpdatePriority priorityGroup, bool update, bool fixedUpdate)
+			{
+				this._manager = manager;
+				this._priorityGroup = priorityGroup;
+
+				this._update = update;
+				this._fixedUpdate = fixedUpdate;
+
+				this.valueEnabledAction = null;
+			}
+
 			private void SetValue(ref bool originalValue, bool newValue)
 			{
 				bool becameEnabled = CheckValueEnabled(originalValue, newValue);
@@ -78,6 +89,7 @@ namespace Miscreant.Utilities.Lifecycle
 		private CustomUpdateBehaviour[] _fixedUpdateTails = null;
 
 		private int _groupCount;
+		private bool _initialized;
 
 #if UNITY_EDITOR
 		/// <summary>
@@ -160,14 +172,24 @@ namespace Miscreant.Utilities.Lifecycle
 
 		private void OnDisable()
 		{
-			Initialize();
+			_groupCount = 0;
+
+			// TODO: Miscreant: Need to define expected behavior when a manager is unloaded and the application continues. 
+
+			_initialized = false;
 		}
 
 		#endregion
 
 		private void Initialize()
 		{
+			if (_initialized)
+			{
+				return;
+			}
+
 			_groupCount = _priorities.Count;
+			_initialized |= _groupCount > 0;
 
 			_updateHeads = new CustomUpdateBehaviour[_groupCount];
 			_updateTails = new CustomUpdateBehaviour[_groupCount];
@@ -176,6 +198,23 @@ namespace Miscreant.Utilities.Lifecycle
 			_fixedUpdateTails = new CustomUpdateBehaviour[_groupCount];
 
 			UpdatePriorities();
+		}
+
+		/// <summary>
+		/// Can only execute successfully if the current priority list is empty. This is designed
+		/// for situations where the manager object was created at runtime. Once the manager is
+		/// initialized with a non-empty priority list, it can't be initialized with another. 
+		/// </summary>
+		/// <param name="priorities">Priority groups to use with this manager</param>
+		public void Initialize(params CustomUpdatePriority[] priorities)
+		{
+			if (_initialized)
+			{
+				return;
+			}
+
+			this._priorities = new List<CustomUpdatePriority>(priorities);
+			Initialize();
 		}
 
 		internal void UpdatePriorities()
