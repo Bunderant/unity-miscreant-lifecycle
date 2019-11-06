@@ -7,6 +7,13 @@ namespace Miscreant.Utilities.Lifecycle
 	[CreateAssetMenu(menuName = nameof(Miscreant) + "/" + nameof(Miscreant.Utilities.Lifecycle) + "/" + nameof(CustomUpdateManager))]
 	public sealed class CustomUpdateManager : ScriptableObject
 	{
+		public enum UpdateType : byte
+		{
+			None,
+			Normal,
+			Fixed
+		}
+
 		/// <summary>
 		/// Congig data for use by individual components that use this system. 
 		/// </summary>
@@ -232,6 +239,138 @@ namespace Miscreant.Utilities.Lifecycle
 		}
 
 		/// <summary>
+		/// Checks that the heads and tails of all lists in the system are null for every UpdateType. 
+		/// </summary>
+		/// <returns>True if the system is empty, false otherwise.</returns>
+		public bool CheckAllGroupsEmpty()
+		{
+			bool isEmpty = true;
+
+			for (int i = 0; i < _groupCount && isEmpty; i++)
+			{
+				isEmpty &= (
+					ReferenceEquals(_updateHeads[i], null) &&
+					ReferenceEquals(_updateTails[i], null) &&
+					ReferenceEquals(_fixedUpdateHeads[i], null) &&
+					ReferenceEquals(_fixedUpdateTails[i], null)
+				);
+			}
+
+			return isEmpty;
+		}
+
+		/// <summary>
+		/// Checks that the heads and tails of all Update lists are null.
+		/// </summary>
+		/// <returns>True if all Update groups are empty, false otherwise.</returns>
+		public bool CheckAllUpdateGroupsEmpty()
+		{
+			bool isEmpty = true;
+
+			for (int i = 0; i < _groupCount && isEmpty; i++)
+			{
+				isEmpty &= (
+					ReferenceEquals(_updateHeads[i], null) &&
+					ReferenceEquals(_updateTails[i], null)
+				);
+			}
+
+			return isEmpty;
+		}
+
+		/// <summary>
+		/// Checks that the heads and tails of all FixedUpdate lists are null.
+		/// </summary>
+		/// <returns>True if all FixedUpdate gorups are empty, false otherwise.</returns>
+		public bool CheckAllFixedUpdateGroupsEmpty()
+		{
+			bool isEmpty = true;
+
+			for (int i = 0; i < _groupCount && isEmpty; i++)
+			{
+				isEmpty &= (
+					ReferenceEquals(_fixedUpdateHeads[i], null) &&
+					ReferenceEquals(_fixedUpdateTails[i], null)
+				);
+			}
+
+			return isEmpty;
+		}
+
+		/// <summary>
+		/// Gets the number of elements in the whole system matching the specified UpdateType. 
+		/// </summary>
+		/// <param name="updateType">UpdateType to match.</param>
+		/// <returns>The count.</returns>
+		public int GetCountForAllGroups(UpdateType updateType)
+		{
+			int count = 0;
+			for (int i = 0; i < _groupCount; i++)
+			{
+				count += GetCountForGroup(_priorities[i], updateType);
+			}
+			return count;
+		}
+
+		/// <summary>
+		/// Gets the number of elements in the priority group matching the specified UpdateType. 
+		/// </summary>
+		/// <param name="priorityGroup">Group to count.</param>
+		/// <param name="updateType">UpdateType to match.</param>
+		/// <returns>The count.</returns>
+		public int GetCountForGroup(CustomUpdatePriority priorityGroup, UpdateType updateType)
+		{
+			int total = 0;
+			void IncrementTotal()
+			{
+				total++;
+			}
+
+			TraverseGroupForType(priorityGroup, updateType, IncrementTotal);
+			return total;
+		}
+
+		/// <summary>
+		/// Traverses the list matching specific priority group and UpdateType, performing the given action once per element.
+		/// </summary>
+		/// <param name="priorityGroup">Group to traverse.</param>
+		/// <param name="updateType">Update type to match.</param>
+		/// <param name="perElementAction">Action to perform (cannot be null).</param>
+		public void TraverseGroupForType(CustomUpdatePriority priorityGroup, UpdateType updateType, Action perElementAction)
+		{
+			CustomUpdateBehaviour currentElement;
+			Func<CustomUpdateBehaviour> GetNext;
+
+			switch (updateType)
+			{
+				case UpdateType.Normal:
+					currentElement = _updateHeads[priorityGroup.Index];
+					if (ReferenceEquals(currentElement, null))
+					{
+						return;
+					}
+					GetNext = () => { return currentElement.updateLink; };
+					break;
+				case UpdateType.Fixed:
+					currentElement = _fixedUpdateHeads[priorityGroup.Index];
+					if (ReferenceEquals(currentElement, null))
+					{
+						return;
+					}
+					GetNext = () => { return currentElement.fixedUpdateLink; };
+					break;
+				default:
+					throw new ArgumentException($"Update type not supported for enumeration: {updateType}");
+			}
+			
+			while (!ReferenceEquals(currentElement, null))
+			{
+				perElementAction.Invoke();
+				currentElement = GetNext();
+			}
+		}
+
+		/// <summary>
 		/// Add a CustomUpdateBehaviour to the system. ONLY invoke from its OnEnable callback, or by setting the
 		/// update config flags (either via code or toggling from the Inspector).
 		/// Will not add the component to any update groups for which it is already a part of (no duplicates).
@@ -371,4 +510,3 @@ namespace Miscreant.Utilities.Lifecycle
 		}
 	}
 }
-
