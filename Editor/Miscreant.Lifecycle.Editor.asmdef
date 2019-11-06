@@ -1,5 +1,5 @@
 {
-    "name": "Unity.Miscreant.Lifecycle.Editor",
+    "name": "Miscreant.Lifecycle.Editor",
     "references": [
         "GUID:7ce7be4f561d86d4ca8e059386037ba1"
     ],
