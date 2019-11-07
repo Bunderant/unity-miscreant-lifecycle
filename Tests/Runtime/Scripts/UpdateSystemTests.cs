@@ -81,56 +81,35 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 		[Test]
 		public void Instantiate_BasicManagedUpdateActive_AddedToSystem()
 		{
-			string groupName = "Default";
-			using (MockEnvironment env = new MockEnvironment(groupName))
-			{
-				env.InstantiateManagedComponents<TestBasicManagedUpdatesComponent>(
-					groupName,
-					MockObjectToggleConfig.UpdateActiveAndEnabled
-				);
-
-				Assert.That(
-					env.manager.GetCountForGroup(env.priorities[groupName], CustomUpdateManager.UpdateType.Normal) == 1 &&
-					env.manager.GetCountForGroup(env.priorities[groupName], CustomUpdateManager.UpdateType.Fixed) == 0,
-					$"There should be exactly one {nameof(CustomUpdateBehaviour)} with UPDATE running in the system."
-				);
-			}
+			RunSingleObjectTest(MockObjectToggleConfig.UpdateActiveAndEnabled, 1, 0);
 		}
 
 		[Test]
 		public void Instantiate_BasicManagedFixedUpdateActive_AddedToSystem()
 		{
-			string groupName = "Default";
-			using (MockEnvironment env = new MockEnvironment(groupName))
-			{
-				env.InstantiateManagedComponents<TestBasicManagedUpdatesComponent>(
-					groupName,
-					MockObjectToggleConfig.FixedUpdateActiveAndEnabled
-				);
-
-				Assert.That(
-					env.manager.GetCountForGroup(env.priorities[groupName], CustomUpdateManager.UpdateType.Normal) == 0 &&
-					env.manager.GetCountForGroup(env.priorities[groupName], CustomUpdateManager.UpdateType.Fixed) == 1,
-					$"There should be exactly one {nameof(CustomUpdateBehaviour)} with FIXED UPDATE running in the system."
-				);
-			}
+			RunSingleObjectTest(MockObjectToggleConfig.FixedUpdateActiveAndEnabled, 0, 1);
 		}
 
 		[Test]
 		public void Instantiate_BasicManagedUpdateAndFixedActive_AddedToSystem()
+		{
+			RunSingleObjectTest(MockObjectToggleConfig.AllActiveAndEnabled, 1, 1);
+		}
+
+		private void RunSingleObjectTest(MockObjectToggleConfig toggleConfig, int expectedUpdateCount, int expectedFixedCount)
 		{
 			string groupName = "Default";
 			using (MockEnvironment env = new MockEnvironment(groupName))
 			{
 				env.InstantiateManagedComponents<TestBasicManagedUpdatesComponent>(
 					groupName,
-					MockObjectToggleConfig.AllActiveAndEnabled
+					toggleConfig
 				);
 
 				Assert.That(
-					env.manager.GetCountForGroup(env.priorities[groupName], CustomUpdateManager.UpdateType.Normal) == 1 &&
-					env.manager.GetCountForGroup(env.priorities[groupName], CustomUpdateManager.UpdateType.Fixed) == 1,
-					$"There should be exactly one {nameof(CustomUpdateBehaviour)} with UPDATE and FIXED UPDATE running in the system."
+					env.manager.GetCountForGroup(env.priorities[groupName], CustomUpdateManager.UpdateType.Normal) == expectedUpdateCount &&
+					env.manager.GetCountForGroup(env.priorities[groupName], CustomUpdateManager.UpdateType.Fixed) == expectedFixedCount,
+					$"There should be exactly one {nameof(CustomUpdateBehaviour)} with {toggleConfig} running in the system."
 				);
 			}
 		}
