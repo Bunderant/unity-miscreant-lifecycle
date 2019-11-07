@@ -115,5 +115,24 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 				);
 			}
 		}
+
+		[Test]
+		public void Instantiate_BasicManagedUpdateAndFixedActive_AddedToSystem()
+		{
+			string groupName = "Default";
+			using (MockEnvironment env = new MockEnvironment(groupName))
+			{
+				env.InstantiateManagedComponents<TestBasicManagedUpdatesComponent>(
+					groupName,
+					MockObjectToggleConfig.AllActiveAndEnabled
+				);
+
+				Assert.That(
+					env.manager.GetCountForGroup(env.priorities[groupName], CustomUpdateManager.UpdateType.Normal) == 1 &&
+					env.manager.GetCountForGroup(env.priorities[groupName], CustomUpdateManager.UpdateType.Fixed) == 1,
+					$"There should be exactly one {nameof(CustomUpdateBehaviour)} with UPDATE and FIXED UPDATE running in the system."
+				);
+			}
+		}
 	}
 }
