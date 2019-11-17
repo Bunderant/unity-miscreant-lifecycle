@@ -89,13 +89,17 @@ namespace Miscreant.Utilities.Lifecycle
 		[SerializeField]
 		private List<CustomUpdatePriority> _priorities = new List<CustomUpdatePriority>();
 
-		private CustomUpdateBehaviour[] _updateHeads = null;
-		private CustomUpdateBehaviour[] _updateTails = null;
+		private sealed class IntrusiveList
+		{
+			public CustomUpdateBehaviour head;
+			public CustomUpdateBehaviour tail;
+			public uint count;
+		}
 
-		private CustomUpdateBehaviour[] _fixedUpdateHeads = null;
-		private CustomUpdateBehaviour[] _fixedUpdateTails = null;
+		private IntrusiveList[] _updateLists = null;
+		private IntrusiveList[] _fixedUpdateLists = null;
 
-		private int _groupCount;
+		private ushort _groupCount;
 		private bool _initialized;
 
 #if UNITY_EDITOR
@@ -125,7 +129,7 @@ namespace Miscreant.Utilities.Lifecycle
 					List<CustomUpdateBehaviour> updateGroup = new List<CustomUpdateBehaviour>();
 					List<CustomUpdateBehaviour> fixedUpdateGroup = new List<CustomUpdateBehaviour>();
 
-					var updateHead = updateManager._updateHeads[i];
+					var updateHead = updateManager._updateLists[i].head;
 					var currentUpdate = updateHead;
 					if (updateHead != null)
 					{
@@ -136,7 +140,7 @@ namespace Miscreant.Utilities.Lifecycle
 						} while (currentUpdate != null);
 					}
 
-					var fixedHead = updateManager._fixedUpdateHeads[i];
+					var fixedHead = updateManager._fixedUpdateLists[i].head;
 					var currentFixed = fixedHead;
 					if (fixedHead != null)
 					{
@@ -195,14 +199,17 @@ namespace Miscreant.Utilities.Lifecycle
 				return;
 			}
 
-			_groupCount = _priorities.Count;
+			_groupCount = (ushort)_priorities.Count;
 			_initialized |= _groupCount > 0;
 
-			_updateHeads = new CustomUpdateBehaviour[_groupCount];
-			_updateTails = new CustomUpdateBehaviour[_groupCount];
+			_updateLists = new IntrusiveList[_groupCount];
+			_fixedUpdateLists = new IntrusiveList[_groupCount];
 
-			_fixedUpdateHeads = new CustomUpdateBehaviour[_groupCount];
-			_fixedUpdateTails = new CustomUpdateBehaviour[_groupCount];
+			for (int i = 0; i < _groupCount; i++)
+			{
+				_updateLists[i] = new IntrusiveList();
+				_fixedUpdateLists[i] = new IntrusiveList();
+			}
 
 			UpdatePriorities();
 		}
@@ -248,11 +255,14 @@ namespace Miscreant.Utilities.Lifecycle
 
 			for (int i = 0; i < _groupCount && isEmpty; i++)
 			{
+				IntrusiveList updateList = _updateLists[i];
+				IntrusiveList fixedUpdateList = _fixedUpdateLists[i];
+
 				isEmpty &= (
-					ReferenceEquals(_updateHeads[i], null) &&
-					ReferenceEquals(_updateTails[i], null) &&
-					ReferenceEquals(_fixedUpdateHeads[i], null) &&
-					ReferenceEquals(_fixedUpdateTails[i], null)
+					ReferenceEquals(updateList.head, null) &&
+					ReferenceEquals(updateList.tail, null) &&
+					ReferenceEquals(fixedUpdateList.head, null) &&
+					ReferenceEquals(fixedUpdateList.tail, null)
 				);
 			}
 
@@ -269,9 +279,10 @@ namespace Miscreant.Utilities.Lifecycle
 
 			for (int i = 0; i < _groupCount && isEmpty; i++)
 			{
+				IntrusiveList updateList = _updateLists[i];
 				isEmpty &= (
-					ReferenceEquals(_updateHeads[i], null) &&
-					ReferenceEquals(_updateTails[i], null)
+					ReferenceEquals(updateList.head, null) &&
+					ReferenceEquals(updateList.tail, null)
 				);
 			}
 
@@ -288,9 +299,10 @@ namespace Miscreant.Utilities.Lifecycle
 
 			for (int i = 0; i < _groupCount && isEmpty; i++)
 			{
+				IntrusiveList fixedUpdateList = _fixedUpdateLists[i];
 				isEmpty &= (
-					ReferenceEquals(_fixedUpdateHeads[i], null) &&
-					ReferenceEquals(_fixedUpdateTails[i], null)
+					ReferenceEquals(fixedUpdateList.head, null) &&
+					ReferenceEquals(fixedUpdateList.tail, null)
 				);
 			}
 
@@ -344,7 +356,7 @@ namespace Miscreant.Utilities.Lifecycle
 			switch (updateType)
 			{
 				case UpdateType.Normal:
-					currentElement = _updateHeads[priorityGroup.Index];
+					currentElement = _updateLists[priorityGroup.Index].head;
 					if (ReferenceEquals(currentElement, null))
 					{
 						return;
@@ -352,7 +364,7 @@ namespace Miscreant.Utilities.Lifecycle
 					GetNext = () => { return currentElement.updateLink; };
 					break;
 				case UpdateType.Fixed:
-					currentElement = _fixedUpdateHeads[priorityGroup.Index];
+					currentElement = _fixedUpdateLists[priorityGroup.Index].head;
 					if (ReferenceEquals(currentElement, null))
 					{
 						return;
@@ -362,7 +374,7 @@ namespace Miscreant.Utilities.Lifecycle
 				default:
 					throw new ArgumentException($"Update type not supported for enumeration: {updateType}");
 			}
-			
+
 			while (!ReferenceEquals(currentElement, null))
 			{
 				perElementAction.Invoke();
@@ -385,10 +397,11 @@ namespace Miscreant.Utilities.Lifecycle
 			if (behaviour.isActiveAndEnabled && config.update && !behaviour.updateActive)
 			{
 				int priorityIndex = config.PriorityGroup.Index;
-				ref CustomUpdateBehaviour tail = ref _updateTails[priorityIndex];
+				IntrusiveList updateList = _updateLists[priorityIndex];
+				ref CustomUpdateBehaviour tail = ref updateList.tail;
 				if (ReferenceEquals(tail, null))
 				{
-					_updateHeads[priorityIndex] = behaviour;
+					updateList.head = behaviour;
 				}
 				else
 				{
@@ -397,16 +410,19 @@ namespace Miscreant.Utilities.Lifecycle
 
 				behaviour.updateLink = null;
 				tail = behaviour;
+
 				behaviour.updateActive = true;
+				updateList.count++;
 			}
 
 			if (behaviour.isActiveAndEnabled && config.fixedUpdate && !behaviour.fixedUpdateActive)
 			{
 				int priorityIndex = config.PriorityGroup.Index;
-				ref CustomUpdateBehaviour tail = ref _fixedUpdateTails[priorityIndex];
+				IntrusiveList fixedUpdateList = _fixedUpdateLists[priorityIndex];
+				ref CustomUpdateBehaviour tail = ref fixedUpdateList.tail;
 				if (ReferenceEquals(tail, null))
 				{
-					_fixedUpdateHeads[priorityIndex] = behaviour;
+					fixedUpdateList.head = behaviour;
 				}
 				else
 				{
@@ -415,7 +431,9 @@ namespace Miscreant.Utilities.Lifecycle
 
 				behaviour.fixedUpdateLink = null;
 				tail = behaviour;
+
 				behaviour.fixedUpdateActive = true;
+				fixedUpdateList.count++;
 			}
 		}
 
@@ -426,7 +444,9 @@ namespace Miscreant.Utilities.Lifecycle
 		{
 			for (int i = 0; i < _groupCount; i++)
 			{
-				ref CustomUpdateBehaviour head = ref _updateHeads[i];
+				IntrusiveList updateList = _updateLists[i];
+
+				ref CustomUpdateBehaviour head = ref updateList.head;
 				CustomUpdateBehaviour previous = null;
 				CustomUpdateBehaviour current = head;
 
@@ -455,12 +475,13 @@ namespace Miscreant.Utilities.Lifecycle
 						var next = current.updateLink;
 						current.updateLink = null;
 						current.updateActive = false;
+						updateList.count--;
 						current = next;
 					}
 				}
 
 				// Set the tail to the last active element processed. Will be null if the list was empty. 
-				_updateTails[i] = previous;
+				updateList.tail = previous;
 			}
 		}
 
@@ -471,7 +492,9 @@ namespace Miscreant.Utilities.Lifecycle
 		{
 			for (int i = 0; i < _groupCount; i++)
 			{
-				ref CustomUpdateBehaviour head = ref _fixedUpdateHeads[i];
+				IntrusiveList fixedUpdateList = _fixedUpdateLists[i];
+
+				ref CustomUpdateBehaviour head = ref fixedUpdateList.head;
 				CustomUpdateBehaviour previous = null;
 				CustomUpdateBehaviour current = head;
 
@@ -500,12 +523,13 @@ namespace Miscreant.Utilities.Lifecycle
 						var next = current.fixedUpdateLink;
 						current.fixedUpdateLink = null;
 						current.fixedUpdateActive = false;
+						fixedUpdateList.count--;
 						current = next;
 					}
 				}
 
 				// Set the tail to the last active element processed. Will be null if the list was empty. 
-				_fixedUpdateTails[i] = previous;
+				fixedUpdateList.tail = previous;
 			}
 		}
 	}
