@@ -37,7 +37,7 @@ public class CustomUpdateConfigDrawer : PropertyDrawer
 				);
 
 				var selectedObjects = property.serializedObject.targetObjects;
-				// System.Array.Sort(selectedObjects, new InstanceIdComparer());
+				System.Array.Sort(selectedObjects, new InstanceIdComparer());
 
 				foreach (var selection in selectedObjects)
 				{
@@ -58,19 +58,19 @@ public class CustomUpdateConfigDrawer : PropertyDrawer
 		return EditorGUI.GetPropertyHeight(property, label, property.isExpanded);
 	}
 
-	// private class InstanceIdComparer : System.Collections.Generic.IComparer<Object>
-	// {
-	// 	public int Compare(Object one, Object other)
-	// 	{
-	// 		if (one.GetInstanceID() < other.GetInstanceID())
-	// 		{
-	// 			return 1;
-	// 		}
-	// 		else if (one.GetInstanceID() > other.GetInstanceID())
-	// 		{
-	// 			return -1;
-	// 		}
-	// 		return 0;
-	// 	}
-	// }
+	private class InstanceIdComparer : System.Collections.Generic.IComparer<Object>
+	{
+		public int Compare(Object one, Object other)
+		{
+			if (one.GetInstanceID() < other.GetInstanceID())
+			{
+				return 1;
+			}
+			else if (one.GetInstanceID() > other.GetInstanceID())
+			{
+				return -1;
+			}
+			return 0;
+		}
+	}
 }
