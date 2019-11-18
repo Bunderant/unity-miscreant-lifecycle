@@ -9,6 +9,7 @@ using Miscreant.Utilities.Lifecycle;
 public class CustomUpdateManagerEditor : Editor
 {
 	private CustomUpdateManager _target;
+	private CustomUpdateManager.RuntimeData _latestData;
 	private ReorderableList _priorityList;
 
 	private List<CustomUpdatePriority> _lastSavedPriorities;
@@ -70,6 +71,8 @@ public class CustomUpdateManagerEditor : Editor
 
 		_runtimeGroupVisibility = new bool[_priorityList.count];
 		_runtimeGroupScrollPositions = new Vector2[_priorityList.count];
+
+		_latestData = ScriptableObject.CreateInstance<CustomUpdateManager.RuntimeData>();
 
 		EditorApplication.update += OnUpdate;
 	}
@@ -142,9 +145,8 @@ public class CustomUpdateManagerEditor : Editor
 
 	private void DisplayRuntimePriorityLists()
 	{
-		var runtimeData = ScriptableObject.CreateInstance<CustomUpdateManager.RuntimeData>();
-		runtimeData.Initialize(_target);
-		var so = new SerializedObject(runtimeData);
+		_latestData.Initialize(_target);
+		var so = new SerializedObject(_latestData);
 
 		_selectedTabIndex = GUILayout.Toolbar(_selectedTabIndex, _tabNames);
 		DrawGroupCollection(
