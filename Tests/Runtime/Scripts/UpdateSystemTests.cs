@@ -79,19 +79,19 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 		}
 
 		[Test]
-		public void Instantiate_BasicManagedUpdateActive_AddedToSystem()
+		public void Instantiate_BasicManagedUpdateActive_AddedToEmptySystem()
 		{
 			RunSingleObjectTest(MockObjectToggleConfig.UpdateActiveAndEnabled, 1, 0);
 		}
 
 		[Test]
-		public void Instantiate_BasicManagedFixedUpdateActive_AddedToSystem()
+		public void Instantiate_BasicManagedFixedUpdateActive_AddedToEmptySystem()
 		{
 			RunSingleObjectTest(MockObjectToggleConfig.FixedUpdateActiveAndEnabled, 0, 1);
 		}
 
 		[Test]
-		public void Instantiate_BasicManagedUpdateAndFixedActive_AddedToSystem()
+		public void Instantiate_BasicManagedUpdateAndFixedActive_AddedToEmptySystem()
 		{
 			RunSingleObjectTest(MockObjectToggleConfig.AllActiveAndEnabled, 1, 1);
 		}
