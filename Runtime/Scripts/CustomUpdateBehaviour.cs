@@ -8,17 +8,26 @@ namespace Miscreant.Utilities.Lifecycle
 		public CustomUpdateManager.Config updateConfig = new CustomUpdateManager.Config(true, true);
 
 		/// <summary>
-		/// Specifies the next behavior to have its update method executed in this priority group by the update manager. Part of the
-		/// intrusive linked list implementation. 
-		/// </summary>
+        /// Previous update link. ONLY modify from IntrusiveList or its subclasses. 
+        /// </summary>
 		[NonSerialized]
-		internal CustomUpdateBehaviour updateLink;
+		internal CustomUpdateBehaviour previousUpdate;
 		/// <summary>
-		/// Specifies the next behavior to have its fixed update method executed in this priority group by the update manager. Part 
-		/// of the intrusive linked list implementation.
-		/// </summary>
+        /// Next update link. ONLY modify from IntrusiveList or its subclasses. 
+        /// </summary>
 		[NonSerialized]
-		internal CustomUpdateBehaviour fixedUpdateLink;
+		internal CustomUpdateBehaviour nextUpdate;
+
+		[NonSerialized]
+		/// <summary>
+        /// Previous FIXED update link. ONLY modify from IntrusiveList or its subclasses. 
+        /// </summary>
+		internal CustomUpdateBehaviour previousFixedUpdate;
+		[NonSerialized]
+		/// <summary>
+        /// Next FIXED update link. ONLY modify from IntrusiveList or its subclasses. 
+        /// </summary>
+		internal CustomUpdateBehaviour nextFixedUpdate;
 
 		// State Tracking
 		// TODO: Miscreant: Don't mask the built-in field in case someone really wants to use it. Could lead to elusive bugs. 
@@ -27,16 +36,6 @@ namespace Miscreant.Utilities.Lifecycle
 		/// </summary>
 		[NonSerialized]
 		public new bool isActiveAndEnabled;
-		/// <summary>
-		/// ONLY set from the UpdateSystem. Marks whether this compoenent is already in an update group. Prevents duplicates.
-		/// </summary>
-		[NonSerialized]
-		internal bool updateActive;
-		/// <summary>
-		/// ONLY set from the UpdateSystem. Marks whether this component is already in a fixed update group. Prevents duplicates.
-		/// </summary>
-		[NonSerialized]
-		internal bool fixedUpdateActive;
 
 		public static T Create<T>(
 			CustomUpdateManager.Config config, bool gameObjectActive, bool componentEnabled, Transform parent = null
@@ -69,7 +68,7 @@ namespace Miscreant.Utilities.Lifecycle
 			isActiveAndEnabled = true;
 
 			updateConfig.Manager.TryAdd(this);
-			updateConfig.valueEnabledAction = HandleUpdateModeEnabled;
+			updateConfig.valueChangedAction = HandleUpdateModeChanged;
 		}
 
 		/// <summary>
@@ -79,14 +78,22 @@ namespace Miscreant.Utilities.Lifecycle
 		{
 			isActiveAndEnabled = false;
 			
-			updateConfig.valueEnabledAction = null;
+			updateConfig.Manager.TryRemove(this);
+			updateConfig.valueChangedAction = null;
 		}
 
 		#endregion
 
-		private void HandleUpdateModeEnabled()
+		private void HandleUpdateModeChanged(bool becameEnabled)
 		{
-			updateConfig.Manager.TryAdd(this);
+			if (becameEnabled)
+			{
+				updateConfig.Manager.TryAdd(this);
+			}
+			else
+			{
+				updateConfig.Manager.TryRemove(this);
+			}
 		}
 
 		/// <summary>

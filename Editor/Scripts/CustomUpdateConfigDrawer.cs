@@ -10,6 +10,9 @@ public class CustomUpdateConfigDrawer : PropertyDrawer
 	{
 		EditorGUI.BeginProperty(position, label, property);
 
+		bool updateFlagBefore = property.FindPropertyRelative("_update").boolValue;
+		bool fixedFlagBefore = property.FindPropertyRelative("_fixedUpdate").boolValue;
+
 		EditorGUI.BeginChangeCheck();
 
 		EditorGUI.PropertyField(position, property, label, property.isExpanded);
@@ -18,15 +21,31 @@ public class CustomUpdateConfigDrawer : PropertyDrawer
 		{
 			property.serializedObject.ApplyModifiedProperties();
 
-			var selectedObjects = property.serializedObject.targetObjects;
-			// System.Array.Sort(selectedObjects, new InstanceIdComparer());
+			bool updateFlagAfter = property.FindPropertyRelative("_update").boolValue;
+			bool fixedFlagAfter = property.FindPropertyRelative("_fixedUpdate").boolValue;
 
-			foreach (var selection in selectedObjects)
+			bool didChange = (
+				(updateFlagBefore != updateFlagAfter) ||
+				(fixedFlagBefore != fixedFlagAfter)
+			);
+
+			if (didChange)
 			{
-				var updateBehaviour = selection as CustomUpdateBehaviour;
-				if (updateBehaviour != null)
+				bool becameActive = (
+					(!updateFlagBefore && updateFlagAfter) ||
+					(!fixedFlagBefore && fixedFlagAfter)
+				);
+
+				var selectedObjects = property.serializedObject.targetObjects;
+				// System.Array.Sort(selectedObjects, new InstanceIdComparer());
+
+				foreach (var selection in selectedObjects)
 				{
-					updateBehaviour.updateConfig.valueEnabledAction?.Invoke();
+					var updateBehaviour = selection as CustomUpdateBehaviour;
+					if (updateBehaviour != null)
+					{
+						updateBehaviour.updateConfig.valueChangedAction?.Invoke(becameActive);
+					}
 				}
 			}
 		}
@@ -45,11 +64,11 @@ public class CustomUpdateConfigDrawer : PropertyDrawer
 	// 	{
 	// 		if (one.GetInstanceID() < other.GetInstanceID())
 	// 		{
-	// 			return -1;
+	// 			return 1;
 	// 		}
 	// 		else if (one.GetInstanceID() > other.GetInstanceID())
 	// 		{
-	// 			return 1;
+	// 			return -1;
 	// 		}
 	// 		return 0;
 	// 	}

@@ -45,7 +45,7 @@ namespace Miscreant.Utilities.Lifecycle
 			}
 
 			[NonSerialized]
-			public Action valueEnabledAction;
+			public Action<bool> valueChangedAction;
 
 			public Config(bool update, bool fixedUpdate)
 			{
@@ -55,7 +55,7 @@ namespace Miscreant.Utilities.Lifecycle
 				this._update = update;
 				this._fixedUpdate = fixedUpdate;
 
-				this.valueEnabledAction = null;
+				this.valueChangedAction = null;
 			}
 
 			public Config(CustomUpdateManager manager, CustomUpdatePriority priorityGroup, bool update, bool fixedUpdate)
@@ -66,34 +66,173 @@ namespace Miscreant.Utilities.Lifecycle
 				this._update = update;
 				this._fixedUpdate = fixedUpdate;
 
-				this.valueEnabledAction = null;
+				this.valueChangedAction = null;
 			}
 
 			private void SetValue(ref bool originalValue, bool newValue)
 			{
-				bool becameEnabled = CheckValueEnabled(originalValue, newValue);
+				bool changed = originalValue != newValue;
 				originalValue = newValue;
 
-				if (becameEnabled && valueEnabledAction != null)
+				if (changed && valueChangedAction != null)
 				{
-					valueEnabledAction.Invoke();
+					valueChangedAction.Invoke(newValue);
 				}
-			}
-
-			private bool CheckValueEnabled(bool originalValue, bool newValue)
-			{
-				return !(originalValue == newValue || newValue == false);
 			}
 		}
 
 		[SerializeField]
 		private List<CustomUpdatePriority> _priorities = new List<CustomUpdatePriority>();
 
-		private sealed class IntrusiveList
+		private abstract class IntrusiveList
 		{
-			public CustomUpdateBehaviour head;
-			public CustomUpdateBehaviour tail;
-			public uint count;
+			public CustomUpdatePriority priorityGroup;
+			public CustomUpdateBehaviour head = null;
+			public uint count = 0;
+
+			public IntrusiveList(CustomUpdatePriority priorityGroup)
+			{
+				this.priorityGroup = priorityGroup;
+			}
+
+			internal abstract void AddToTail(CustomUpdateBehaviour component);
+			internal abstract void Remove(CustomUpdateBehaviour component);
+		}
+
+		private sealed class IntrusiveUpdateList : IntrusiveList
+		{
+			public IntrusiveUpdateList(CustomUpdatePriority priorityGroup) : base(priorityGroup)
+			{ }
+
+			internal override void AddToTail(CustomUpdateBehaviour component)
+			{
+				if (!ReferenceEquals(component.nextUpdate, null) || !ReferenceEquals(component.previousUpdate, null))
+				{
+					return;
+				}
+				count++;
+
+				if (ReferenceEquals(head, null))
+				{
+					head = component;
+					head.previousUpdate = head;
+					head.nextUpdate = head;
+					return;
+				}
+
+				Add(component, head.previousUpdate, head);
+			}
+
+			private void Add(CustomUpdateBehaviour node, CustomUpdateBehaviour prev, CustomUpdateBehaviour next)
+			{
+				node.nextUpdate = next;
+				node.previousUpdate = prev;
+
+				next.previousUpdate = node;
+				prev.nextUpdate = node;
+			}
+
+			internal override void Remove(CustomUpdateBehaviour component)
+			{
+				if (ReferenceEquals(component.nextUpdate, null) && ReferenceEquals(component.previousUpdate, null))
+				{
+					return;
+				}
+				count--;
+
+				if (count == 0)
+				{
+					// TODO: Miscreant: Restore this under a "strict" conditional
+					// if (!ReferenceEquals(component, head))
+					// {
+					// 	throw new ArgumentException("component is not the root of the list");
+					// }
+
+					head.previousUpdate = null;
+					head.nextUpdate = null;
+					head = null;
+					return;
+				}
+
+				if (ReferenceEquals(component, head))
+				{
+					head = head.nextUpdate;
+				}
+
+				component.nextUpdate.previousUpdate = component.previousUpdate;
+				component.previousUpdate.nextUpdate = component.nextUpdate;
+
+				component.previousUpdate = null;
+				component.nextUpdate = null;
+			}
+		}
+
+		private sealed class IntrusiveFixedUpdateList : IntrusiveList
+		{
+			public IntrusiveFixedUpdateList(CustomUpdatePriority priorityGroup) : base(priorityGroup)
+			{ }
+
+			internal override void AddToTail(CustomUpdateBehaviour component)
+			{
+				if (!ReferenceEquals(component.nextFixedUpdate, null) || !ReferenceEquals(component.previousFixedUpdate, null))
+				{
+					return;
+				}
+				count++;
+
+				if (ReferenceEquals(head, null))
+				{
+					head = component;
+					head.previousFixedUpdate = head;
+					head.nextFixedUpdate = head;
+					return;
+				}
+
+				Add(component, head.previousFixedUpdate, head);
+			}
+
+			private void Add(CustomUpdateBehaviour node, CustomUpdateBehaviour prev, CustomUpdateBehaviour next)
+			{
+				node.nextFixedUpdate = next;
+				node.previousFixedUpdate = prev;
+
+				next.previousFixedUpdate = node;
+				prev.nextFixedUpdate = node;
+			}
+
+			internal override void Remove(CustomUpdateBehaviour component)
+			{
+				if (ReferenceEquals(component.nextFixedUpdate, null) && ReferenceEquals(component.previousFixedUpdate, null))
+				{
+					return;
+				}
+				count--;
+
+				if (count == 0)
+				{
+					// TODO: Miscreant: Restore this under a "strict" conditional
+					// if (!ReferenceEquals(component, head))
+					// {
+					// 	throw new ArgumentException("component is not the root of the list");
+					// }
+
+					head.previousFixedUpdate = null;
+					head.nextFixedUpdate = null;
+					head = null;
+					return;
+				}
+
+				if (ReferenceEquals(component, head))
+				{
+					head = head.nextFixedUpdate;
+				}
+
+				component.nextFixedUpdate.previousFixedUpdate = component.previousFixedUpdate;
+				component.previousFixedUpdate.nextFixedUpdate = component.nextFixedUpdate;
+
+				component.previousFixedUpdate = null;
+				component.nextFixedUpdate = null;
+			}
 		}
 
 		private IntrusiveList[] _updateLists = null;
@@ -129,26 +268,26 @@ namespace Miscreant.Utilities.Lifecycle
 					List<CustomUpdateBehaviour> updateGroup = new List<CustomUpdateBehaviour>();
 					List<CustomUpdateBehaviour> fixedUpdateGroup = new List<CustomUpdateBehaviour>();
 
-					var updateHead = updateManager._updateLists[i].head;
-					var currentUpdate = updateHead;
-					if (updateHead != null)
+					var updateList = updateManager._updateLists[i];
+					var currentUpdate = updateList.head;
+					if (!ReferenceEquals(currentUpdate, null))
 					{
 						do
 						{
 							updateGroup.Add(currentUpdate);
-							currentUpdate = currentUpdate.updateLink;
-						} while (currentUpdate != null);
+							currentUpdate = currentUpdate.nextUpdate;
+						} while (!ReferenceEquals(currentUpdate, updateList.head));
 					}
 
-					var fixedHead = updateManager._fixedUpdateLists[i].head;
-					var currentFixed = fixedHead;
-					if (fixedHead != null)
+					var fixedList = updateManager._fixedUpdateLists[i];
+					var currentFixed = fixedList.head;
+					if (!ReferenceEquals(currentFixed, null))
 					{
 						do
 						{
 							fixedUpdateGroup.Add(currentFixed);
-							currentFixed = currentFixed.fixedUpdateLink;
-						} while (currentFixed != null);
+							currentFixed = currentFixed.nextFixedUpdate;
+						} while (!ReferenceEquals(currentFixed, fixedList.head));
 					}
 
 					_priorities[i] = updateManager._priorities[i];
@@ -207,8 +346,9 @@ namespace Miscreant.Utilities.Lifecycle
 
 			for (int i = 0; i < _groupCount; i++)
 			{
-				_updateLists[i] = new IntrusiveList();
-				_fixedUpdateLists[i] = new IntrusiveList();
+				CustomUpdatePriority group = _priorities[i];
+				_updateLists[i] = new IntrusiveUpdateList(group);
+				_fixedUpdateLists[i] = new IntrusiveFixedUpdateList(group);
 			}
 
 			UpdatePriorities();
@@ -260,9 +400,7 @@ namespace Miscreant.Utilities.Lifecycle
 
 				isEmpty &= (
 					ReferenceEquals(updateList.head, null) &&
-					ReferenceEquals(updateList.tail, null) &&
-					ReferenceEquals(fixedUpdateList.head, null) &&
-					ReferenceEquals(fixedUpdateList.tail, null)
+					ReferenceEquals(fixedUpdateList.head, null)
 				);
 			}
 
@@ -280,10 +418,7 @@ namespace Miscreant.Utilities.Lifecycle
 			for (int i = 0; i < _groupCount && isEmpty; i++)
 			{
 				IntrusiveList updateList = _updateLists[i];
-				isEmpty &= (
-					ReferenceEquals(updateList.head, null) &&
-					ReferenceEquals(updateList.tail, null)
-				);
+				isEmpty &= ReferenceEquals(updateList.head, null);
 			}
 
 			return isEmpty;
@@ -300,10 +435,7 @@ namespace Miscreant.Utilities.Lifecycle
 			for (int i = 0; i < _groupCount && isEmpty; i++)
 			{
 				IntrusiveList fixedUpdateList = _fixedUpdateLists[i];
-				isEmpty &= (
-					ReferenceEquals(fixedUpdateList.head, null) &&
-					ReferenceEquals(fixedUpdateList.tail, null)
-				);
+				isEmpty &= ReferenceEquals(fixedUpdateList.head, null);
 			}
 
 			return isEmpty;
@@ -350,35 +482,33 @@ namespace Miscreant.Utilities.Lifecycle
 		/// <param name="perElementAction">Action to perform (cannot be null).</param>
 		public void TraverseGroupForType(CustomUpdatePriority priorityGroup, UpdateType updateType, Action perElementAction)
 		{
+			IntrusiveList list;
 			CustomUpdateBehaviour currentElement;
 			Func<CustomUpdateBehaviour> GetNext;
 
 			switch (updateType)
 			{
 				case UpdateType.Normal:
-					currentElement = _updateLists[priorityGroup.Index].head;
-					if (ReferenceEquals(currentElement, null))
-					{
-						return;
-					}
-					GetNext = () => { return currentElement.updateLink; };
+					list = _updateLists[priorityGroup.Index];
+					currentElement = list.head;
+					GetNext = () => { return currentElement.nextUpdate; };
 					break;
 				case UpdateType.Fixed:
-					currentElement = _fixedUpdateLists[priorityGroup.Index].head;
-					if (ReferenceEquals(currentElement, null))
-					{
-						return;
-					}
-					GetNext = () => { return currentElement.fixedUpdateLink; };
+					list = _fixedUpdateLists[priorityGroup.Index];
+					currentElement = list.head;
+					GetNext = () => { return currentElement.nextFixedUpdate; };
 					break;
 				default:
 					throw new ArgumentException($"Update type not supported for enumeration: {updateType}");
 			}
 
-			while (!ReferenceEquals(currentElement, null))
+			if (!ReferenceEquals(currentElement, null))
 			{
-				perElementAction.Invoke();
-				currentElement = GetNext();
+				do
+				{
+					perElementAction.Invoke();
+					currentElement = GetNext();
+				} while (!ReferenceEquals(currentElement, list.head));
 			}
 		}
 
@@ -389,51 +519,36 @@ namespace Miscreant.Utilities.Lifecycle
 		/// Does nothing if the component and/or associated gameObject aren't active in the heirarchy, or the update
 		/// config flags are all false. 
 		/// </summary>
-		/// <param name="behaviour">The component to add to the system.</param>
-		public void TryAdd(CustomUpdateBehaviour behaviour)
+		/// <param name="component">The component to add to the system.</param>
+		public void TryAdd(CustomUpdateBehaviour component)
 		{
-			var config = behaviour.updateConfig;
+			var config = component.updateConfig;
+			int priorityIndex = config.PriorityGroup.Index;
 
-			if (behaviour.isActiveAndEnabled && config.update && !behaviour.updateActive)
+			// TODO: Miscreant: Make sure there arent' any redundant checks here
+			if (component.isActiveAndEnabled && config.update)
 			{
-				int priorityIndex = config.PriorityGroup.Index;
-				IntrusiveList updateList = _updateLists[priorityIndex];
-				ref CustomUpdateBehaviour tail = ref updateList.tail;
-				if (ReferenceEquals(tail, null))
-				{
-					updateList.head = behaviour;
-				}
-				else
-				{
-					tail.updateLink = behaviour;
-				}
-
-				behaviour.updateLink = null;
-				tail = behaviour;
-
-				behaviour.updateActive = true;
-				updateList.count++;
+				_updateLists[priorityIndex].AddToTail(component);
 			}
-
-			if (behaviour.isActiveAndEnabled && config.fixedUpdate && !behaviour.fixedUpdateActive)
+			if (component.isActiveAndEnabled && config.fixedUpdate)
 			{
-				int priorityIndex = config.PriorityGroup.Index;
-				IntrusiveList fixedUpdateList = _fixedUpdateLists[priorityIndex];
-				ref CustomUpdateBehaviour tail = ref fixedUpdateList.tail;
-				if (ReferenceEquals(tail, null))
-				{
-					fixedUpdateList.head = behaviour;
-				}
-				else
-				{
-					tail.fixedUpdateLink = behaviour;
-				}
+				_fixedUpdateLists[priorityIndex].AddToTail(component);
+			}
+		}
 
-				behaviour.fixedUpdateLink = null;
-				tail = behaviour;
+		public void TryRemove(CustomUpdateBehaviour component)
+		{
+			var config = component.updateConfig;
+			int priorityIndex = config.PriorityGroup.Index;
 
-				behaviour.fixedUpdateActive = true;
-				fixedUpdateList.count++;
+			// TODO: Miscreant: Make sure there arent' any redundant checks here
+			if (!component.isActiveAndEnabled || !config.update)
+			{
+				_updateLists[priorityIndex].Remove(component);
+			}
+			if (!component.isActiveAndEnabled || !config.fixedUpdate)
+			{
+				_fixedUpdateLists[priorityIndex].Remove(component);
 			}
 		}
 
@@ -444,44 +559,18 @@ namespace Miscreant.Utilities.Lifecycle
 		{
 			for (int i = 0; i < _groupCount; i++)
 			{
-				IntrusiveList updateList = _updateLists[i];
+				// Don't cache the list head, since it could be modified as the loop executes.
+				IntrusiveList list = _updateLists[i];
+				CustomUpdateBehaviour current = list.head;
 
-				ref CustomUpdateBehaviour head = ref updateList.head;
-				CustomUpdateBehaviour previous = null;
-				CustomUpdateBehaviour current = head;
-
-				while (!ReferenceEquals(current, null)) // Avoid the '==' operator (overridden by Unity) so we don't cross the managed to unmanaged gap.
+				if (!ReferenceEquals(current, null))
 				{
-					if (current.isActiveAndEnabled && current.updateConfig.update)
+					do
 					{
 						current.ManagedUpdate();
-
-						previous = current;
-						current = current.updateLink;
-					}
-					else
-					{
-						if (ReferenceEquals(current, head))
-						{
-							// If we removed the head, the previous link must be null, so no need to populate its link field.
-							head = current.updateLink;
-						}
-						else
-						{
-							// Otherwise, set the previous element's link field to skip the element we just removed.
-							previous.updateLink = current.updateLink;
-						}
-
-						var next = current.updateLink;
-						current.updateLink = null;
-						current.updateActive = false;
-						updateList.count--;
-						current = next;
-					}
+						current = current.nextUpdate;
+					} while (!ReferenceEquals(current, list.head));
 				}
-
-				// Set the tail to the last active element processed. Will be null if the list was empty. 
-				updateList.tail = previous;
 			}
 		}
 
@@ -492,44 +581,18 @@ namespace Miscreant.Utilities.Lifecycle
 		{
 			for (int i = 0; i < _groupCount; i++)
 			{
-				IntrusiveList fixedUpdateList = _fixedUpdateLists[i];
+				// Don't cache the list head, since it could be modified as the loop executes.
+				IntrusiveList list = _updateLists[i];
+				CustomUpdateBehaviour current = list.head;
 
-				ref CustomUpdateBehaviour head = ref fixedUpdateList.head;
-				CustomUpdateBehaviour previous = null;
-				CustomUpdateBehaviour current = head;
-
-				while (!ReferenceEquals(current, null)) // Avoid the '==' operator (overridden by Unity) so we don't cross the managed to unmanaged gap.
+				if (!ReferenceEquals(current, null))
 				{
-					if (current.isActiveAndEnabled && current.updateConfig.fixedUpdate)
+					do
 					{
 						current.ManagedFixedUpdate();
-
-						previous = current;
-						current = current.fixedUpdateLink;
-					}
-					else
-					{
-						if (ReferenceEquals(current, head))
-						{
-							// If we removed the head, the previous link must be null, so no need to populate its link field.
-							head = current.fixedUpdateLink;
-						}
-						else
-						{
-							// Otherwise, set the previous element's link field to skip the element we just removed.
-							previous.fixedUpdateLink = current.fixedUpdateLink;
-						}
-
-						var next = current.fixedUpdateLink;
-						current.fixedUpdateLink = null;
-						current.fixedUpdateActive = false;
-						fixedUpdateList.count--;
-						current = next;
-					}
+						current = current.nextFixedUpdate;
+					} while (!ReferenceEquals(current, list.head));
 				}
-
-				// Set the tail to the last active element processed. Will be null if the list was empty. 
-				fixedUpdateList.tail = previous;
 			}
 		}
 	}
