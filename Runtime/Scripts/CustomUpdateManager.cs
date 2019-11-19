@@ -582,7 +582,7 @@ namespace Miscreant.Utilities.Lifecycle
 			for (int i = 0; i < _groupCount; i++)
 			{
 				// Don't cache the list head, since it could be modified as the loop executes.
-				IntrusiveList list = _updateLists[i];
+				IntrusiveList list = _fixedUpdateLists[i];
 				CustomUpdateBehaviour current = list.head;
 
 				if (!ReferenceEquals(current, null))
