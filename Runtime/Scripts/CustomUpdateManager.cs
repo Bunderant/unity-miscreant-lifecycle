@@ -90,10 +90,31 @@ namespace Miscreant.Utilities.Lifecycle
 			public CustomUpdateBehaviour head = null;
 			public uint count = 0;
 
+			protected CustomUpdateBehaviour current;
+
 			public IntrusiveList(CustomUpdatePriority priorityGroup)
 			{
 				this.priorityGroup = priorityGroup;
 			}
+
+			public void ExecuteAll()
+			{
+				if (ReferenceEquals(head, null))
+				{
+					return;
+				}
+
+				current = head;
+				do
+				{
+					ExecuteCurrent();
+					Advance();
+				} while (!ReferenceEquals(current, head));
+				current = null;
+			}
+
+			protected abstract void ExecuteCurrent();
+			protected abstract void Advance();
 
 			internal abstract void AddToTail(CustomUpdateBehaviour component);
 			internal abstract void Remove(CustomUpdateBehaviour component);
@@ -103,6 +124,16 @@ namespace Miscreant.Utilities.Lifecycle
 		{
 			public IntrusiveUpdateList(CustomUpdatePriority priorityGroup) : base(priorityGroup)
 			{ }
+
+			protected override void ExecuteCurrent()
+			{
+				current.ManagedUpdate();
+			}
+
+			protected override void Advance()
+			{
+				current = current.nextUpdate;
+			}
 
 			internal override void AddToTail(CustomUpdateBehaviour component)
 			{
@@ -148,6 +179,8 @@ namespace Miscreant.Utilities.Lifecycle
 					// 	throw new ArgumentException("component is not the root of the list");
 					// }
 
+					// TODO: MIscreant: Elegantly handle "current" field  when removing the last element in the list. Need to work out semanitcs there, too. 
+
 					head.previousUpdate = null;
 					head.nextUpdate = null;
 					head = null;
@@ -162,6 +195,11 @@ namespace Miscreant.Utilities.Lifecycle
 				component.nextUpdate.previousUpdate = component.previousUpdate;
 				component.previousUpdate.nextUpdate = component.nextUpdate;
 
+				if (ReferenceEquals(current, component))
+				{
+					current = component.previousUpdate;
+				}
+
 				component.previousUpdate = null;
 				component.nextUpdate = null;
 			}
@@ -171,6 +209,16 @@ namespace Miscreant.Utilities.Lifecycle
 		{
 			public IntrusiveFixedUpdateList(CustomUpdatePriority priorityGroup) : base(priorityGroup)
 			{ }
+
+			protected override void ExecuteCurrent()
+			{
+				current.ManagedFixedUpdate();
+			}
+
+			protected override void Advance()
+			{
+				current = current.nextFixedUpdate;
+			}
 
 			internal override void AddToTail(CustomUpdateBehaviour component)
 			{
@@ -216,6 +264,8 @@ namespace Miscreant.Utilities.Lifecycle
 					// 	throw new ArgumentException("component is not the root of the list");
 					// }
 
+					// TODO: MIscreant: Elegantly handle "current" field  when removing the last element in the list. Need to work out semanitcs there, too. 
+
 					head.previousFixedUpdate = null;
 					head.nextFixedUpdate = null;
 					head = null;
@@ -229,6 +279,11 @@ namespace Miscreant.Utilities.Lifecycle
 
 				component.nextFixedUpdate.previousFixedUpdate = component.previousFixedUpdate;
 				component.previousFixedUpdate.nextFixedUpdate = component.nextFixedUpdate;
+
+				if (ReferenceEquals(current, component))
+				{
+					current = component.previousFixedUpdate;
+				}
 
 				component.previousFixedUpdate = null;
 				component.nextFixedUpdate = null;
@@ -559,18 +614,7 @@ namespace Miscreant.Utilities.Lifecycle
 		{
 			for (int i = 0; i < _groupCount; i++)
 			{
-				// Don't cache the list head, since it could be modified as the loop executes.
-				IntrusiveList list = _updateLists[i];
-				CustomUpdateBehaviour current = list.head;
-
-				if (!ReferenceEquals(current, null))
-				{
-					do
-					{
-						current.ManagedUpdate();
-						current = current.nextUpdate;
-					} while (!ReferenceEquals(current, list.head));
-				}
+				_updateLists[i].ExecuteAll();
 			}
 		}
 
@@ -581,18 +625,7 @@ namespace Miscreant.Utilities.Lifecycle
 		{
 			for (int i = 0; i < _groupCount; i++)
 			{
-				// Don't cache the list head, since it could be modified as the loop executes.
-				IntrusiveList list = _fixedUpdateLists[i];
-				CustomUpdateBehaviour current = list.head;
-
-				if (!ReferenceEquals(current, null))
-				{
-					do
-					{
-						current.ManagedFixedUpdate();
-						current = current.nextFixedUpdate;
-					} while (!ReferenceEquals(current, list.head));
-				}
+				_fixedUpdateLists[i].ExecuteAll();
 			}
 		}
 	}
