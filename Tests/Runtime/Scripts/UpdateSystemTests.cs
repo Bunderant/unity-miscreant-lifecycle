@@ -27,6 +27,7 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 		{
 			public readonly CustomUpdateManager manager;
 			public readonly ReadOnlyDictionary<string, CustomUpdatePriority> priorities;
+			private readonly TestManagedUpdatesSceneController _runtimeController;
 
 			public MockEnvironment(params string[] priorityGroupNames)
 			{
@@ -48,6 +49,17 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 
 				manager = ScriptableObject.CreateInstance<CustomUpdateManager>();
 				manager.Initialize(priorityGroups);
+
+				_runtimeController = new GameObject("Runtime Controller").AddComponent<TestManagedUpdatesSceneController>();
+				_runtimeController.enabled = false;
+
+				_runtimeController.OnMonoBehaviourUpdate = (() => {
+					manager.RunUpdate();
+				});
+
+				_runtimeController.OnMonoBehaviourFixedUpdate = (() => {
+					manager.RunFixedUpdate();
+				});
 			}
 
 			public void InstantiateManagedComponents<T>(string groupName, params MockObjectToggleConfig[] toggleConfig) where T : CustomUpdateBehaviour
@@ -67,8 +79,19 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 				}
 			}
 
+			public void StartUpdating()
+			{
+				_runtimeController.enabled = true;
+			}
+
+			public void StopUpdating()
+			{
+				_runtimeController.enabled = false;
+			}
+
 			public void Dispose()
 			{
+				Object.Destroy(_runtimeController.gameObject);
 				Object.Destroy(manager);
 
 				foreach (var kvp in priorities)
