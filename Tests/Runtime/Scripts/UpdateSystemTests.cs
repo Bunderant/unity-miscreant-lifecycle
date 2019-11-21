@@ -11,6 +11,22 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 	{
 		public const string DEFAULT_GROUP_NAME = "Default";
 
+		private struct ExpectedUpdateCount
+		{
+			public int value;
+			public ExpectedUpdateCount(int value) => this.value = value;
+			public static implicit operator int(ExpectedUpdateCount count) => count.value;
+			public override string ToString() => $"{value}";
+		}
+
+		private struct ExpectedFixedUpdateCount
+		{
+			public int value;
+			public ExpectedFixedUpdateCount(int value) => this.value = value;
+			public static implicit operator int(ExpectedFixedUpdateCount count) => count.value;
+			public override string ToString() => $"{value}";
+		}
+
 		[System.Flags]
 		private enum MockObjectToggleConfig : int
 		{
@@ -112,36 +128,63 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 		}
 
 		[Test]
-		public void Instantiate_BasicManagedUpdateActive_AddedToEmptySystem()
+		public void Instantiate_OneBasicManagedUpdateActive_AddedToEmptySystem()
 		{
-			RunSingleObjectTest(MockObjectToggleConfig.UpdateActiveAndEnabled, 1, 0);
-		}
-
-		[Test]
-		public void Instantiate_BasicManagedFixedUpdateActive_AddedToEmptySystem()
-		{
-			RunSingleObjectTest(MockObjectToggleConfig.FixedUpdateActiveAndEnabled, 0, 1);
-		}
-
-		[Test]
-		public void Instantiate_BasicManagedUpdateAndFixedActive_AddedToEmptySystem()
-		{
-			RunSingleObjectTest(MockObjectToggleConfig.AllActiveAndEnabled, 1, 1);
-		}
-
-		private void RunSingleObjectTest(MockObjectToggleConfig toggleConfig, int expectedUpdateCount, int expectedFixedCount)
-		{
-			string groupName = DEFAULT_GROUP_NAME;
-			using (MockEnvironment env = new MockEnvironment(groupName))
+			using (MockEnvironment env = new MockEnvironment(DEFAULT_GROUP_NAME))
 			{
-				env.InstantiateManagedComponents<TestBasicManagedUpdatesComponent>(
-					groupName,
-					toggleConfig
+				RunObjectInstantiateCountValidationTest(
+					env,
+					DEFAULT_GROUP_NAME,
+					new ExpectedUpdateCount(1),
+					new ExpectedFixedUpdateCount(0),
+					MockObjectToggleConfig.UpdateActiveAndEnabled
 				);
-
-				AssertGroupCountForTypeEquals(env, groupName, CustomUpdateManager.UpdateType.Normal, expectedUpdateCount);
-				AssertGroupCountForTypeEquals(env, groupName, CustomUpdateManager.UpdateType.Fixed, expectedFixedCount);
 			}
+		}
+
+		[Test]
+		public void Instantiate_OneBasicManagedFixedUpdateActive_AddedToEmptySystem()
+		{
+			using (MockEnvironment env = new MockEnvironment(DEFAULT_GROUP_NAME))
+			{
+				RunObjectInstantiateCountValidationTest(
+					env,
+					DEFAULT_GROUP_NAME,
+					new ExpectedUpdateCount(0),
+					new ExpectedFixedUpdateCount(1),
+					MockObjectToggleConfig.FixedUpdateActiveAndEnabled
+				);
+			}
+		}
+
+		[Test]
+		public void Instantiate_OneBasicManagedUpdateAndFixedActive_AddedToEmptySystem()
+		{
+			using (MockEnvironment env = new MockEnvironment(DEFAULT_GROUP_NAME))
+			{
+				RunObjectInstantiateCountValidationTest(
+					env,
+					DEFAULT_GROUP_NAME,
+					new ExpectedUpdateCount(1),
+					new ExpectedFixedUpdateCount(1),
+					MockObjectToggleConfig.AllActiveAndEnabled
+				);
+			}
+		}
+
+		private static void RunObjectInstantiateCountValidationTest(
+			MockEnvironment env,
+			string groupName,
+			ExpectedUpdateCount expectedUpdateCountAfter,
+			ExpectedFixedUpdateCount expectedFixedCountAfter,
+			params MockObjectToggleConfig[] instantiatedObjectConfigSettings)
+		{
+			env.InstantiateManagedComponents<TestBasicManagedUpdatesComponent>(
+				groupName,
+				instantiatedObjectConfigSettings);
+
+			AssertGroupCountForTypeEquals(env, groupName, CustomUpdateManager.UpdateType.Normal, expectedUpdateCountAfter);
+			AssertGroupCountForTypeEquals(env, groupName, CustomUpdateManager.UpdateType.Fixed, expectedFixedCountAfter);
 		}
 
 		private static void AssertGroupCountForTypeEquals(
