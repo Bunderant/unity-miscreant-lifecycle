@@ -172,6 +172,63 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 			}
 		}
 
+		[Test]
+		public void Instantiate_OneBasicManagedUpdateActive_AddedToPopulatedSystem()
+		{
+			using (MockEnvironment env = new MockEnvironment(DEFAULT_GROUP_NAME))
+			{
+				env.InstantiateManagedComponents<TestBasicManagedUpdatesComponent>(
+					DEFAULT_GROUP_NAME,
+					MockObjectToggleConfig.UpdateActiveAndEnabled);
+
+				RunObjectInstantiateCountValidationTest(
+					env,
+					DEFAULT_GROUP_NAME,
+					new ExpectedUpdateCount(2),
+					new ExpectedFixedUpdateCount(0),
+					MockObjectToggleConfig.UpdateActiveAndEnabled
+				);
+			}
+		}
+
+		[Test]
+		public void Instantiate_OneBasicManagedFixedUpdateActive_AddedToPopulatedSystem()
+		{
+			using (MockEnvironment env = new MockEnvironment(DEFAULT_GROUP_NAME))
+			{
+				env.InstantiateManagedComponents<TestBasicManagedUpdatesComponent>(
+					DEFAULT_GROUP_NAME,
+					MockObjectToggleConfig.FixedUpdateActiveAndEnabled);
+
+				RunObjectInstantiateCountValidationTest(
+					env,
+					DEFAULT_GROUP_NAME,
+					new ExpectedUpdateCount(0),
+					new ExpectedFixedUpdateCount(2),
+					MockObjectToggleConfig.FixedUpdateActiveAndEnabled
+				);
+			}
+		}
+
+		[Test]
+		public void Instantiate_OneBasicManagedUpdateAndFixedActive_AddedToPopulatedSystem()
+		{
+			using (MockEnvironment env = new MockEnvironment(DEFAULT_GROUP_NAME))
+			{
+				env.InstantiateManagedComponents<TestBasicManagedUpdatesComponent>(
+					DEFAULT_GROUP_NAME,
+					MockObjectToggleConfig.AllActiveAndEnabled);
+
+				RunObjectInstantiateCountValidationTest(
+					env,
+					DEFAULT_GROUP_NAME,
+					new ExpectedUpdateCount(2),
+					new ExpectedFixedUpdateCount(2),
+					MockObjectToggleConfig.AllActiveAndEnabled
+				);
+			}
+		}
+
 		private static void RunObjectInstantiateCountValidationTest(
 			MockEnvironment env,
 			string groupName,
