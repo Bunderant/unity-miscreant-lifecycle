@@ -69,8 +69,10 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 
 			public void InstantiateManagedComponents<T>(string groupName, params MockObjectToggleConfig[] toggleConfig) where T : CustomUpdateBehaviour
 			{
-				var group = priorities[groupName];
-				foreach (var config in toggleConfig)
+				CustomUpdatePriority group = priorities[groupName];
+				Transform containerTransform = _runtimeController.transform;
+
+				foreach (MockObjectToggleConfig config in toggleConfig)
 				{
 					CustomUpdateBehaviour.Create<T>(
 						new CustomUpdateManager.Config(
@@ -79,7 +81,8 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 							config.HasFlag(MockObjectToggleConfig.Update),
 							config.HasFlag(MockObjectToggleConfig.FixedUpdate)),
 						config.HasFlag(MockObjectToggleConfig.GameObjectActive),
-						config.HasFlag(MockObjectToggleConfig.ComponentEnabled)
+						config.HasFlag(MockObjectToggleConfig.ComponentEnabled),
+						containerTransform
 					);
 				}
 			}
