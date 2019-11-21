@@ -80,17 +80,40 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 
 				foreach (MockObjectToggleConfig config in toggleConfig)
 				{
-					CustomUpdateBehaviour.Create<T>(
-						new CustomUpdateManager.Config(
-							manager,
-							group,
-							config.HasFlag(MockObjectToggleConfig.Update),
-							config.HasFlag(MockObjectToggleConfig.FixedUpdate)),
-						config.HasFlag(MockObjectToggleConfig.GameObjectActive),
-						config.HasFlag(MockObjectToggleConfig.ComponentEnabled),
-						containerTransform
-					);
+					InstantiateManagedUpdateGameObject<T>(group, config, containerTransform);
 				}
+			}
+
+			public void InstantiateManagedComponents<T>(
+				out T[] components,
+				string groupName,
+				params MockObjectToggleConfig[] toggleConfig) where T : CustomUpdateBehaviour
+			{
+				CustomUpdatePriority group = priorities[groupName];
+				Transform containerTransform = _runtimeController.transform;
+
+				components = new T[toggleConfig.Length];
+				for (int i = 0; i < toggleConfig.Length; i++)
+				{
+					components[i] = InstantiateManagedUpdateGameObject<T>(group, toggleConfig[i], containerTransform);
+				}
+			}
+
+			private T InstantiateManagedUpdateGameObject<T>(
+				CustomUpdatePriority group,
+				MockObjectToggleConfig config,
+				Transform parent = null) where T : CustomUpdateBehaviour
+			{
+				return CustomUpdateBehaviour.Create<T>(
+					new CustomUpdateManager.Config(
+						manager,
+						group,
+						config.HasFlag(MockObjectToggleConfig.Update),
+						config.HasFlag(MockObjectToggleConfig.FixedUpdate)),
+					config.HasFlag(MockObjectToggleConfig.GameObjectActive),
+					config.HasFlag(MockObjectToggleConfig.ComponentEnabled),
+					parent
+				);
 			}
 
 			public void StartUpdating()
@@ -242,6 +265,27 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 
 			AssertGroupCountForTypeEquals(env, groupName, CustomUpdateManager.UpdateType.Normal, expectedUpdateCountAfter);
 			AssertGroupCountForTypeEquals(env, groupName, CustomUpdateManager.UpdateType.Fixed, expectedFixedCountAfter);
+		}
+
+		[Test]
+		public void Enable_OneBasicManagedUpdate_AddedToEmptySystem()
+		{
+			using (MockEnvironment env = new MockEnvironment(DEFAULT_GROUP_NAME))
+			{
+				env.InstantiateManagedComponents<TestBasicManagedUpdatesComponent>(
+					out TestBasicManagedUpdatesComponent[] components,
+					DEFAULT_GROUP_NAME,
+					MockObjectToggleConfig.GameObjectActive | MockObjectToggleConfig.Update
+				);
+
+				AssertGroupCountForTypeEquals(env, DEFAULT_GROUP_NAME, CustomUpdateManager.UpdateType.Normal, 0);
+				AssertGroupCountForTypeEquals(env, DEFAULT_GROUP_NAME, CustomUpdateManager.UpdateType.Fixed, 0);
+
+				components[0].enabled = true;
+
+				AssertGroupCountForTypeEquals(env, DEFAULT_GROUP_NAME, CustomUpdateManager.UpdateType.Normal, 1);
+				AssertGroupCountForTypeEquals(env, DEFAULT_GROUP_NAME, CustomUpdateManager.UpdateType.Fixed, 0);
+			}
 		}
 
 		private static void AssertGroupCountForTypeEquals(
