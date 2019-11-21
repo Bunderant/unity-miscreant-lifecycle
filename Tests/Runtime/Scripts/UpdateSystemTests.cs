@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using UnityEngine.TestTools;
@@ -8,6 +9,8 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 {
 	public sealed class UpdateSystemTests
 	{
+		public const string DEFAULT_GROUP_NAME = "Default";
+
 		[System.Flags]
 		private enum MockObjectToggleConfig : int
 		{
@@ -53,11 +56,13 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 				_runtimeController = new GameObject("Runtime Controller").AddComponent<TestManagedUpdatesSceneController>();
 				_runtimeController.enabled = false;
 
-				_runtimeController.OnMonoBehaviourUpdate = (() => {
+				_runtimeController.OnMonoBehaviourUpdate = (() =>
+				{
 					manager.RunUpdate();
 				});
 
-				_runtimeController.OnMonoBehaviourFixedUpdate = (() => {
+				_runtimeController.OnMonoBehaviourFixedUpdate = (() =>
+				{
 					manager.RunFixedUpdate();
 				});
 			}
@@ -121,7 +126,7 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 
 		private void RunSingleObjectTest(MockObjectToggleConfig toggleConfig, int expectedUpdateCount, int expectedFixedCount)
 		{
-			string groupName = "Default";
+			string groupName = DEFAULT_GROUP_NAME;
 			using (MockEnvironment env = new MockEnvironment(groupName))
 			{
 				env.InstantiateManagedComponents<TestBasicManagedUpdatesComponent>(
@@ -129,11 +134,62 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 					toggleConfig
 				);
 
-				Assert.That(
-					env.manager.GetCountForGroup(env.priorities[groupName], CustomUpdateManager.UpdateType.Normal) == expectedUpdateCount &&
-					env.manager.GetCountForGroup(env.priorities[groupName], CustomUpdateManager.UpdateType.Fixed) == expectedFixedCount,
-					$"There should be exactly one {nameof(CustomUpdateBehaviour)} with {toggleConfig} running in the system."
+				AssertGroupCountForTypeEquals(env, groupName, CustomUpdateManager.UpdateType.Normal, expectedUpdateCount);
+				AssertGroupCountForTypeEquals(env, groupName, CustomUpdateManager.UpdateType.Fixed, expectedFixedCount);
+			}
+		}
+
+		private static void AssertGroupCountForTypeEquals(
+			MockEnvironment env,
+			string groupName,
+			CustomUpdateManager.UpdateType updateType,
+			int expectedCount)
+		{
+			int actualCount = env.manager.GetCountForGroup(env.priorities[groupName], updateType);
+
+			Assert.That(
+				actualCount == expectedCount,
+				$"Group \'{groupName}\' did not have the expected count for update type \'{updateType}\'.\n" +
+				$"Expected count: {expectedCount}\n" +
+				$"Actual count: {actualCount}"
+			);
+		}
+
+		[UnityTest]
+		public IEnumerator SelfDestruct_ManagedUpdateOnlyOneInSystem()
+		{
+			string groupName = DEFAULT_GROUP_NAME;
+			using (MockEnvironment env = new MockEnvironment(groupName))
+			{
+				env.InstantiateManagedComponents<TestManagedUpdatesSelfDestruct>(
+					groupName,
+					MockObjectToggleConfig.UpdateActiveAndEnabled
 				);
+
+				AssertGroupCountForTypeEquals(env, groupName, CustomUpdateManager.UpdateType.Normal, 1);
+
+				env.StartUpdating();
+
+				TestManagedUpdatesSelfDestruct.OnSelfDestruct = new UnityEngine.Events.UnityEvent();
+				TestManagedUpdatesSelfDestruct.OnSelfDestruct.AddListener(HandleSelfDestruct);
+
+				bool componentStillExists = true;
+				void HandleSelfDestruct()
+				{
+					AssertGroupCountForTypeEquals(env, groupName, CustomUpdateManager.UpdateType.Normal, 0);
+
+					TestManagedUpdatesSelfDestruct.OnSelfDestruct.RemoveListener(HandleSelfDestruct);
+					componentStillExists = false;
+				}
+
+				// Make sure the component actually self-destructs. 
+				float timeout = Time.time + TestManagedUpdatesSelfDestruct.DEFAULT_COUNTDOWN_DURATION * 3;
+				while (componentStillExists && Time.time < timeout)
+				{
+					yield return new WaitForEndOfFrame();
+				}
+
+				Assert.That(Time.time < timeout, "Component did not successfully self destruct: Timed out.");
 			}
 		}
 	}
