@@ -55,16 +55,6 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 
 				_runtimeController = new GameObject("Runtime Controller").AddComponent<TestManagedUpdatesSceneController>();
 				_runtimeController.enabled = false;
-
-				_runtimeController.OnMonoBehaviourUpdate = (() =>
-				{
-					manager.RunUpdate();
-				});
-
-				_runtimeController.OnMonoBehaviourFixedUpdate = (() =>
-				{
-					manager.RunFixedUpdate();
-				});
 			}
 
 			public void InstantiateManagedComponents<T>(string groupName, params MockObjectToggleConfig[] toggleConfig) where T : CustomUpdateBehaviour
@@ -89,12 +79,24 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 
 			public void StartUpdating()
 			{
+				_runtimeController.OnMonoBehaviourUpdate = (() =>
+				{
+					manager.RunUpdate();
+				});
+
+				_runtimeController.OnMonoBehaviourFixedUpdate = (() =>
+				{
+					manager.RunFixedUpdate();
+				});
+
 				_runtimeController.enabled = true;
 			}
 
 			public void StopUpdating()
 			{
 				_runtimeController.enabled = false;
+				_runtimeController.OnMonoBehaviourUpdate = null;
+				_runtimeController.OnMonoBehaviourFixedUpdate = null;
 			}
 
 			public void Dispose()
