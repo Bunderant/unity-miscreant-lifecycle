@@ -7,6 +7,8 @@ using UnityEngine.TestTools;
 
 namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 {
+	using UpdateType = CustomUpdateManager.UpdateType;
+
 	public sealed class UpdateSystemTests
 	{
 		public const string DEFAULT_GROUP_NAME = "Default";
@@ -73,6 +75,37 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 				_runtimeController.enabled = false;
 			}
 
+			public static void GetExpectedDeltaForComponentToggleChange(
+				MockObjectToggleConfig before,
+				MockObjectToggleConfig after,
+				out int updateDelta,
+				out int fixedUpdateDelta)
+			{
+				updateDelta = 0;
+				if (before.HasFlag(MockObjectToggleConfig.UpdateActiveAndEnabled) &&
+					!after.HasFlag(MockObjectToggleConfig.UpdateActiveAndEnabled))
+				{
+					updateDelta = -1;
+				}
+				else if (!before.HasFlag(MockObjectToggleConfig.UpdateActiveAndEnabled) &&
+					after.HasFlag(MockObjectToggleConfig.UpdateActiveAndEnabled))
+				{
+					updateDelta = 1;
+				}
+
+				fixedUpdateDelta = 0;
+				if (before.HasFlag(MockObjectToggleConfig.FixedUpdateActiveAndEnabled) &&
+					!after.HasFlag(MockObjectToggleConfig.FixedUpdateActiveAndEnabled))
+				{
+					fixedUpdateDelta = -1;
+				}
+				else if (!before.HasFlag(MockObjectToggleConfig.FixedUpdateActiveAndEnabled) &&
+					after.HasFlag(MockObjectToggleConfig.FixedUpdateActiveAndEnabled))
+				{
+					fixedUpdateDelta = 1;
+				}
+			}
+
 			public void InstantiateManagedComponents<T>(string groupName, params MockObjectToggleConfig[] toggleConfig) where T : CustomUpdateBehaviour
 			{
 				CustomUpdatePriority group = priorities[groupName];
@@ -99,6 +132,11 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 				}
 			}
 
+			public int GetCountForGroup(string groupName, UpdateType updateType)
+			{
+				return manager.GetCountForGroup(priorities[groupName], updateType);
+			}
+
 			private T InstantiateManagedUpdateGameObject<T>(
 				CustomUpdatePriority group,
 				MockObjectToggleConfig config,
@@ -114,6 +152,14 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 					config.HasFlag(MockObjectToggleConfig.ComponentEnabled),
 					parent
 				);
+			}
+
+			public void SetToggleConfigForManagedComponent(CustomUpdateBehaviour component, MockObjectToggleConfig toggleConfig)
+			{
+				component.gameObject.SetActive(toggleConfig.HasFlag(MockObjectToggleConfig.GameObjectActive));
+				component.enabled = toggleConfig.HasFlag(MockObjectToggleConfig.ComponentEnabled);
+				component.updateConfig.update = toggleConfig.HasFlag(MockObjectToggleConfig.Update);
+				component.updateConfig.fixedUpdate = toggleConfig.HasFlag(MockObjectToggleConfig.FixedUpdate);
 			}
 
 			public void StartUpdating()
@@ -263,38 +309,120 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 				groupName,
 				instantiatedObjectConfigSettings);
 
-			AssertGroupCountForTypeEquals(env, groupName, CustomUpdateManager.UpdateType.Normal, expectedUpdateCountAfter);
-			AssertGroupCountForTypeEquals(env, groupName, CustomUpdateManager.UpdateType.Fixed, expectedFixedCountAfter);
+			AssertGroupCountForTypeEquals(env, groupName, UpdateType.Normal, expectedUpdateCountAfter);
+			AssertGroupCountForTypeEquals(env, groupName, UpdateType.Fixed, expectedFixedCountAfter);
 		}
 
 		[Test]
-		public void Enable_OneBasicManagedUpdate_AddedToEmptySystem()
+		public void EnableComponent_OneBasicManagedUpdate_AddsToStstem()
+		{
+			var before = MockObjectToggleConfig.GameObjectActive | MockObjectToggleConfig.Update;
+			var after = before | MockObjectToggleConfig.ComponentEnabled;
+
+			ValidateComponentToggleStateChange(before, after);
+		}
+
+		[Test]
+		public void EnableComponent_OneBasicManagedFixedUpdate_AddsToSystem()
+		{
+			var before = MockObjectToggleConfig.GameObjectActive | MockObjectToggleConfig.FixedUpdate;
+			var after = before | MockObjectToggleConfig.ComponentEnabled;
+
+			ValidateComponentToggleStateChange(before, after);
+		}
+
+		[Test]
+		public void EnableComponent_OneBasicManagedUpdateAndFixed_AddsBothToSystem()
+		{
+			var before = MockObjectToggleConfig.GameObjectActive | MockObjectToggleConfig.Update | MockObjectToggleConfig.FixedUpdate;
+			var after = before | MockObjectToggleConfig.ComponentEnabled;
+
+			ValidateComponentToggleStateChange(before, after);
+		}
+
+		/// <summary>
+		/// This test should ALWAYS succeed. Creates an empty initial environment and operates on the default priority group. 
+		/// Expected counts before/after both instantiation and manipulation are derived from the configuration parameters.
+		/// </summary>
+		/// <param name="initialConfiguration"></param>
+		/// <param name="finalConfiguration"></param>
+		private void ValidateComponentToggleStateChange(
+			MockObjectToggleConfig initialConfiguration,
+			MockObjectToggleConfig finalConfiguration)
 		{
 			using (MockEnvironment env = new MockEnvironment(DEFAULT_GROUP_NAME))
 			{
-				env.InstantiateManagedComponents<TestBasicManagedUpdatesComponent>(
-					out TestBasicManagedUpdatesComponent[] components,
+				ValidateComponentToggleStateChange(
+					env,
 					DEFAULT_GROUP_NAME,
-					MockObjectToggleConfig.GameObjectActive | MockObjectToggleConfig.Update
-				);
-
-				AssertGroupCountForTypeEquals(env, DEFAULT_GROUP_NAME, CustomUpdateManager.UpdateType.Normal, 0);
-				AssertGroupCountForTypeEquals(env, DEFAULT_GROUP_NAME, CustomUpdateManager.UpdateType.Fixed, 0);
-
-				components[0].enabled = true;
-
-				AssertGroupCountForTypeEquals(env, DEFAULT_GROUP_NAME, CustomUpdateManager.UpdateType.Normal, 1);
-				AssertGroupCountForTypeEquals(env, DEFAULT_GROUP_NAME, CustomUpdateManager.UpdateType.Fixed, 0);
+					initialConfiguration,
+					finalConfiguration);
 			}
+		}
+
+		/// <summary>
+		/// This test should ALWAYS succeed. 
+		/// Expected counts before/after both instantiation and manipulation are derived from the configuration parameters.
+		/// </summary>
+		/// <param name="env">Mock Environment</param>
+		/// <param name="groupName">Priority Group Name</param>
+		/// <param name="initialConfiguration">Configuration of instantiated component/GameObject.</param>
+		/// <param name="finalConfiguration">Final configuration of the component/GameObject.</param>
+		private void ValidateComponentToggleStateChange(
+			MockEnvironment env,
+			string groupName,
+			MockObjectToggleConfig initialConfiguration,
+			MockObjectToggleConfig finalConfiguration)
+		{
+			int expectedInitialUpdateCount = (
+				env.GetCountForGroup(groupName, UpdateType.Normal) +
+				(initialConfiguration.HasFlag(MockObjectToggleConfig.UpdateActiveAndEnabled) ? 1 : 0)
+			);
+
+			int expectedInitialFixedCount = (
+				env.GetCountForGroup(groupName, UpdateType.Fixed) +
+				(initialConfiguration.HasFlag(MockObjectToggleConfig.FixedUpdateActiveAndEnabled) ? 1 : 0)
+			);
+
+			env.InstantiateManagedComponents<TestBasicManagedUpdatesComponent>(
+				out TestBasicManagedUpdatesComponent[] components,
+				DEFAULT_GROUP_NAME,
+				initialConfiguration
+			);
+
+			AssertGroupCountForTypeEquals(env, groupName, UpdateType.Normal, expectedInitialUpdateCount);
+			AssertGroupCountForTypeEquals(env, groupName, UpdateType.Fixed, expectedInitialFixedCount);
+
+			// Cache expected counts as the actual counts (since we've asserted that's true) to keep things readable. 
+			int initialUpdateCount = expectedInitialUpdateCount;
+			int initialFixedCount = expectedInitialFixedCount;
+
+			Debug.Log($"{initialConfiguration} AFTER INSTANTIATE:\t\tUpdate: ({initialUpdateCount})\t\tFixedUpdate: ({initialFixedCount})");
+
+			env.SetToggleConfigForManagedComponent(components[0], finalConfiguration);
+
+			MockEnvironment.GetExpectedDeltaForComponentToggleChange(
+				initialConfiguration,
+				finalConfiguration,
+				out int updateDelta,
+				out int fixedUpdateDelata);
+
+			int expectedFinalUpdateCount = initialUpdateCount + updateDelta;
+			int expectedFinalFixedCount = initialFixedCount + fixedUpdateDelata;
+
+			AssertGroupCountForTypeEquals(env, groupName, UpdateType.Normal, expectedFinalUpdateCount);
+			AssertGroupCountForTypeEquals(env, groupName, UpdateType.Fixed, expectedFinalFixedCount);
+
+			Debug.Log($"{finalConfiguration} AFTER CHANGE:\t\tUpdate: {expectedFinalUpdateCount}\t\tFixedUpdate: {expectedFinalFixedCount}");
 		}
 
 		private static void AssertGroupCountForTypeEquals(
 			MockEnvironment env,
 			string groupName,
-			CustomUpdateManager.UpdateType updateType,
+			UpdateType updateType,
 			int expectedCount)
 		{
-			int actualCount = env.manager.GetCountForGroup(env.priorities[groupName], updateType);
+			int actualCount = env.GetCountForGroup(groupName, updateType);
 
 			Assert.That(
 				actualCount == expectedCount,
@@ -315,7 +443,7 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 					MockObjectToggleConfig.UpdateActiveAndEnabled
 				);
 
-				AssertGroupCountForTypeEquals(env, groupName, CustomUpdateManager.UpdateType.Normal, 1);
+				AssertGroupCountForTypeEquals(env, groupName, UpdateType.Normal, 1);
 
 				env.StartUpdating();
 
@@ -325,7 +453,7 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 				bool componentStillExists = true;
 				void HandleSelfDestruct()
 				{
-					AssertGroupCountForTypeEquals(env, groupName, CustomUpdateManager.UpdateType.Normal, 0);
+					AssertGroupCountForTypeEquals(env, groupName, UpdateType.Normal, 0);
 
 					TestManagedUpdatesSelfDestruct.OnSelfDestruct.RemoveListener(HandleSelfDestruct);
 					componentStillExists = false;
