@@ -666,6 +666,47 @@ namespace Miscreant.Utilities.Lifecycle
 				_fixedUpdateLists[i].ExecuteAll();
 			}
 		}
+
+		public bool CheckSystemForComponent(CustomUpdateBehaviour component)
+		{
+			if (!ReferenceEquals(this, component.updateConfig.Manager))
+			{
+				throw new ManagerMismatchException();
+			}
+
+			bool found = false;
+
+			int referenceCount = 0;
+			UpdateType currentType = UpdateType.Normal;
+			foreach (CustomUpdatePriority priority in _priorities)
+			{
+				TraverseGroupForType(priority, currentType, IncrementReferenceCountIfFound);
+			}
+			found |= referenceCount > 0;
+
+			referenceCount = 0;
+			currentType = UpdateType.Fixed;
+			foreach (CustomUpdatePriority priority in _priorities)
+			{
+				TraverseGroupForType(priority, currentType, IncrementReferenceCountIfFound);
+			}
+			found |= referenceCount > 0;
+
+			void IncrementReferenceCountIfFound(CustomUpdateBehaviour current)
+			{
+				if (ReferenceEquals(current, component))
+				{
+					referenceCount++;
+					if (referenceCount > 1)
+					{
+						throw new DuplicateReferenceException();
+					}
+				}
+			}
+
+			return found;
+		}
+
 		#region Exceptions
 
 		//
