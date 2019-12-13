@@ -9,6 +9,59 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 
 	public class UpdateSystemTests_ToggleState
 	{
+		private static ObjectToggleConfig[] _validToggleStatesActiveInSystem = new ObjectToggleConfig[] {
+			ObjectToggleConfig.GameObjectActive | ObjectToggleConfig.ComponentEnabled | ObjectToggleConfig.Update,
+			ObjectToggleConfig.GameObjectActive | ObjectToggleConfig.ComponentEnabled | ObjectToggleConfig.FixedUpdate,
+			ObjectToggleConfig.GameObjectActive | ObjectToggleConfig.ComponentEnabled | ObjectToggleConfig.Update | ObjectToggleConfig.FixedUpdate
+		};
+
+		private static ObjectToggleConfig[] _invalidToggleStatesNeedActiveGameObject = GetModifiedValues(
+			_validToggleStatesActiveInSystem,
+			ObjectToggleConfig.GameObjectActive,
+			(a, b) => a & ~b
+		);
+
+		[Test, Sequential]
+		public void SetGameObjectActive_SingleObject_AddedToSystem([ValueSource(nameof(_invalidToggleStatesNeedActiveGameObject))] ObjectToggleConfig initialConfig)
+		{
+			const string groupName = UpdateSystemTests.DEFAULT_GROUP_NAME;
+			using (FakeEnvironment env = new FakeEnvironment(groupName))
+			{
+				//
+				// Arrange
+				//
+				TestBasicManagedUpdatesComponent[] components;
+				env.InstantiateManagedComponents<TestBasicManagedUpdatesComponent>(
+					out components,
+					UpdateSystemTests.DEFAULT_GROUP_NAME,
+					initialConfig
+				);
+
+				// Make sure that the system doesn't contain the instantiated component before proceeding
+				CustomUpdateBehaviour component = components[0];
+				if (env.manager.CheckSystemForComponent(component))
+				{
+					throw new Exception("Tried to begin activation test with an already registered component. Configuration: " + initialConfig);
+				}
+
+				//
+				// Act
+				//
+				ObjectToggleConfig finalConfig = initialConfig | ObjectToggleConfig.GameObjectActive;
+				env.SetToggleConfig(component, finalConfig);
+
+				//
+				// Assert
+				//
+				Assert.IsTrue(
+					env.manager.CheckSystemForComponent(component),
+					"Final configuration should make the component active in the system.\n" +
+						$"Initial config {initialConfig}\n" +
+						$"Final config: {finalConfig}"
+				);
+			}
+		}
+
 		private static TValue[] GetModifiedValues<TValue, TModifier>(TValue[] values, TModifier modifier, Func<TValue, TModifier, TValue> operation)
 		{
 			int count = values.Length;

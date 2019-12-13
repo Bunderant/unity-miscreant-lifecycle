@@ -134,7 +134,7 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 			);
 		}
 
-		public void SetToggleConfigForManagedComponent(CustomUpdateBehaviour component, ObjectToggleConfig toggleConfig)
+		public void SetToggleConfig(CustomUpdateBehaviour component, ObjectToggleConfig toggleConfig)
 		{
 			component.gameObject.SetActive(toggleConfig.HasFlag(ObjectToggleConfig.GameObjectActive));
 			component.enabled = toggleConfig.HasFlag(ObjectToggleConfig.ComponentEnabled);

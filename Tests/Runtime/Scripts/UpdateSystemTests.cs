@@ -231,7 +231,7 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 
 			Debug.Log($"{initialConfiguration} AFTER INSTANTIATE:\t\tUpdate: ({initialUpdateCount})\t\tFixedUpdate: ({initialFixedCount})");
 
-			env.SetToggleConfigForManagedComponent(components[0], finalConfiguration);
+			env.SetToggleConfig(components[0], finalConfiguration);
 
 			FakeEnvironment.GetExpectedDeltaForComponentToggleChange(
 				initialConfiguration,
