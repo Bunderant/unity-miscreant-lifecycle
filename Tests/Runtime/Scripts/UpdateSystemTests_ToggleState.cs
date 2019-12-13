@@ -9,6 +9,18 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 
 	public class UpdateSystemTests_ToggleState
 	{
+		private static TValue[] GetModifiedValues<TValue, TModifier>(TValue[] values, TModifier modifier, Func<TValue, TModifier, TValue> operation)
+		{
+			int count = values.Length;
+			TValue[] modifiedValues = new TValue[count];
+			for (int i = 0; i < count; i++)
+			{
+				modifiedValues[i] = operation(values[i], modifier);
+			}
+
+			return modifiedValues;
+		}
+
 		/// <summary>
 		/// Generates all permutations of a 'flags' Enum type, filtering out named combinations of flags.
 		/// </summary>
