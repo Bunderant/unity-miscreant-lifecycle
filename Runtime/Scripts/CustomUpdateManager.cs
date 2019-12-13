@@ -568,6 +568,44 @@ namespace Miscreant.Utilities.Lifecycle
 		}
 
 		/// <summary>
+		/// Traverses the list matching specific priority group and UpdateType, performing the given action once per element.
+		/// </summary>
+		/// <param name="priorityGroup">Group to traverse.</param>
+		/// <param name="updateType">Update type to match.</param>
+		/// <param name="perElementAction">Action to perform (cannot be null).</param>
+		public void TraverseGroupForType(CustomUpdatePriority priorityGroup, UpdateType updateType, Action<CustomUpdateBehaviour> perElementAction)
+		{
+			IntrusiveList list;
+			CustomUpdateBehaviour currentElement;
+			Func<CustomUpdateBehaviour> GetNext;
+
+			switch (updateType)
+			{
+				case UpdateType.Normal:
+					list = _updateLists[priorityGroup.Index];
+					currentElement = list.head;
+					GetNext = () => { return currentElement.nextUpdate; };
+					break;
+				case UpdateType.Fixed:
+					list = _fixedUpdateLists[priorityGroup.Index];
+					currentElement = list.head;
+					GetNext = () => { return currentElement.nextFixedUpdate; };
+					break;
+				default:
+					throw new ArgumentException($"Update type not supported for enumeration: {updateType}");
+			}
+
+			if (!ReferenceEquals(currentElement, null))
+			{
+				do
+				{
+					perElementAction.Invoke(currentElement);
+					currentElement = GetNext();
+				} while (!ReferenceEquals(currentElement, list.head));
+			}
+		}
+
+		/// <summary>
 		/// Add a CustomUpdateBehaviour to the system. ONLY invoke from its OnEnable callback, or by setting the
 		/// update config flags (either via code or toggling from the Inspector).
 		/// Will not add the component to any update groups for which it is already a part of (no duplicates).
