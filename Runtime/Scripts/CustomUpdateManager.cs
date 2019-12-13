@@ -179,7 +179,7 @@ namespace Miscreant.Utilities.Lifecycle
 					// 	throw new ArgumentException("component is not the root of the list");
 					// }
 
-					// TODO: MIscreant: Elegantly handle "current" field  when removing the last element in the list. Need to work out semanitcs there, too. 
+					// TODO: MIscreant: Elegantly handle "current" field  when removing the last element in the list. Need to work out semantics there, too. 
 
 					head.previousUpdate = null;
 					head.nextUpdate = null;
@@ -264,7 +264,7 @@ namespace Miscreant.Utilities.Lifecycle
 					// 	throw new ArgumentException("component is not the root of the list");
 					// }
 
-					// TODO: MIscreant: Elegantly handle "current" field  when removing the last element in the list. Need to work out semanitcs there, too. 
+					// TODO: MIscreant: Elegantly handle "current" field  when removing the last element in the list. Need to work out semantics there, too. 
 
 					head.previousFixedUpdate = null;
 					head.nextFixedUpdate = null;
@@ -482,7 +482,7 @@ namespace Miscreant.Utilities.Lifecycle
 		/// <summary>
 		/// Checks that the heads and tails of all FixedUpdate lists are null.
 		/// </summary>
-		/// <returns>True if all FixedUpdate gorups are empty, false otherwise.</returns>
+		/// <returns>True if all FixedUpdate groups are empty, false otherwise.</returns>
 		public bool CheckAllFixedUpdateGroupsEmpty()
 		{
 			bool isEmpty = true;
@@ -571,7 +571,7 @@ namespace Miscreant.Utilities.Lifecycle
 		/// Add a CustomUpdateBehaviour to the system. ONLY invoke from its OnEnable callback, or by setting the
 		/// update config flags (either via code or toggling from the Inspector).
 		/// Will not add the component to any update groups for which it is already a part of (no duplicates).
-		/// Does nothing if the component and/or associated gameObject aren't active in the heirarchy, or the update
+		/// Does nothing if the component and/or associated gameObject aren't active in the hierarchy, or the update
 		/// config flags are all false. 
 		/// </summary>
 		/// <param name="component">The component to add to the system.</param>
@@ -580,7 +580,7 @@ namespace Miscreant.Utilities.Lifecycle
 			var config = component.updateConfig;
 			int priorityIndex = config.PriorityGroup.Index;
 
-			// TODO: Miscreant: Make sure there arent' any redundant checks here
+			// TODO: Miscreant: Make sure there aren't any redundant checks here
 			if (component.isActiveAndEnabled && config.update)
 			{
 				_updateLists[priorityIndex].AddToTail(component);
@@ -596,7 +596,7 @@ namespace Miscreant.Utilities.Lifecycle
 			var config = component.updateConfig;
 			int priorityIndex = config.PriorityGroup.Index;
 
-			// TODO: Miscreant: Make sure there arent' any redundant checks here
+			// TODO: Miscreant: Make sure there aren't any redundant checks here
 			if (!component.isActiveAndEnabled || !config.update)
 			{
 				_updateLists[priorityIndex].Remove(component);
