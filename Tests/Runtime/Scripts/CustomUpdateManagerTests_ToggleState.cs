@@ -33,6 +33,12 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 			(a, b) => a & ~b
 		);
 
+		private static ObjectToggleConfig[] _inactiveToggleStatesNeedFixedUpdate = GetModifiedValues(
+			_allActiveToggleStates,
+			ObjectToggleConfig.FixedUpdate,
+			(a, b) => a & ~b
+		);
+
 		[Test, Sequential]
 		public void TryAdd_SingleGameObjectToggledOn_AddedToSystem([ValueSource(nameof(_inactiveToggleStatesNeedGameObject))] ObjectToggleConfig initialConfig)
 		{
@@ -57,6 +63,15 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 			using (FakeEnvironment env = new FakeEnvironment(CustomUpdateManagerTests.DEFAULT_GROUP_NAME))
 			{
 				RunToggleTest(env, initialConfig, initialConfig | ObjectToggleConfig.Update, true);
+			}
+		}
+
+		[Test, Sequential]
+		public void TryAdd_SingleFixedUpdateFlagToggledOn_AddedToSystem([ValueSource(nameof(_inactiveToggleStatesNeedFixedUpdate))] ObjectToggleConfig initialConfig)
+		{
+			using (FakeEnvironment env = new FakeEnvironment(CustomUpdateManagerTests.DEFAULT_GROUP_NAME))
+			{
+				RunToggleTest(env, initialConfig, initialConfig | ObjectToggleConfig.FixedUpdate, true);
 			}
 		}
 
