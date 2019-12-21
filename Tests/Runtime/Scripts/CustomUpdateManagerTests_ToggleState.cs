@@ -7,7 +7,7 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 {
 	using ObjectToggleConfig = FakeEnvironment.ObjectToggleConfig;
 
-	public class UpdateSystemTests_ToggleState
+	public class CustomUpdateManagerTests_ToggleState
 	{
 		private static ObjectToggleConfig[] _validToggleStatesActiveInSystem = new ObjectToggleConfig[] {
 			ObjectToggleConfig.GameObjectActive | ObjectToggleConfig.ComponentEnabled | ObjectToggleConfig.Update,
@@ -24,7 +24,7 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 		[Test, Sequential]
 		public void SetGameObjectActive_SingleObject_AddedToSystem([ValueSource(nameof(_invalidToggleStatesNeedActiveGameObject))] ObjectToggleConfig initialConfig)
 		{
-			const string groupName = UpdateSystemTests.DEFAULT_GROUP_NAME;
+			const string groupName = CustomUpdateManagerTests.DEFAULT_GROUP_NAME;
 			using (FakeEnvironment env = new FakeEnvironment(groupName))
 			{
 				//
@@ -33,7 +33,7 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 				TestBasicManagedUpdatesComponent[] components;
 				env.InstantiateManagedComponents<TestBasicManagedUpdatesComponent>(
 					out components,
-					UpdateSystemTests.DEFAULT_GROUP_NAME,
+					CustomUpdateManagerTests.DEFAULT_GROUP_NAME,
 					initialConfig
 				);
 

@@ -8,7 +8,7 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 	using UpdateType = CustomUpdateManager.UpdateType;
 	using ObjectToggleConfig = FakeEnvironment.ObjectToggleConfig;
 
-	public sealed class UpdateSystemTests
+	public sealed class CustomUpdateManagerTests
 	{
 		public const string DEFAULT_GROUP_NAME = "Default";
 
