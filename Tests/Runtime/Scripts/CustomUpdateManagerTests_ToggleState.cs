@@ -21,45 +21,57 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 			(a, b) => a & ~b
 		);
 
+		private static ObjectToggleConfig[] _invalidToggleStatesNeedActiveComponent = GetModifiedValues(
+			_validToggleStatesActiveInSystem,
+			ObjectToggleConfig.ComponentEnabled,
+			(a, b) => a & ~b
+		);
+
 		[Test, Sequential]
-		public void TryAdd_GameObjectToggledOn_AddedToSystem([ValueSource(nameof(_invalidToggleStatesNeedActiveGameObject))] ObjectToggleConfig initialConfig)
+		public void TryAdd_SingleGameObjectToggledOn_AddedToSystem([ValueSource(nameof(_invalidToggleStatesNeedActiveGameObject))] ObjectToggleConfig initialConfig)
 		{
-			const string groupName = CustomUpdateManagerTests.DEFAULT_GROUP_NAME;
-			using (FakeEnvironment env = new FakeEnvironment(groupName))
+			using (FakeEnvironment env = new FakeEnvironment(CustomUpdateManagerTests.DEFAULT_GROUP_NAME))
 			{
-				//
-				// Arrange
-				//
-				TestBasicManagedUpdatesComponent[] components;
-				env.InstantiateManagedComponents<TestBasicManagedUpdatesComponent>(
-					out components,
-					CustomUpdateManagerTests.DEFAULT_GROUP_NAME,
-					initialConfig
-				);
-
-				// Make sure that the system doesn't contain the instantiated component before proceeding
-				CustomUpdateBehaviour component = components[0];
-				if (env.manager.CheckSystemForComponent(component))
-				{
-					throw new Exception("Tried to begin activation test with an already registered component. Configuration: " + initialConfig);
-				}
-
-				//
-				// Act
-				//
-				ObjectToggleConfig finalConfig = initialConfig | ObjectToggleConfig.GameObjectActive;
-				env.SetToggleConfig(component, finalConfig);
-
-				//
-				// Assert
-				//
-				Assert.IsTrue(
-					env.manager.CheckSystemForComponent(component),
-					"Final configuration should make the component active in the system.\n" +
-						$"Initial config {initialConfig}\n" +
-						$"Final config: {finalConfig}"
-				);
+				RunToggleTest(env, initialConfig, initialConfig | ObjectToggleConfig.GameObjectActive, true);
 			}
+		}
+
+		[Test, Sequential]
+		public void TryAdd_SingleComponentToggledOn_AddedToSystem([ValueSource(nameof(_invalidToggleStatesNeedActiveComponent))] ObjectToggleConfig initialConfig)
+		{
+			using (FakeEnvironment env = new FakeEnvironment(CustomUpdateManagerTests.DEFAULT_GROUP_NAME))
+			{
+				RunToggleTest(env, initialConfig, initialConfig | ObjectToggleConfig.ComponentEnabled, true);
+			}
+		}
+
+		private static void RunToggleTest(FakeEnvironment env, ObjectToggleConfig initialConfig, ObjectToggleConfig finalConfig, bool isExpectedInSystem)
+		{
+			//
+			// Arrange
+			//
+			TestBasicManagedUpdatesComponent[] components;
+			env.InstantiateManagedComponents<TestBasicManagedUpdatesComponent>(
+				out components,
+				CustomUpdateManagerTests.DEFAULT_GROUP_NAME,
+				initialConfig
+			);
+
+			//
+			// Act
+			//
+			CustomUpdateBehaviour component = components[0];
+			env.SetToggleConfig(component, finalConfig);
+
+			//
+			// Assert
+			//
+			Assert.IsTrue(
+				isExpectedInSystem == env.manager.CheckSystemForComponent(component),
+				$"Final configuration should leave the component {(isExpectedInSystem ? "REGISTERED" : "UNREGISTERED")} for the system.\n" +
+					$"Initial config {initialConfig}\n" +
+					$"Final config: {finalConfig}"
+			);
 		}
 
 		private static TValue[] GetModifiedValues<TValue, TModifier>(TValue[] values, TModifier modifier, Func<TValue, TModifier, TValue> operation)
