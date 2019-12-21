@@ -9,32 +9,32 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 
 	public class CustomUpdateManagerTests_ToggleState
 	{
-		private static ObjectToggleConfig[] _validToggleStatesActiveInSystem = new ObjectToggleConfig[] {
+		private static ObjectToggleConfig[] _allActiveToggleStates = new ObjectToggleConfig[] {
 			ObjectToggleConfig.GameObjectActive | ObjectToggleConfig.ComponentEnabled | ObjectToggleConfig.Update,
 			ObjectToggleConfig.GameObjectActive | ObjectToggleConfig.ComponentEnabled | ObjectToggleConfig.FixedUpdate,
 			ObjectToggleConfig.GameObjectActive | ObjectToggleConfig.ComponentEnabled | ObjectToggleConfig.Update | ObjectToggleConfig.FixedUpdate
 		};
 
-		private static ObjectToggleConfig[] _invalidToggleStatesNeedActiveGameObject = GetModifiedValues(
-			_validToggleStatesActiveInSystem,
+		private static ObjectToggleConfig[] _inactiveToggleStatesNeedGameObject = GetModifiedValues(
+			_allActiveToggleStates,
 			ObjectToggleConfig.GameObjectActive,
 			(a, b) => a & ~b
 		);
 
-		private static ObjectToggleConfig[] _invalidToggleStatesNeedActiveComponent = GetModifiedValues(
-			_validToggleStatesActiveInSystem,
+		private static ObjectToggleConfig[] _inactiveToggleStatesNeedComponent = GetModifiedValues(
+			_allActiveToggleStates,
 			ObjectToggleConfig.ComponentEnabled,
 			(a, b) => a & ~b
 		);
 
-		private static ObjectToggleConfig[] _invalidToggleStatesNeedActiveUpdate = GetModifiedValues(
-			_validToggleStatesActiveInSystem,
+		private static ObjectToggleConfig[] _inactiveToggleStatesNeedUpdate = GetModifiedValues(
+			_allActiveToggleStates,
 			ObjectToggleConfig.Update,
 			(a, b) => a & ~b
 		);
 
 		[Test, Sequential]
-		public void TryAdd_SingleGameObjectToggledOn_AddedToSystem([ValueSource(nameof(_invalidToggleStatesNeedActiveGameObject))] ObjectToggleConfig initialConfig)
+		public void TryAdd_SingleGameObjectToggledOn_AddedToSystem([ValueSource(nameof(_inactiveToggleStatesNeedGameObject))] ObjectToggleConfig initialConfig)
 		{
 			using (FakeEnvironment env = new FakeEnvironment(CustomUpdateManagerTests.DEFAULT_GROUP_NAME))
 			{
@@ -43,7 +43,7 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 		}
 
 		[Test, Sequential]
-		public void TryAdd_SingleComponentToggledOn_AddedToSystem([ValueSource(nameof(_invalidToggleStatesNeedActiveComponent))] ObjectToggleConfig initialConfig)
+		public void TryAdd_SingleComponentToggledOn_AddedToSystem([ValueSource(nameof(_inactiveToggleStatesNeedComponent))] ObjectToggleConfig initialConfig)
 		{
 			using (FakeEnvironment env = new FakeEnvironment(CustomUpdateManagerTests.DEFAULT_GROUP_NAME))
 			{
@@ -52,7 +52,7 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 		}
 
 		[Test, Sequential]
-		public void TryAdd_SingleUpdateFlagToggledOn_AddedToSystem([ValueSource(nameof(_invalidToggleStatesNeedActiveUpdate))] ObjectToggleConfig initialConfig)
+		public void TryAdd_SingleUpdateFlagToggledOn_AddedToSystem([ValueSource(nameof(_inactiveToggleStatesNeedUpdate))] ObjectToggleConfig initialConfig)
 		{
 			using (FakeEnvironment env = new FakeEnvironment(CustomUpdateManagerTests.DEFAULT_GROUP_NAME))
 			{
