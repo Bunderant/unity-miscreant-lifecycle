@@ -77,13 +77,17 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 		private static TValue[] GetModifiedValues<TValue, TModifier>(TValue[] values, TModifier modifier, Func<TValue, TModifier, TValue> operation)
 		{
 			int count = values.Length;
-			TValue[] modifiedValues = new TValue[count];
+			List<TValue> modifiedValues = new List<TValue>(count);
 			for (int i = 0; i < count; i++)
 			{
-				modifiedValues[i] = operation(values[i], modifier);
+				TValue currentModifiedValue = operation(values[i], modifier);
+				if (!modifiedValues.Contains(currentModifiedValue))
+				{
+					modifiedValues.Add(currentModifiedValue);
+				}
 			}
 
-			return modifiedValues;
+			return modifiedValues.ToArray();
 		}
 
 		/// <summary>
