@@ -27,6 +27,12 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 			(a, b) => a & ~b
 		);
 
+		private static ObjectToggleConfig[] _invalidToggleStatesNeedActiveUpdate = GetModifiedValues(
+			_validToggleStatesActiveInSystem,
+			ObjectToggleConfig.Update,
+			(a, b) => a & ~b
+		);
+
 		[Test, Sequential]
 		public void TryAdd_SingleGameObjectToggledOn_AddedToSystem([ValueSource(nameof(_invalidToggleStatesNeedActiveGameObject))] ObjectToggleConfig initialConfig)
 		{
@@ -42,6 +48,15 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 			using (FakeEnvironment env = new FakeEnvironment(CustomUpdateManagerTests.DEFAULT_GROUP_NAME))
 			{
 				RunToggleTest(env, initialConfig, initialConfig | ObjectToggleConfig.ComponentEnabled, true);
+			}
+		}
+
+		[Test, Sequential]
+		public void TryAdd_SingleUpdateFlagToggledOn_AddedToSystem([ValueSource(nameof(_invalidToggleStatesNeedActiveUpdate))] ObjectToggleConfig initialConfig)
+		{
+			using (FakeEnvironment env = new FakeEnvironment(CustomUpdateManagerTests.DEFAULT_GROUP_NAME))
+			{
+				RunToggleTest(env, initialConfig, initialConfig | ObjectToggleConfig.Update, true);
 			}
 		}
 
@@ -66,7 +81,7 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 			//
 			// Assert
 			//
-			Assert.IsTrue(
+			Assert.That(
 				isExpectedInSystem == env.manager.CheckSystemForComponent(component),
 				$"Final configuration should leave the component {(isExpectedInSystem ? "REGISTERED" : "UNREGISTERED")} for the system.\n" +
 					$"Initial config {initialConfig}\n" +
@@ -131,4 +146,3 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 		}
 	}
 }
-
