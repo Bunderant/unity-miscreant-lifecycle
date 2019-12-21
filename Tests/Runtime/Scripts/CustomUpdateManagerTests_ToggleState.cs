@@ -22,7 +22,7 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 		);
 
 		[Test, Sequential]
-		public void SetGameObjectActive_SingleObject_AddedToSystem([ValueSource(nameof(_invalidToggleStatesNeedActiveGameObject))] ObjectToggleConfig initialConfig)
+		public void TryAdd_GameObjectToggledOn_AddedToSystem([ValueSource(nameof(_invalidToggleStatesNeedActiveGameObject))] ObjectToggleConfig initialConfig)
 		{
 			const string groupName = CustomUpdateManagerTests.DEFAULT_GROUP_NAME;
 			using (FakeEnvironment env = new FakeEnvironment(groupName))
