@@ -160,5 +160,35 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 
 			return powersOfTwo.ToArray();
 		}
+
+		/// <summary> 
+		/// Generates all permutations of the given Enum type. Intended for use on enum types with the "Flags" attribute defined, and explicit 
+		/// constants for its power-of-two values
+		/// </summary>
+		/// <typeparam name="T">The enum type.</typeparam>
+		/// <returns>An array of all permutations for values defined in the enum, in ascending order.</returns> 
+        public static T[] GetAllPowerOfTwoPermutations<T>() where T : Enum
+        {
+			ICollection<T> uniqueValues = GetPowerOfTwoValues<T>();
+
+			// Get the sum of all values in the set for the given type
+            int allToggledOnValue = 0;
+            foreach (T value in uniqueValues)
+            {
+                int intValue = (int)(ValueType)value;
+				allToggledOnValue |= intValue;
+            }
+
+            List<T> permutations = new List<T>();
+			for (int currentValue = 0; currentValue <= allToggledOnValue; currentValue++)
+			{
+				if ((allToggledOnValue | currentValue) == allToggledOnValue)
+				{
+					permutations.Add((T)(ValueType)currentValue);
+				}
+			}
+
+            return permutations.ToArray();
+        }
 	}
 }
