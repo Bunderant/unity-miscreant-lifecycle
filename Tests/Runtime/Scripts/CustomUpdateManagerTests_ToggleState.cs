@@ -39,40 +39,43 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 			(a, b) => a & ~b
 		);
 
+		private FakeEnvironment _environment;
+
+		[SetUp]
+		public void SetUp()
+		{
+			_environment = new FakeEnvironment(CustomUpdateManagerTests.DEFAULT_GROUP_NAME);
+		}
+
+		[TearDown]
+		public void TearDown()
+		{
+			_environment.Dispose();
+			_environment = null;
+		}
+
 		[Test, Sequential]
 		public void TryAdd_SingleGameObjectToggledOn_AddedToSystem([ValueSource(nameof(_inactiveToggleStatesNeedGameObject))] ObjectToggleConfig initialConfig)
 		{
-			using (FakeEnvironment env = new FakeEnvironment(CustomUpdateManagerTests.DEFAULT_GROUP_NAME))
-			{
-				RunToggleTest(env, initialConfig, initialConfig | ObjectToggleConfig.GameObjectActive, true);
-			}
+			RunToggleTest(_environment, initialConfig, initialConfig | ObjectToggleConfig.GameObjectActive, true);
 		}
 
 		[Test, Sequential]
 		public void TryAdd_SingleComponentToggledOn_AddedToSystem([ValueSource(nameof(_inactiveToggleStatesNeedComponent))] ObjectToggleConfig initialConfig)
 		{
-			using (FakeEnvironment env = new FakeEnvironment(CustomUpdateManagerTests.DEFAULT_GROUP_NAME))
-			{
-				RunToggleTest(env, initialConfig, initialConfig | ObjectToggleConfig.ComponentEnabled, true);
-			}
+			RunToggleTest(_environment, initialConfig, initialConfig | ObjectToggleConfig.ComponentEnabled, true);
 		}
 
 		[Test, Sequential]
 		public void TryAdd_SingleUpdateFlagToggledOn_AddedToSystem([ValueSource(nameof(_inactiveToggleStatesNeedUpdate))] ObjectToggleConfig initialConfig)
 		{
-			using (FakeEnvironment env = new FakeEnvironment(CustomUpdateManagerTests.DEFAULT_GROUP_NAME))
-			{
-				RunToggleTest(env, initialConfig, initialConfig | ObjectToggleConfig.Update, true);
-			}
+			RunToggleTest(_environment, initialConfig, initialConfig | ObjectToggleConfig.Update, true);
 		}
 
 		[Test, Sequential]
 		public void TryAdd_SingleFixedUpdateFlagToggledOn_AddedToSystem([ValueSource(nameof(_inactiveToggleStatesNeedFixedUpdate))] ObjectToggleConfig initialConfig)
 		{
-			using (FakeEnvironment env = new FakeEnvironment(CustomUpdateManagerTests.DEFAULT_GROUP_NAME))
-			{
-				RunToggleTest(env, initialConfig, initialConfig | ObjectToggleConfig.FixedUpdate, true);
-			}
+			RunToggleTest(_environment, initialConfig, initialConfig | ObjectToggleConfig.FixedUpdate, true);
 		}
 
 		private static void RunToggleTest(FakeEnvironment env, ObjectToggleConfig initialConfig, ObjectToggleConfig finalConfig, bool isExpectedInSystem)
