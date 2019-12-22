@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System;
 using NUnit.Framework;
+using System.Linq;
 
 namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 {
@@ -15,29 +16,17 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 			ObjectToggleConfig.GameObjectActive | ObjectToggleConfig.ComponentEnabled | ObjectToggleConfig.Update | ObjectToggleConfig.FixedUpdate
 		};
 
-		private static ObjectToggleConfig[] _inactiveToggleStatesNeedGameObject = GetModifiedValues(
-			_allActiveToggleStates,
-			ObjectToggleConfig.GameObjectActive,
-			(a, b) => a & ~b
-		);
+		private static ObjectToggleConfig[] _inactiveToggleStatesNeedGameObject = _allActiveToggleStates.Select(
+			x => { return x & ~ObjectToggleConfig.GameObjectActive; }).Distinct().ToArray();
 
-		private static ObjectToggleConfig[] _inactiveToggleStatesNeedComponent = GetModifiedValues(
-			_allActiveToggleStates,
-			ObjectToggleConfig.ComponentEnabled,
-			(a, b) => a & ~b
-		);
+		private static ObjectToggleConfig[] _inactiveToggleStatesNeedComponent = _allActiveToggleStates.Select(
+			x => { return x & ~ObjectToggleConfig.ComponentEnabled; }).Distinct().ToArray();
 
-		private static ObjectToggleConfig[] _inactiveToggleStatesNeedUpdate = GetModifiedValues(
-			_allActiveToggleStates,
-			ObjectToggleConfig.Update,
-			(a, b) => a & ~b
-		);
+		private static ObjectToggleConfig[] _inactiveToggleStatesNeedUpdate = _allActiveToggleStates.Select(
+			x => { return x & ~ObjectToggleConfig.Update; }).Distinct().ToArray();
 
-		private static ObjectToggleConfig[] _inactiveToggleStatesNeedFixedUpdate = GetModifiedValues(
-			_allActiveToggleStates,
-			ObjectToggleConfig.FixedUpdate,
-			(a, b) => a & ~b
-		);
+		private static ObjectToggleConfig[] _inactiveToggleStatesNeedFixedUpdate = _allActiveToggleStates.Select(
+			x => { return x & ~ObjectToggleConfig.FixedUpdate; }).Distinct().ToArray();
 
 		private FakeEnvironment _environment;
 
@@ -105,22 +94,6 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 					$"Initial config {initialConfig}\n" +
 					$"Final config: {finalConfig}"
 			);
-		}
-
-		private static TValue[] GetModifiedValues<TValue, TModifier>(TValue[] values, TModifier modifier, Func<TValue, TModifier, TValue> operation)
-		{
-			int count = values.Length;
-			List<TValue> modifiedValues = new List<TValue>(count);
-			for (int i = 0; i < count; i++)
-			{
-				TValue currentModifiedValue = operation(values[i], modifier);
-				if (!modifiedValues.Contains(currentModifiedValue))
-				{
-					modifiedValues.Add(currentModifiedValue);
-				}
-			}
-
-			return modifiedValues.ToArray();
 		}
 
 		/// <summary>
