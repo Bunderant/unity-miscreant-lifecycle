@@ -14,11 +14,11 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 		[Flags]
 		public enum ObjectToggleConfig : int
 		{
-			None = 0,
-			GameObjectActive = 1,
-			ComponentEnabled = 2,
-			Update = 4,
-			FixedUpdate = 8,
+			None				= 0,
+			GameObjectActive	= 1 << 0,
+			ComponentEnabled	= 1 << 1,
+			Update				= 1 << 2,
+			FixedUpdate			= 1 << 3,
 
 			AllActiveAndEnabled = GameObjectActive | ComponentEnabled | Update | FixedUpdate,
 			UpdateActiveAndEnabled = AllActiveAndEnabled & ~FixedUpdate,

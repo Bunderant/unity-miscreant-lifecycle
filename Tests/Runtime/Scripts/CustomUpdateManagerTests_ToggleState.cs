@@ -124,43 +124,41 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 		}
 
 		/// <summary>
-		/// Generates all permutations of a 'flags' Enum type, filtering out named combinations of flags.
+		/// Creates a collection of all unique power-of-two values from an Enum type. Intended for use on types with the "Flags" attribute 
+		/// defined, and explicit constants for its power-of-two values. This is a convenience to filter out named flag combinations. 
 		/// </summary>
-		public static T[] GenerateAllTogglePermutations<T>() where T : Enum
+		/// <typeparam name="T">The enum type.</typeparam>
+		/// <returns>A collection of unique power-of-two values, sorted according to the System.Enum.GetValues specification.</returns>
+		public static ICollection<T> GetPowerOfTwoValues<T>() where T : Enum
 		{
-			if (!typeof(T).IsDefined(typeof(FlagsAttribute), false))
-			{
-				throw new ArgumentException($"{typeof(FlagsAttribute).Name} must be defined to generate the permutations of the given Enum: {typeof(T).Name}");
-			}
+			return GetPowerOfTwoValues<T>((T[])System.Enum.GetValues(typeof(T)));
+		}
 
-			var allNamedConfigValues = System.Enum.GetValues(typeof(ObjectToggleConfig)) as ObjectToggleConfig[];
-			int allToggledOnValue = 0;
-			foreach (ObjectToggleConfig toggleConfig in allNamedConfigValues)
-			{
-				int toggleConfigValue = (int)toggleConfig;
-				double exponent = System.Math.Log(toggleConfigValue, 2);
+		/// <summary>
+		/// Creates a collection of all unique power-of-two values from the given collection. Intended for use on enum types with the "Flags"
+		/// attribute defined, and explicit constants for its power-of-two values. This is a convenience to filter out named flag combinations. 
+		/// </summary>
+		/// <param name="unfilteredEnumValues">Existing collection.</param>
+		/// <typeparam name="T">The enum type.</typeparam>
+		/// <returns>An array of unique power-of-two values, in the same order as they appeared in the original collection.</returns>
+		public static T[] GetPowerOfTwoValues<T>(T[] unfilteredEnumValues) where T : Enum
+		{
+			List<T> powersOfTwo = new List<T>(unfilteredEnumValues.Length);
 
-				// If the base 2 log of the config value is an integer, we know the value represents a single flag and not a named combination
-				bool isInteger = System.Math.Ceiling(exponent) == System.Math.Floor(exponent);
-				if (isInteger)
+			int foundPowersOfTwo = 0;
+			foreach (T enumValue in unfilteredEnumValues)
+			{
+				int intValue = (int)(ValueType)enumValue;
+				
+				if ((intValue != 0) && ((intValue & (intValue - 1)) == 0) && 	// If the value is a power of two and...
+					((intValue & foundPowersOfTwo) == 0))						// it hasn't been added yet, then...
 				{
-					allToggledOnValue |= toggleConfigValue;
+					powersOfTwo.Add(enumValue);
+					foundPowersOfTwo |= intValue;
 				}
 			}
 
-			var permutations = new SortedSet<T>();
-			for (int currentValue = 0; currentValue <= allToggledOnValue; currentValue++)
-			{
-				if ((allToggledOnValue | currentValue) == allToggledOnValue)
-				{
-					permutations.Add((T)(ValueType)currentValue);
-				}
-			}
-
-			var permutationsArray = new T[permutations.Count];
-			permutations.CopyTo(permutationsArray);
-
-			return permutationsArray;
+			return powersOfTwo.ToArray();
 		}
 	}
 }
