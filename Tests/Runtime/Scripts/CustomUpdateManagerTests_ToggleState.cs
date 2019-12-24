@@ -67,6 +67,18 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 			RunToggleTest(_environment, initialConfig, initialConfig | ObjectToggleConfig.FixedUpdate);
 		}
 
+		[Test, Sequential]
+		public void TryRemove_SingleGameObjectToggledOff_RemovedFromSystem([ValueSource(nameof(_allActiveToggleStates))] ObjectToggleConfig initialConfig)
+		{
+			RunToggleTest(_environment, initialConfig, initialConfig & ~ObjectToggleConfig.GameObjectActive);
+		}
+
+		[Test, Sequential]
+		public void TryRemove_SingleComponentToggledOff_RemovedFromSystem([ValueSource(nameof(_allActiveToggleStates))] ObjectToggleConfig initialConfig)
+		{
+			RunToggleTest(_environment, initialConfig, initialConfig & ~ObjectToggleConfig.ComponentEnabled);
+		}
+
 		private static void RunToggleTest(FakeEnvironment env, ObjectToggleConfig initialConfig, ObjectToggleConfig finalConfig)
 		{
 			//
