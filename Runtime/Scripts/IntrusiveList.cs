@@ -1,4 +1,6 @@
-﻿namespace Miscreant.Utilities.Lifecycle
+﻿using System;
+
+namespace Miscreant.Utilities.Lifecycle
 {
 	internal abstract class IntrusiveList
 	{
@@ -15,7 +17,7 @@
 
 		public void ExecuteAll()
 		{
-			if (ReferenceEquals(head, null))
+			if (count == 0)
 			{
 				return;
 			}
@@ -24,6 +26,22 @@
 			do
 			{
 				ExecuteCurrent();
+				Advance();
+			} while (!ReferenceEquals(current, head));
+			current = null;
+		}
+
+		public void Traverse(Action<CustomUpdateBehaviour> perElementAction)
+		{
+			if (count == 0)
+			{
+				return;
+			}
+
+			current = head;
+			do
+			{
+				perElementAction.Invoke(current);
 				Advance();
 			} while (!ReferenceEquals(current, head));
 			current = null;

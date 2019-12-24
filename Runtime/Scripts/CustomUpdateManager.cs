@@ -323,6 +323,19 @@ namespace Miscreant.Utilities.Lifecycle
 			return total;
 		}
 
+		private IntrusiveList GetPriorityGroupListForType(CustomUpdatePriority priorityGroup, UpdateType type)
+		{
+			switch (type)
+			{
+				case UpdateType.Normal:
+					return _updateLists[priorityGroup.Index];
+				case UpdateType.Fixed:
+					return _fixedUpdateLists[priorityGroup.Index];
+				default:
+					throw new ArgumentException($"Can't get {nameof(IntrusiveList)} for {nameof(UpdateType)}: {type}");
+			}
+		}
+
 		/// <summary>
 		/// Traverses the list matching specific priority group and UpdateType, performing the given action once per element.
 		/// </summary>
@@ -331,34 +344,9 @@ namespace Miscreant.Utilities.Lifecycle
 		/// <param name="perElementAction">Action to perform (cannot be null).</param>
 		public void TraverseGroupForType(CustomUpdatePriority priorityGroup, UpdateType updateType, Action perElementAction)
 		{
-			IntrusiveList list;
-			CustomUpdateBehaviour currentElement;
-			Func<CustomUpdateBehaviour> GetNext;
-
-			switch (updateType)
-			{
-				case UpdateType.Normal:
-					list = _updateLists[priorityGroup.Index];
-					currentElement = list.head;
-					GetNext = () => { return currentElement.nextUpdate; };
-					break;
-				case UpdateType.Fixed:
-					list = _fixedUpdateLists[priorityGroup.Index];
-					currentElement = list.head;
-					GetNext = () => { return currentElement.nextFixedUpdate; };
-					break;
-				default:
-					throw new ArgumentException($"Update type not supported for enumeration: {updateType}");
-			}
-
-			if (!ReferenceEquals(currentElement, null))
-			{
-				do
-				{
-					perElementAction.Invoke();
-					currentElement = GetNext();
-				} while (!ReferenceEquals(currentElement, list.head));
-			}
+			GetPriorityGroupListForType(priorityGroup, updateType).Traverse(
+				(x) => { perElementAction.Invoke(); }
+			);
 		}
 
 		/// <summary>
@@ -369,34 +357,7 @@ namespace Miscreant.Utilities.Lifecycle
 		/// <param name="perElementAction">Action to perform (cannot be null).</param>
 		public void TraverseGroupForType(CustomUpdatePriority priorityGroup, UpdateType updateType, Action<CustomUpdateBehaviour> perElementAction)
 		{
-			IntrusiveList list;
-			CustomUpdateBehaviour currentElement;
-			Func<CustomUpdateBehaviour> GetNext;
-
-			switch (updateType)
-			{
-				case UpdateType.Normal:
-					list = _updateLists[priorityGroup.Index];
-					currentElement = list.head;
-					GetNext = () => { return currentElement.nextUpdate; };
-					break;
-				case UpdateType.Fixed:
-					list = _fixedUpdateLists[priorityGroup.Index];
-					currentElement = list.head;
-					GetNext = () => { return currentElement.nextFixedUpdate; };
-					break;
-				default:
-					throw new ArgumentException($"Update type not supported for enumeration: {updateType}");
-			}
-
-			if (!ReferenceEquals(currentElement, null))
-			{
-				do
-				{
-					perElementAction.Invoke(currentElement);
-					currentElement = GetNext();
-				} while (!ReferenceEquals(currentElement, list.head));
-			}
+			GetPriorityGroupListForType(priorityGroup, updateType).Traverse(perElementAction);
 		}
 
 		/// <summary>
