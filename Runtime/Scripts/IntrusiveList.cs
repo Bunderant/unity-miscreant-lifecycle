@@ -1,8 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-namespace Miscreant.Utilities.Lifecycle
+﻿namespace Miscreant.Utilities.Lifecycle
 {
 	internal abstract class IntrusiveList
 	{
