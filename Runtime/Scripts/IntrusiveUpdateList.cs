@@ -6,9 +6,6 @@ namespace Miscreant.Utilities.Lifecycle
 {
 	internal sealed class IntrusiveUpdateList : IntrusiveList
 	{
-		public IntrusiveUpdateList(CustomUpdatePriority priorityGroup) : base(priorityGroup)
-		{ }
-
 		protected override void ExecuteCurrent()
 		{
 			current.ManagedUpdate();

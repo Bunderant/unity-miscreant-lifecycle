@@ -4,16 +4,10 @@ namespace Miscreant.Utilities.Lifecycle
 {
 	internal abstract class IntrusiveList
 	{
-		public readonly CustomUpdatePriority priorityGroup;
 		public CustomUpdateBehaviour head = null;
 		public uint count = 0;
 
 		protected CustomUpdateBehaviour current;
-
-		public IntrusiveList(CustomUpdatePriority priorityGroup)
-		{
-			this.priorityGroup = priorityGroup;
-		}
 
 		public void ExecuteAll()
 		{

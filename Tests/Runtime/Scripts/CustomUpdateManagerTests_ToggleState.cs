@@ -46,28 +46,28 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 		[Test, Sequential]
 		public void TryAdd_SingleGameObjectToggledOn_AddedToSystem([ValueSource(nameof(_inactiveToggleStatesNeedGameObject))] ObjectToggleConfig initialConfig)
 		{
-			RunToggleTest(_environment, initialConfig, initialConfig | ObjectToggleConfig.GameObjectActive, true);
+			RunToggleTest(_environment, initialConfig, initialConfig | ObjectToggleConfig.GameObjectActive);
 		}
 
 		[Test, Sequential]
 		public void TryAdd_SingleComponentToggledOn_AddedToSystem([ValueSource(nameof(_inactiveToggleStatesNeedComponent))] ObjectToggleConfig initialConfig)
 		{
-			RunToggleTest(_environment, initialConfig, initialConfig | ObjectToggleConfig.ComponentEnabled, true);
+			RunToggleTest(_environment, initialConfig, initialConfig | ObjectToggleConfig.ComponentEnabled);
 		}
 
 		[Test, Sequential]
 		public void TryAdd_SingleUpdateFlagToggledOn_AddedToSystem([ValueSource(nameof(_inactiveToggleStatesNeedUpdate))] ObjectToggleConfig initialConfig)
 		{
-			RunToggleTest(_environment, initialConfig, initialConfig | ObjectToggleConfig.Update, true);
+			RunToggleTest(_environment, initialConfig, initialConfig | ObjectToggleConfig.Update);
 		}
 
 		[Test, Sequential]
 		public void TryAdd_SingleFixedUpdateFlagToggledOn_AddedToSystem([ValueSource(nameof(_inactiveToggleStatesNeedFixedUpdate))] ObjectToggleConfig initialConfig)
 		{
-			RunToggleTest(_environment, initialConfig, initialConfig | ObjectToggleConfig.FixedUpdate, true);
+			RunToggleTest(_environment, initialConfig, initialConfig | ObjectToggleConfig.FixedUpdate);
 		}
 
-		private static void RunToggleTest(FakeEnvironment env, ObjectToggleConfig initialConfig, ObjectToggleConfig finalConfig, bool isExpectedInSystem)
+		private static void RunToggleTest(FakeEnvironment env, ObjectToggleConfig initialConfig, ObjectToggleConfig finalConfig)
 		{
 			//
 			// Arrange
@@ -88,11 +88,19 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 			//
 			// Assert
 			//
+			bool updateExpected = finalConfig.HasFlag(
+				ObjectToggleConfig.GameObjectActive | ObjectToggleConfig.ComponentEnabled | ObjectToggleConfig.Update
+			);
+			bool fixedUpdateExpected = finalConfig.HasFlag(
+				ObjectToggleConfig.GameObjectActive | ObjectToggleConfig.ComponentEnabled | ObjectToggleConfig.FixedUpdate
+			);
+
+			env.manager.CheckSystemForComponent(component, out bool updateFound, out bool fixedUpdateFound);
 			Assert.That(
-				isExpectedInSystem == env.manager.CheckSystemForComponent(component),
-				$"Final configuration should leave the component {(isExpectedInSystem ? "REGISTERED" : "UNREGISTERED")} for the system.\n" +
-					$"Initial config {initialConfig}\n" +
-					$"Final config: {finalConfig}"
+				(updateExpected == updateFound) && (fixedUpdateExpected == fixedUpdateFound),
+				$"Final configuration's expected state was not reflected in the manager.\n" +
+					$"Update Expected/Result: {updateExpected}/{updateFound}\n" +
+					$"FixedUpdate Expected/Result: {fixedUpdateExpected}/{fixedUpdateFound}"
 			);
 		}
 
