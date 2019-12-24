@@ -44,25 +44,25 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 		}
 
 		[Test, Sequential]
-		public void TryAdd_SingleGameObjectToggledOn_AddedToSystem([ValueSource(nameof(_inactiveToggleStatesNeedGameObject))] ObjectToggleConfig initialConfig)
+		public void TryAdd_SingleGameObjectToggledOn_CorrectFlagsAddedToSystem([ValueSource(nameof(_inactiveToggleStatesNeedGameObject))] ObjectToggleConfig initialConfig)
 		{
 			RunToggleTest(_environment, initialConfig, initialConfig | ObjectToggleConfig.GameObjectActive);
 		}
 
 		[Test, Sequential]
-		public void TryAdd_SingleComponentToggledOn_AddedToSystem([ValueSource(nameof(_inactiveToggleStatesNeedComponent))] ObjectToggleConfig initialConfig)
+		public void TryAdd_SingleComponentToggledOn_CorrectFlagsAddedToSystem([ValueSource(nameof(_inactiveToggleStatesNeedComponent))] ObjectToggleConfig initialConfig)
 		{
 			RunToggleTest(_environment, initialConfig, initialConfig | ObjectToggleConfig.ComponentEnabled);
 		}
 
 		[Test, Sequential]
-		public void TryAdd_SingleUpdateFlagToggledOn_AddedToSystem([ValueSource(nameof(_inactiveToggleStatesNeedUpdate))] ObjectToggleConfig initialConfig)
+		public void TryAdd_SingleUpdateFlagToggledOn_CorrectFlagsAddedToSystem([ValueSource(nameof(_inactiveToggleStatesNeedUpdate))] ObjectToggleConfig initialConfig)
 		{
 			RunToggleTest(_environment, initialConfig, initialConfig | ObjectToggleConfig.Update);
 		}
 
 		[Test, Sequential]
-		public void TryAdd_SingleFixedUpdateFlagToggledOn_AddedToSystem([ValueSource(nameof(_inactiveToggleStatesNeedFixedUpdate))] ObjectToggleConfig initialConfig)
+		public void TryAdd_SingleFixedUpdateFlagToggledOn_CorrectFlagsAddedToSystem([ValueSource(nameof(_inactiveToggleStatesNeedFixedUpdate))] ObjectToggleConfig initialConfig)
 		{
 			RunToggleTest(_environment, initialConfig, initialConfig | ObjectToggleConfig.FixedUpdate);
 		}
