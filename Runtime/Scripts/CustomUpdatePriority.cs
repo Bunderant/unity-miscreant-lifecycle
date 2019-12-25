@@ -8,7 +8,7 @@ namespace Miscreant.Utilities.Lifecycle
 		public int Index { get; private set; }
 
 		/// <summary>
-		/// Should only ever be called by a <see cref="CustomUpdateManager" /> ScritpableObject asset. 
+		/// Should only ever be called by a <see cref="CustomUpdateManager" /> ScriptableObject asset. 
 		/// Always use a the manager object to control execution order. 
 		/// </summary>
 		/// <param name="index">The new priority value.</param>
