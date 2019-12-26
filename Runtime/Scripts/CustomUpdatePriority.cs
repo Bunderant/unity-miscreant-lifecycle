@@ -54,24 +54,37 @@ namespace Miscreant.Utilities.Lifecycle
 			_fixedUpdateList = new IntrusiveFixedUpdateList();
 		}
 
-		public void AddUpdate(CustomUpdateBehaviour component)
+		/// <summary>
+		/// Add a CustomUpdateBehaviour to the system. ONLY invoke from its OnEnable callback, or by setting the
+		/// update config flags (either via code or toggling from the Inspector).
+		/// Will not add the component to any update groups for which it is already a part of (no duplicates).
+		/// Does nothing if the component and/or associated gameObject aren't active in the hierarchy, or the update
+		/// config flags are all false. 
+		/// </summary>
+		/// <param name="component">The component to add to the system.</param>
+		public void TryRegister(CustomUpdateBehaviour component)
 		{
-			_updateList.AddToTail(component);
+			if (component.isActiveAndEnabled && component.updateConfig.update)
+			{
+				_updateList.AddToTail(component);
+			}
+			if (component.isActiveAndEnabled && component.updateConfig.fixedUpdate)
+			{
+				_fixedUpdateList.AddToTail(component);
+			}
 		}
 
-		public void AddFixedUpdate(CustomUpdateBehaviour component)
+		public void TryUnregister(CustomUpdateBehaviour component)
 		{
-			_fixedUpdateList.AddToTail(component);
-		}
-
-		public void RemoveUpdate(CustomUpdateBehaviour component)
-		{
-			_updateList.Remove(component);
-		}
-
-		public void RemoveFixedUpdate(CustomUpdateBehaviour component)
-		{
-			_fixedUpdateList.Remove(component);
+			// TODO: Miscreant: Make sure there aren't any redundant checks here
+			if (!component.isActiveAndEnabled || !component.updateConfig.update)
+			{
+				_updateList.Remove(component);
+			}
+			if (!component.isActiveAndEnabled || !component.updateConfig.fixedUpdate)
+			{
+				_fixedUpdateList.Remove(component);
+			}
 		}
 
 		public void TraverseForType(UpdateType type, Action<CustomUpdateBehaviour> perElementAction)

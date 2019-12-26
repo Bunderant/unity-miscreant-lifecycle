@@ -264,44 +264,6 @@ namespace Miscreant.Utilities.Lifecycle
 		}
 
 		/// <summary>
-		/// Add a CustomUpdateBehaviour to the system. ONLY invoke from its OnEnable callback, or by setting the
-		/// update config flags (either via code or toggling from the Inspector).
-		/// Will not add the component to any update groups for which it is already a part of (no duplicates).
-		/// Does nothing if the component and/or associated gameObject aren't active in the hierarchy, or the update
-		/// config flags are all false. 
-		/// </summary>
-		/// <param name="component">The component to add to the system.</param>
-		public void TryAdd(CustomUpdateBehaviour component)
-		{
-			Config config = component.updateConfig;
-
-			// TODO: Miscreant: Make sure there aren't any redundant checks here
-			if (component.isActiveAndEnabled && config.update)
-			{
-				config.PriorityGroup.AddUpdate(component);
-			}
-			if (component.isActiveAndEnabled && config.fixedUpdate)
-			{
-				config.PriorityGroup.AddFixedUpdate(component);
-			}
-		}
-
-		public void TryRemove(CustomUpdateBehaviour component)
-		{
-			Config config = component.updateConfig;
-
-			// TODO: Miscreant: Make sure there aren't any redundant checks here
-			if (!component.isActiveAndEnabled || !config.update)
-			{
-				config.PriorityGroup.RemoveUpdate(component);
-			}
-			if (!component.isActiveAndEnabled || !config.fixedUpdate)
-			{
-				config.PriorityGroup.RemoveFixedUpdate(component);
-			}
-		}
-
-		/// <summary>
 		/// Should be called from a MonoBehaviour's Update() loop. From a GameplayController class, for example. 
 		/// </summary>
 		public void RunUpdate()
