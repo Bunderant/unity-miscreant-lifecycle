@@ -112,9 +112,9 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 			}
 		}
 
-		public int GetCountForGroup(string groupName, UpdateType updateType)
+		public uint GetCountForGroup(string groupName, UpdateType updateType)
 		{
-			return manager.GetCountForGroup(priorities[groupName], updateType);
+			return priorities[groupName].GetCountForType(updateType);
 		}
 
 		private T InstantiateManagedUpdateGameObject<T>(

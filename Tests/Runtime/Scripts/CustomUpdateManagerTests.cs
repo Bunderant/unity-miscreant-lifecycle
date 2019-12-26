@@ -207,12 +207,12 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 			ObjectToggleConfig finalConfiguration)
 		{
 			int expectedInitialUpdateCount = (
-				env.GetCountForGroup(groupName, UpdateType.Normal) +
+				(int)env.GetCountForGroup(groupName, UpdateType.Normal) +
 				(initialConfiguration.HasFlag(ObjectToggleConfig.UpdateActiveAndEnabled) ? 1 : 0)
 			);
 
 			int expectedInitialFixedCount = (
-				env.GetCountForGroup(groupName, UpdateType.Fixed) +
+				(int)env.GetCountForGroup(groupName, UpdateType.Fixed) +
 				(initialConfiguration.HasFlag(ObjectToggleConfig.FixedUpdateActiveAndEnabled) ? 1 : 0)
 			);
 
@@ -254,7 +254,7 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 			UpdateType updateType,
 			int expectedCount)
 		{
-			int actualCount = env.GetCountForGroup(groupName, updateType);
+			int actualCount = (int)env.GetCountForGroup(groupName, updateType);
 
 			Assert.That(
 				actualCount == expectedCount,

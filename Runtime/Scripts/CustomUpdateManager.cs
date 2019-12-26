@@ -84,40 +84,6 @@ namespace Miscreant.Utilities.Lifecycle
 		[SerializeField]
 		private List<CustomUpdatePriority> _priorities = new List<CustomUpdatePriority>();
 
-		private PriorityGroup[] _priorityGroups = null;
-		private readonly struct PriorityGroup
-		{
-			public readonly CustomUpdatePriority priority;
-			public readonly IntrusiveUpdateList updateList;
-			public readonly IntrusiveFixedUpdateList fixedUpdateList;
-
-			public PriorityGroup(CustomUpdatePriority priority)
-			{
-				this.priority = priority;
-				updateList = new IntrusiveUpdateList();
-				fixedUpdateList = new IntrusiveFixedUpdateList();
-			}
-
-			public void TraverseForType(UpdateType type, Action<CustomUpdateBehaviour> perElementAction)
-			{
-				IntrusiveList list = GetListForType(type);
-				list.Traverse(perElementAction);
-			}
-
-			private IntrusiveList GetListForType(UpdateType type)
-			{
-				switch (type)
-				{
-					case UpdateType.Normal:
-						return updateList;
-					case UpdateType.Fixed:
-						return fixedUpdateList;
-					default:
-						throw new ArgumentException($"Can't get {nameof(IntrusiveList)} for {nameof(UpdateType)}: {type}");
-				}
-			}
-		}
-
 		private ushort _groupCount;
 		private bool _initialized;
 
@@ -148,13 +114,15 @@ namespace Miscreant.Utilities.Lifecycle
 					List<CustomUpdateBehaviour> updateGroup = new List<CustomUpdateBehaviour>();
 					List<CustomUpdateBehaviour> fixedUpdateGroup = new List<CustomUpdateBehaviour>();
 
-					PriorityGroup currentGroup = updateManager._priorityGroups[i];
+					CustomUpdatePriority currentGroup = updateManager._priorities[i];
 
-					currentGroup.updateList.Traverse(
+					currentGroup.TraverseForType(
+						UpdateType.Normal,
 						(c) => { updateGroup.Add(c); }
 					);
 
-					currentGroup.fixedUpdateList.Traverse(
+					currentGroup.TraverseForType(
+						UpdateType.Fixed,
 						(c) => { fixedUpdateGroup.Add(c); }
 					);
 
@@ -209,13 +177,10 @@ namespace Miscreant.Utilities.Lifecycle
 			_groupCount = (ushort)_priorities.Count;
 			_initialized |= _groupCount > 0;
 
-			_priorityGroups = new PriorityGroup[_groupCount];
 			for (int i = 0; i < _groupCount; i++)
 			{
-				_priorityGroups[i] = new PriorityGroup(_priorities[i]);
+				_priorities[i].Initialize(i);
 			}
-
-			UpdatePriorities();
 		}
 
 		/// <summary>
@@ -235,20 +200,6 @@ namespace Miscreant.Utilities.Lifecycle
 			Initialize();
 		}
 
-		internal void UpdatePriorities()
-		{
-			for (int i = 0; i < _priorities.Count; i++)
-			{
-				var currentPriority = _priorities[i];
-				if (currentPriority == null)
-				{
-					continue;
-				}
-
-				currentPriority.SetIndex(i);
-			}
-		}
-
 		/// <summary>
 		/// Checks that the heads and tails of all lists in the system are null for every UpdateType. 
 		/// </summary>
@@ -259,12 +210,7 @@ namespace Miscreant.Utilities.Lifecycle
 
 			for (int i = 0; i < _groupCount && isEmpty; i++)
 			{
-				PriorityGroup currentGroup = _priorityGroups[i];
-
-				isEmpty &= (
-					ReferenceEquals(currentGroup.updateList.head, null) &&
-					ReferenceEquals(currentGroup.fixedUpdateList.head, null)
-				);
+				isEmpty &= _priorities[i].IsEmpty;
 			}
 
 			return isEmpty;
@@ -280,7 +226,7 @@ namespace Miscreant.Utilities.Lifecycle
 
 			for (int i = 0; i < _groupCount && isEmpty; i++)
 			{
-				isEmpty &= ReferenceEquals(_priorityGroups[i].updateList.head, null);
+				isEmpty &= _priorities[i].UpdateEmpty;
 			}
 
 			return isEmpty;
@@ -296,7 +242,7 @@ namespace Miscreant.Utilities.Lifecycle
 
 			for (int i = 0; i < _groupCount && isEmpty; i++)
 			{
-				isEmpty &= ReferenceEquals(_priorityGroups[i].fixedUpdateList.head, null);
+				isEmpty &= _priorities[i].FixedUpdateEmpty;
 			}
 
 			return isEmpty;
@@ -307,33 +253,14 @@ namespace Miscreant.Utilities.Lifecycle
 		/// </summary>
 		/// <param name="updateType">UpdateType to match.</param>
 		/// <returns>The count.</returns>
-		public int GetCountForAllGroups(UpdateType updateType)
+		public ulong GetCountForAllGroups(UpdateType updateType)
 		{
-			int count = 0;
+			ulong count = 0;
 			for (int i = 0; i < _groupCount; i++)
 			{
-				count += GetCountForGroup(_priorities[i], updateType);
+				count += _priorities[i].GetCountForType(updateType);
 			}
 			return count;
-		}
-
-		/// <summary>
-		/// Gets the number of elements in the priority group matching the specified UpdateType. 
-		/// </summary>
-		/// <param name="priority">Group to count.</param>
-		/// <param name="updateType">UpdateType to match.</param>
-		/// <returns>The count.</returns>
-		public int GetCountForGroup(CustomUpdatePriority priority, UpdateType updateType)
-		{
-			int total = 0;
-			void IncrementTotal(CustomUpdateBehaviour component)
-			{
-				total++;
-			}
-
-			_priorityGroups[priority.Index].TraverseForType(updateType, IncrementTotal);
-
-			return total;
 		}
 
 		/// <summary>
@@ -346,33 +273,31 @@ namespace Miscreant.Utilities.Lifecycle
 		/// <param name="component">The component to add to the system.</param>
 		public void TryAdd(CustomUpdateBehaviour component)
 		{
-			var config = component.updateConfig;
-			int priorityIndex = config.PriorityGroup.Index;
+			Config config = component.updateConfig;
 
 			// TODO: Miscreant: Make sure there aren't any redundant checks here
 			if (component.isActiveAndEnabled && config.update)
 			{
-				_priorityGroups[priorityIndex].updateList.AddToTail(component);
+				config.PriorityGroup.AddUpdate(component);
 			}
 			if (component.isActiveAndEnabled && config.fixedUpdate)
 			{
-				_priorityGroups[priorityIndex].fixedUpdateList.AddToTail(component);
+				config.PriorityGroup.AddFixedUpdate(component);
 			}
 		}
 
 		public void TryRemove(CustomUpdateBehaviour component)
 		{
-			var config = component.updateConfig;
-			int priorityIndex = config.PriorityGroup.Index;
+			Config config = component.updateConfig;
 
 			// TODO: Miscreant: Make sure there aren't any redundant checks here
 			if (!component.isActiveAndEnabled || !config.update)
 			{
-				_priorityGroups[priorityIndex].updateList.Remove(component);
+				config.PriorityGroup.RemoveUpdate(component);
 			}
 			if (!component.isActiveAndEnabled || !config.fixedUpdate)
 			{
-				_priorityGroups[priorityIndex].fixedUpdateList.Remove(component);
+				config.PriorityGroup.RemoveFixedUpdate(component);
 			}
 		}
 
@@ -383,7 +308,7 @@ namespace Miscreant.Utilities.Lifecycle
 		{
 			for (int i = 0; i < _groupCount; i++)
 			{
-				_priorityGroups[i].updateList.ExecuteAll();
+				_priorities[i].ExecuteAllForType(UpdateType.Normal);
 			}
 		}
 
@@ -394,7 +319,7 @@ namespace Miscreant.Utilities.Lifecycle
 		{
 			for (int i = 0; i < _groupCount; i++)
 			{
-				_priorityGroups[i].fixedUpdateList.ExecuteAll();
+				_priorities[i].ExecuteAllForType(UpdateType.Fixed);
 			}
 		}
 
@@ -413,7 +338,7 @@ namespace Miscreant.Utilities.Lifecycle
 
 			for (int i = 0; i < _groupCount; i++)
 			{
-				PriorityGroup group = _priorityGroups[i];
+				CustomUpdatePriority group = _priorities[i];
 
 				referenceCount = 0;
 				group.TraverseForType(UpdateType.Normal, IncrementReferenceCountIfFound);
