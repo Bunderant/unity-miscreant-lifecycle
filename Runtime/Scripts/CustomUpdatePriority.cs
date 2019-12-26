@@ -8,8 +8,6 @@ namespace Miscreant.Utilities.Lifecycle
 	[CreateAssetMenu(menuName = nameof(Miscreant) + "/" + nameof(Miscreant.Utilities.Lifecycle) + "/" + nameof(CustomUpdatePriority))]
 	public sealed class CustomUpdatePriority : ScriptableObject
 	{
-		public int Index { get; private set; }
-
 		private IntrusiveUpdateList _updateList;
 		private IntrusiveFixedUpdateList _fixedUpdateList;
 
@@ -24,7 +22,6 @@ namespace Miscreant.Utilities.Lifecycle
 
 		private void OnDisable()
 		{
-			Index = -1;
 			_updateList = null;
 			_fixedUpdateList = null;
 		}
@@ -35,8 +32,7 @@ namespace Miscreant.Utilities.Lifecycle
 		/// Should only ever be called by a <see cref="CustomUpdateManager" /> ScriptableObject asset. 
 		/// Always use a the manager object to control execution order. 
 		/// </summary>
-		/// <param name="index">The new priority value.</param>
-		internal void Initialize(int index, [System.Runtime.CompilerServices.CallerMemberName] string callerName = "")
+		internal void Initialize([System.Runtime.CompilerServices.CallerMemberName] string callerName = "")
 		{
 			// TODO: Miscreant: Need to make sure the calling object is the right type, as well. 
 			if (!string.Equals(callerName, nameof(CustomUpdateManager.Initialize)))
@@ -47,9 +43,6 @@ namespace Miscreant.Utilities.Lifecycle
 					this
 				);
 			}
-
-			this.Index = index;
-
 			_updateList = new IntrusiveUpdateList();
 			_fixedUpdateList = new IntrusiveFixedUpdateList();
 		}

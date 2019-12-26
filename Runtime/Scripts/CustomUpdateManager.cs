@@ -173,7 +173,7 @@ namespace Miscreant.Utilities.Lifecycle
 
 			for (int i = 0; i < _groupCount; i++)
 			{
-				_priorities[i].Initialize(i);
+				_priorities[i].Initialize();
 			}
 		}
 
