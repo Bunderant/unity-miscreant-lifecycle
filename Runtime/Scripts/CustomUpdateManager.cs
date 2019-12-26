@@ -21,10 +21,6 @@ namespace Miscreant.Utilities.Lifecycle
 		public struct Config
 		{
 			[SerializeField]
-			private CustomUpdateManager _manager;
-			public CustomUpdateManager Manager { get { return _manager; } }
-
-			[SerializeField]
 			private CustomUpdatePriority _priorityGroup;
 			public CustomUpdatePriority PriorityGroup { get { return _priorityGroup; } }
 
@@ -49,7 +45,6 @@ namespace Miscreant.Utilities.Lifecycle
 
 			public Config(bool update, bool fixedUpdate)
 			{
-				this._manager = null;
 				this._priorityGroup = null;
 
 				this._update = update;
@@ -58,9 +53,8 @@ namespace Miscreant.Utilities.Lifecycle
 				this.valueChangedAction = null;
 			}
 
-			public Config(CustomUpdateManager manager, CustomUpdatePriority priorityGroup, bool update, bool fixedUpdate)
+			public Config(CustomUpdatePriority priorityGroup, bool update, bool fixedUpdate)
 			{
-				this._manager = manager;
 				this._priorityGroup = priorityGroup;
 
 				this._update = update;

@@ -124,7 +124,6 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 		{
 			return CustomUpdateBehaviour.Create<T>(
 				new CustomUpdateManager.Config(
-					manager,
 					group,
 					config.HasFlag(ObjectToggleConfig.Update),
 					config.HasFlag(ObjectToggleConfig.FixedUpdate)),
