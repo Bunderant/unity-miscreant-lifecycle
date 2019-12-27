@@ -18,6 +18,7 @@ namespace Miscreant.Utilities.Lifecycle
 
 		internal override void AddToTail(CustomUpdateBehaviour component)
 		{
+			// TODO: Miscreant: Only need to check once of these references. Since the lists are circular, if one of these refs is null, both must be null. 
 			if (!ReferenceEquals(component.nextUpdate, null) || !ReferenceEquals(component.previousUpdate, null))
 			{
 				return;
@@ -46,6 +47,7 @@ namespace Miscreant.Utilities.Lifecycle
 
 		internal override void Remove(CustomUpdateBehaviour component)
 		{
+			// TODO: Miscreant: Only need to check once of these references. Since the lists are circular, if one of these refs is null, both must be null. 
 			if (ReferenceEquals(component.nextUpdate, null) && ReferenceEquals(component.previousUpdate, null))
 			{
 				return;
@@ -54,14 +56,7 @@ namespace Miscreant.Utilities.Lifecycle
 
 			if (count == 0)
 			{
-				// TODO: Miscreant: Restore this under a "strict" conditional
-				// if (!ReferenceEquals(component, head))
-				// {
-				// 	throw new ArgumentException("component is not the root of the list");
-				// }
-
-				// TODO: MIscreant: Elegantly handle "current" field  when removing the last element in the list. Need to work out semantics there, too. 
-
+				// TODO: Miscreant: Elegantly handle "current" field  when removing the last element in the list. Need to work out semantics there, too. 
 				head.previousUpdate = null;
 				head.nextUpdate = null;
 				head = null;
