@@ -30,12 +30,12 @@ namespace Miscreant.Utilities.Lifecycle
 		internal CustomUpdateBehaviour nextFixedUpdate;
 
 		// State Tracking
-		// TODO: Miscreant: Don't mask the built-in field in case someone really wants to use it. Could lead to elusive bugs. 
 		/// <summary>
-		/// Masks the bult-in MonoBehaviour property so it can be checked without bridging the gap from managed to unmanaged code. 
+		/// Mimics the built-in MonoBehaviour property so it can be checked without bridging the gap from managed to unmanaged code. 
 		/// </summary>
-		[NonSerialized]
-		public new bool isActiveAndEnabled;
+		private bool _isActiveAndEnabled;
+		internal bool ShouldUpdate { get { return _isActiveAndEnabled && updateConfig.update; } }
+		internal bool ShouldFixedUpdate { get { return _isActiveAndEnabled && updateConfig.fixedUpdate; } }
 
 		public static T Create<T>(
 			CustomUpdateManager.Config config, bool gameObjectActive, bool componentEnabled, Transform parent = null
@@ -65,7 +65,7 @@ namespace Miscreant.Utilities.Lifecycle
 		/// </summary>
 		protected virtual void OnEnable()
 		{
-			isActiveAndEnabled = true;
+			_isActiveAndEnabled = true;
 
 			updateConfig.PriorityGroup.TryRegister(this);
 			updateConfig.valueChangedAction = HandleUpdateModeChanged;
@@ -76,7 +76,7 @@ namespace Miscreant.Utilities.Lifecycle
 		/// </summary>
 		protected virtual void OnDisable()
 		{
-			isActiveAndEnabled = false;
+			_isActiveAndEnabled = false;
 			
 			updateConfig.PriorityGroup.TryUnregister(this);
 			updateConfig.valueChangedAction = null;

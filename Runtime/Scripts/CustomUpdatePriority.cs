@@ -57,11 +57,12 @@ namespace Miscreant.Utilities.Lifecycle
 		/// <param name="component">The component to add to the system.</param>
 		public void TryRegister(CustomUpdateBehaviour component)
 		{
-			if (component.isActiveAndEnabled && component.updateConfig.update)
+			// TODO: Miscreant: avoid calling properties here, just pass the registration flags in as parameters as a micro-optimization. 
+			if (component.ShouldUpdate)
 			{
 				_updateList.AddToTail(component);
 			}
-			if (component.isActiveAndEnabled && component.updateConfig.fixedUpdate)
+			if (component.ShouldFixedUpdate)
 			{
 				_fixedUpdateList.AddToTail(component);
 			}
@@ -69,12 +70,12 @@ namespace Miscreant.Utilities.Lifecycle
 
 		public void TryUnregister(CustomUpdateBehaviour component)
 		{
-			// TODO: Miscreant: Make sure there aren't any redundant checks here
-			if (!component.isActiveAndEnabled || !component.updateConfig.update)
+			// TODO: Miscreant: avoid calling properties here, just pass the registration flags in as parameters as a micro-optimization. 
+			if (!component.ShouldUpdate)
 			{
 				_updateList.Remove(component);
 			}
-			if (!component.isActiveAndEnabled || !component.updateConfig.fixedUpdate)
+			if (!component.ShouldFixedUpdate)
 			{
 				_fixedUpdateList.Remove(component);
 			}
