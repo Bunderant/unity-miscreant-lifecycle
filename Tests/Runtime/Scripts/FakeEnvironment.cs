@@ -55,35 +55,15 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 			_runtimeController.enabled = false;
 		}
 
-		public static void GetExpectedDeltaForComponentToggleChange(
-			ObjectToggleConfig before,
-			ObjectToggleConfig after,
-			out int updateDelta,
-			out int fixedUpdateDelta)
+		internal static void GetExpectedUpdateFlagsFromConfig(ObjectToggleConfig config, out bool updateExpected, out bool fixedUpdateExpected)
 		{
-			updateDelta = 0;
-			if (before.HasFlag(ObjectToggleConfig.UpdateActiveAndEnabled) &&
-				!after.HasFlag(ObjectToggleConfig.UpdateActiveAndEnabled))
-			{
-				updateDelta = -1;
-			}
-			else if (!before.HasFlag(ObjectToggleConfig.UpdateActiveAndEnabled) &&
-				after.HasFlag(ObjectToggleConfig.UpdateActiveAndEnabled))
-			{
-				updateDelta = 1;
-			}
+			updateExpected = config.HasFlag(
+				ObjectToggleConfig.GameObjectActive | ObjectToggleConfig.ComponentEnabled | ObjectToggleConfig.Update
+			);
 
-			fixedUpdateDelta = 0;
-			if (before.HasFlag(ObjectToggleConfig.FixedUpdateActiveAndEnabled) &&
-				!after.HasFlag(ObjectToggleConfig.FixedUpdateActiveAndEnabled))
-			{
-				fixedUpdateDelta = -1;
-			}
-			else if (!before.HasFlag(ObjectToggleConfig.FixedUpdateActiveAndEnabled) &&
-				after.HasFlag(ObjectToggleConfig.FixedUpdateActiveAndEnabled))
-			{
-				fixedUpdateDelta = 1;
-			}
+			fixedUpdateExpected = config.HasFlag(
+				ObjectToggleConfig.GameObjectActive | ObjectToggleConfig.ComponentEnabled | ObjectToggleConfig.FixedUpdate
+			);
 		}
 
 		public void InstantiateManagedComponents<T>(string groupName, params ObjectToggleConfig[] toggleConfig) where T : CustomUpdateBehaviour
