@@ -7,26 +7,6 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 
 	public sealed class CustomUpdateManagerTests_ToggleState
 	{
-		private static ObjectToggleConfig[] _allActiveToggleStates = CustomUpdateManagerTests.allActiveTogglePermutations;
-
-		private static ObjectToggleConfig[] _activeUpdateToggleStates = _allActiveToggleStates.Where(
-			x => { return x.HasFlag(ObjectToggleConfig.Update); }).Distinct().ToArray();
-
-		private static ObjectToggleConfig[] _activeFixedUpateToggleStates = _allActiveToggleStates.Where(
-			x => { return x.HasFlag(ObjectToggleConfig.FixedUpdate); }).Distinct().ToArray();
-
-		private static ObjectToggleConfig[] _inactiveToggleStatesNeedGameObject = _allActiveToggleStates.Select(
-			x => { return x & ~ObjectToggleConfig.GameObjectActive; }).Distinct().ToArray();
-
-		private static ObjectToggleConfig[] _inactiveToggleStatesNeedComponent = _allActiveToggleStates.Select(
-			x => { return x & ~ObjectToggleConfig.ComponentEnabled; }).Distinct().ToArray();
-
-		private static ObjectToggleConfig[] _inactiveToggleStatesNeedUpdate = _allActiveToggleStates.Select(
-			x => { return x & ~ObjectToggleConfig.Update; }).Distinct().ToArray();
-
-		private static ObjectToggleConfig[] _inactiveToggleStatesNeedFixedUpdate = _allActiveToggleStates.Select(
-			x => { return x & ~ObjectToggleConfig.FixedUpdate; }).Distinct().ToArray();
-
 		private FakeEnvironment _environment;
 
 		[SetUp]
@@ -42,50 +22,58 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 			_environment = null;
 		}
 
-		[Test, Sequential]
-		public void TryAdd_SingleGameObjectToggledOn_CorrectFlagsAddedToSystem([ValueSource(nameof(_inactiveToggleStatesNeedGameObject))] ObjectToggleConfig initialConfig)
+		[Test]
+		[TestCaseSource(typeof(CustomUpdateManagerTests), nameof(CustomUpdateManagerTests.inactiveTogglePermutationsNeedGameObject))]
+		public void TryAdd_SingleGameObjectToggledOn_CorrectFlagsAddedToSystem(ObjectToggleConfig initialConfig)
 		{
 			RunToggleTest(_environment, initialConfig, initialConfig | ObjectToggleConfig.GameObjectActive);
 		}
 
-		[Test, Sequential]
-		public void TryAdd_SingleComponentToggledOn_CorrectFlagsAddedToSystem([ValueSource(nameof(_inactiveToggleStatesNeedComponent))] ObjectToggleConfig initialConfig)
+		[Test]
+		[TestCaseSource(typeof(CustomUpdateManagerTests), nameof(CustomUpdateManagerTests.inactiveTogglePermutationsNeedComponent))]
+		public void TryAdd_SingleComponentToggledOn_CorrectFlagsAddedToSystem(ObjectToggleConfig initialConfig)
 		{
 			RunToggleTest(_environment, initialConfig, initialConfig | ObjectToggleConfig.ComponentEnabled);
 		}
 
-		[Test, Sequential]
-		public void TryAdd_SingleUpdateFlagToggledOn_CorrectFlagsAddedToSystem([ValueSource(nameof(_inactiveToggleStatesNeedUpdate))] ObjectToggleConfig initialConfig)
+		[Test]
+		[TestCaseSource(typeof(CustomUpdateManagerTests), nameof(CustomUpdateManagerTests.inactiveTogglePermutationsNeedUpdate))]
+		public void TryAdd_SingleUpdateFlagToggledOn_CorrectFlagsAddedToSystem(ObjectToggleConfig initialConfig)
 		{
 			RunToggleTest(_environment, initialConfig, initialConfig | ObjectToggleConfig.Update);
 		}
 
-		[Test, Sequential]
-		public void TryAdd_SingleFixedUpdateFlagToggledOn_CorrectFlagsAddedToSystem([ValueSource(nameof(_inactiveToggleStatesNeedFixedUpdate))] ObjectToggleConfig initialConfig)
+		[Test]
+		[TestCaseSource(typeof(CustomUpdateManagerTests), nameof(CustomUpdateManagerTests.inactiveTogglePermutationsNeedFixedUpdate))]
+		public void TryAdd_SingleFixedUpdateFlagToggledOn_CorrectFlagsAddedToSystem(ObjectToggleConfig initialConfig)
 		{
 			RunToggleTest(_environment, initialConfig, initialConfig | ObjectToggleConfig.FixedUpdate);
 		}
 
-		[Test, Sequential]
-		public void TryRemove_SingleGameObjectToggledOff_RemovedFromSystem([ValueSource(nameof(_allActiveToggleStates))] ObjectToggleConfig initialConfig)
+		[Test]
+		[TestCaseSource(typeof(CustomUpdateManagerTests), nameof(CustomUpdateManagerTests.allActiveTogglePermutations))]
+		public void TryRemove_SingleGameObjectToggledOff_RemovedFromSystem(ObjectToggleConfig initialConfig)
 		{
 			RunToggleTest(_environment, initialConfig, initialConfig & ~ObjectToggleConfig.GameObjectActive);
 		}
 
-		[Test, Sequential]
-		public void TryRemove_SingleComponentToggledOff_RemovedFromSystem([ValueSource(nameof(_allActiveToggleStates))] ObjectToggleConfig initialConfig)
+		[Test]
+		[TestCaseSource(typeof(CustomUpdateManagerTests), nameof(CustomUpdateManagerTests.allActiveTogglePermutations))]
+		public void TryRemove_SingleComponentToggledOff_RemovedFromSystem(ObjectToggleConfig initialConfig)
 		{
 			RunToggleTest(_environment, initialConfig, initialConfig & ~ObjectToggleConfig.ComponentEnabled);
 		}
 
-		[Test, Sequential]
-		public void TryRemove_SingleUpdateToggledOff_RemovedFromSystem([ValueSource(nameof(_activeUpdateToggleStates))] ObjectToggleConfig initialConfig)
+		[Test]
+		[TestCaseSource(typeof(CustomUpdateManagerTests), nameof(CustomUpdateManagerTests.activeUpdateTogglePermutations))]
+		public void TryRemove_SingleUpdateToggledOff_RemovedFromSystem(ObjectToggleConfig initialConfig)
 		{
 			RunToggleTest(_environment, initialConfig, initialConfig & ~ObjectToggleConfig.Update);
 		}
 
-		[Test, Sequential]
-		public void TryRemove_SingleFixedUpdateToggledOff_RemovedFromSystem([ValueSource(nameof(_activeFixedUpateToggleStates))] ObjectToggleConfig initialConfig)
+		[Test]
+		[TestCaseSource(typeof(CustomUpdateManagerTests), nameof(CustomUpdateManagerTests.activeFixedUpateTogglePermutations))]
+		public void TryRemove_SingleFixedUpdateToggledOff_RemovedFromSystem(ObjectToggleConfig initialConfig)
 		{
 			RunToggleTest(_environment, initialConfig, initialConfig & ~ObjectToggleConfig.FixedUpdate);
 		}

@@ -27,6 +27,24 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 			allActiveTogglePermutations
 		).ToArray();
 
+		internal static ObjectToggleConfig[] activeUpdateTogglePermutations = allActiveTogglePermutations.Where(
+			x => { return x.HasFlag(ObjectToggleConfig.Update); }).Distinct().ToArray();
+
+		internal static ObjectToggleConfig[] activeFixedUpateTogglePermutations = allActiveTogglePermutations.Where(
+			x => { return x.HasFlag(ObjectToggleConfig.FixedUpdate); }).Distinct().ToArray();
+
+		internal static ObjectToggleConfig[] inactiveTogglePermutationsNeedGameObject = allActiveTogglePermutations.Select(
+			x => { return x & ~ObjectToggleConfig.GameObjectActive; }).Distinct().ToArray();
+
+		internal static ObjectToggleConfig[] inactiveTogglePermutationsNeedComponent = allActiveTogglePermutations.Select(
+			x => { return x & ~ObjectToggleConfig.ComponentEnabled; }).Distinct().ToArray();
+
+		internal static ObjectToggleConfig[] inactiveTogglePermutationsNeedUpdate = allActiveTogglePermutations.Select(
+			x => { return x & ~ObjectToggleConfig.Update; }).Distinct().ToArray();
+
+		internal static ObjectToggleConfig[] inactiveTogglePermutationsNeedFixedUpdate = allActiveTogglePermutations.Select(
+			x => { return x & ~ObjectToggleConfig.FixedUpdate; }).Distinct().ToArray();
+
 		private struct ExpectedUpdateCount
 		{
 			public int value;
