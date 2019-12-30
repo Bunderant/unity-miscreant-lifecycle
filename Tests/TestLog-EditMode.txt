@@ -1,0 +1,9 @@
+MiscreantUtilities
+	Miscreant.Lifecycle.EditorTests.dll
+		Miscreant
+			Utilities
+				Lifecycle
+					EditorTests
+						SomeEditorTests
+							SomeEditorTestsSimplePasses
+							SomeEditorTestsWithEnumeratorPasses

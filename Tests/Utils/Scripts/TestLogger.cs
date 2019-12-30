@@ -1,39 +1,25 @@
 ﻿#if UNITY_EDITOR
 
 using UnityEngine;
-using NUnit.Framework;
 using System.IO;
 using System.Text;
 using UnityEditor.TestTools.TestRunner.Api;
 
-namespace Miscreant.Utilities.Lifecycle.RuntimeTests
+namespace Miscreant.Utilities.Lifecycle.TestUtils
 {
-	[SetUpFixture]
 	/// <summary>
 	/// Editor-only class. Logs a list of all tests each time they are run in the editor. 
 	/// </summary>
-	public sealed class TestLogger
+	public static class TestLogger
 	{
-		[OneTimeSetUp]
-		public void OneTimeSetUp()
-		{
-			var api = ScriptableObject.CreateInstance<TestRunnerApi>();	
-			api.RetrieveTestList(TestMode.PlayMode, (testRoot) =>
-			{
-				SaveToDisk(
-					GenerateLogStringForTestNode(testRoot),
-					Application.dataPath.Substring(0, Application.dataPath.LastIndexOf("Assets")) + "Packages/Lifecycle/Tests",
-					"TestLog-PlayMode.txt"
-				);
-			});
-		}
-
-		private void SaveToDisk(string logText, string directoryPath, string fileName)
+		public static void SaveToDisk(ITestAdaptor rootNode, string directoryPath, string fileName)
 		{
 			if (!Directory.Exists(directoryPath))
 			{
 				throw new DirectoryNotFoundException("Directory not found at the specified path: " + directoryPath);
 			}
+
+			string logText = GenerateLogStringForTestNode(rootNode);
 
 			string filePath = directoryPath + "/" + fileName;
 			File.WriteAllText(filePath, logText);
@@ -41,7 +27,7 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 			Debug.Log("Saved test log: " + filePath);
 		}
 
-		private string GenerateLogStringForTestNode(ITestAdaptor testNode)
+		private static string GenerateLogStringForTestNode(ITestAdaptor testNode)
 		{
 			var logText = new StringBuilder();
 
