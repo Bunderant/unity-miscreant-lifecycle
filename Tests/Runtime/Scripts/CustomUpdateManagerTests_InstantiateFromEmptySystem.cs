@@ -22,7 +22,8 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 			_environment = null;
 		}
 
-		[Test, TestCaseSource(typeof(CustomUpdateManagerTests), nameof(CustomUpdateManagerTests.allActiveTogglePermutations))]
+		[Test]
+		[TestCaseSource(typeof(CustomUpdateManagerTests), nameof(CustomUpdateManagerTests.allActiveTogglePermutations))]
 		public void Instantiate_SingleObjectInstantiatedFromEmptySystem_AddedToSystem(ObjectToggleConfig config)
 		{
 			// Arrange
@@ -56,7 +57,8 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 			);
 		}
 
-		[Test, TestCaseSource(typeof(CustomUpdateManagerTests), nameof(CustomUpdateManagerTests.allInactiveTogglePermutations))]
+		[Test]
+		[TestCaseSource(typeof(CustomUpdateManagerTests), nameof(CustomUpdateManagerTests.allInactiveTogglePermutations))]
 		public void Instantiate_SingleObjectInstantiatedFromEmptySystem_NotAddedToSystem(ObjectToggleConfig config)
 		{
 			// Arrange
