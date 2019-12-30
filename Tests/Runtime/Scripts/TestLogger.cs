@@ -43,7 +43,7 @@ namespace Miscreant.Utilities.Lifecycle.RuntimeTests
 
 		private string GenerateLogStringForTestNode(ITestAdaptor testNode)
 		{
-			var logText = new StringBuilder($"Test Log ({System.DateTime.Now.ToUniversalTime()}):\n");
+			var logText = new StringBuilder();
 
 			LogChildrenRecursively(testNode, 0);
 
