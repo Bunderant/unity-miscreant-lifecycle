@@ -71,6 +71,9 @@ namespace Miscreant.Lifecycle
 			component.nextUpdate.previousUpdate = component.previousUpdate;
 			component.previousUpdate.nextUpdate = component.nextUpdate;
 
+			// This specifically handles the case where a component destroys itself from any type of managed update callback. By resetting 'current' to the 
+			// previous link, 'current' will not be null when 'Advance()' is called, and we'll process the expected next link during the next iteration. 
+			// Since it was the 'current' update callback that brought us here, there's no danger of accidentally processing 'current' a second time.
 			if (ReferenceEquals(current, component))
 			{
 				current = component.previousUpdate;
