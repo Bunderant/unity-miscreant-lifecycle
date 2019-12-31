@@ -7,7 +7,6 @@ MiscreantUtilities
 						Instantiate_OneBasicManagedFixedUpdateActive_AddedToPopulatedSystem
 						Instantiate_OneBasicManagedUpdateActive_AddedToPopulatedSystem
 						Instantiate_OneBasicManagedUpdateAndFixedActive_AddedToPopulatedSystem
-						SelfDestruct_ManagedUpdateOnlyOneInSystem
 					CustomUpdateManagerTests_InstantiateFromEmptySystem
 						Instantiate_SingleObjectInstantiatedFromEmptySystem_AddedToSystem
 							Instantiate_SingleObjectInstantiatedFromEmptySystem_AddedToSystem(UpdateActiveAndEnabled)
@@ -27,6 +26,11 @@ MiscreantUtilities
 							Instantiate_SingleObjectInstantiatedFromEmptySystem_NotAddedToSystem(Update, FixedUpdate)
 							Instantiate_SingleObjectInstantiatedFromEmptySystem_NotAddedToSystem(GameObjectActive, Update, FixedUpdate)
 							Instantiate_SingleObjectInstantiatedFromEmptySystem_NotAddedToSystem(ComponentEnabled, Update, FixedUpdate)
+					CustomUpdateManagerTests_MultipleFrames
+						DestroyGameObject_SelfDestructFromManagedUpdate_RemovedFromSystem
+							DestroyGameObject_SelfDestructFromManagedUpdate_RemovedFromSystem(UpdateActiveAndEnabled)
+							DestroyGameObject_SelfDestructFromManagedUpdate_RemovedFromSystem(FixedUpdateActiveAndEnabled)
+							DestroyGameObject_SelfDestructFromManagedUpdate_RemovedFromSystem(AllActiveAndEnabled)
 					CustomUpdateManagerTests_ToggleState
 						TryAdd_SingleComponentToggledOn_CorrectFlagsAddedToSystem
 							TryAdd_SingleComponentToggledOn_CorrectFlagsAddedToSystem(GameObjectActive, Update)

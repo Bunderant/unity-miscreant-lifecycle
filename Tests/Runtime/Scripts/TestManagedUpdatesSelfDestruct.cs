@@ -6,15 +6,10 @@ namespace Miscreant.Lifecycle.RuntimeTests
 {
 	public sealed class TestManagedUpdatesSelfDestruct : CustomUpdateBehaviour
 	{
-		public static UnityEvent OnSelfDestruct;
+		public UnityEvent OnSelfDestruct = new UnityEvent();
 		public const float DEFAULT_COUNTDOWN_DURATION = 0.5f;
 
 		float _expirationTime = -1;
-
-		private void Awake()
-		{
-			StartCountdown(DEFAULT_COUNTDOWN_DURATION);
-		}
 
 		public override void ManagedUpdate()
 		{

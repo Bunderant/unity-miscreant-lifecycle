@@ -1,10 +1,7 @@
 ﻿using NUnit.Framework;
-using UnityEngine;
 using System;
 using System.Linq;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.TestTools;
 
 namespace Miscreant.Lifecycle.RuntimeTests
 {
@@ -147,44 +144,6 @@ namespace Miscreant.Lifecycle.RuntimeTests
 				$"Expected count: {expectedCount}\n" +
 				$"Actual count: {actualCount}"
 			);
-		}
-
-		[UnityTest]
-		public IEnumerator SelfDestruct_ManagedUpdateOnlyOneInSystem()
-		{
-			string groupName = DEFAULT_GROUP_NAME;
-			using (FakeEnvironment env = new FakeEnvironment(groupName))
-			{
-				env.InstantiateManagedComponents<TestManagedUpdatesSelfDestruct>(
-					groupName,
-					ObjectToggleConfig.UpdateActiveAndEnabled
-				);
-
-				AssertGroupCountForTypeEquals(env, groupName, UpdateType.Normal, 1);
-
-				env.StartUpdating();
-
-				TestManagedUpdatesSelfDestruct.OnSelfDestruct = new UnityEngine.Events.UnityEvent();
-				TestManagedUpdatesSelfDestruct.OnSelfDestruct.AddListener(HandleSelfDestruct);
-
-				bool componentStillExists = true;
-				void HandleSelfDestruct()
-				{
-					AssertGroupCountForTypeEquals(env, groupName, UpdateType.Normal, 0);
-
-					TestManagedUpdatesSelfDestruct.OnSelfDestruct.RemoveListener(HandleSelfDestruct);
-					componentStillExists = false;
-				}
-
-				// Make sure the component actually self-destructs. 
-				float timeout = Time.time + TestManagedUpdatesSelfDestruct.DEFAULT_COUNTDOWN_DURATION * 3;
-				while (componentStillExists && Time.time < timeout)
-				{
-					yield return new WaitForEndOfFrame();
-				}
-
-				Assert.That(Time.time < timeout, "Component did not successfully self destruct: Timed out.");
-			}
 		}
 
 		/// <summary>

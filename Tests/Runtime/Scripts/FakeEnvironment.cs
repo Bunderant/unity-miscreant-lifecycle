@@ -145,6 +145,8 @@ namespace Miscreant.Lifecycle.RuntimeTests
 
 		public void Dispose()
 		{
+			StopUpdating();
+
 			Object.Destroy(_runtimeController.gameObject);
 			Object.Destroy(manager);
 
