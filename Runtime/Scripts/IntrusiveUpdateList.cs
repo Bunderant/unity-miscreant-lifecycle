@@ -47,8 +47,8 @@ namespace Miscreant.Lifecycle
 
 		internal override void Remove(CustomUpdateBehaviour component)
 		{
-			// TODO: Miscreant: Only need to check once of these references. Since the lists are circular, if one of these refs is null, both must be null. 
-			if (ReferenceEquals(component.nextUpdate, null) && ReferenceEquals(component.previousUpdate, null))
+			// Only need to check one of the link references. Since the lists are circular, if one of these refs is null, both must be null. 
+			if (ReferenceEquals(component.nextUpdate, null))
 			{
 				return;
 			}

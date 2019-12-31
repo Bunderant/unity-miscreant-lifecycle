@@ -46,7 +46,8 @@ namespace Miscreant.Lifecycle
 
 		internal override void Remove(CustomUpdateBehaviour component)
 		{
-			if (ReferenceEquals(component.nextFixedUpdate, null) && ReferenceEquals(component.previousFixedUpdate, null))
+			// Only need to check one of the link references. Since the lists are circular, if one of these refs is null, both must be null. 
+			if (ReferenceEquals(component.nextFixedUpdate, null))
 			{
 				return;
 			}
@@ -54,14 +55,7 @@ namespace Miscreant.Lifecycle
 
 			if (count == 0)
 			{
-				// TODO: Miscreant: Restore this under a "strict" conditional
-				// if (!ReferenceEquals(component, head))
-				// {
-				// 	throw new ArgumentException("component is not the root of the list");
-				// }
-
 				// TODO: MIscreant: Elegantly handle "current" field  when removing the last element in the list. Need to work out semantics there, too. 
-
 				head.previousFixedUpdate = null;
 				head.nextFixedUpdate = null;
 				head = null;
