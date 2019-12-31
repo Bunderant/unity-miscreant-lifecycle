@@ -26,7 +26,7 @@ namespace Miscreant.Lifecycle.RuntimeTests
 		}
 
 		[UnityTest]
-		public IEnumerator DestroyGameObject_SelfDestructFromManagedUpdate_RemovedFromSystem(
+		public IEnumerator DestroyGameObject_SelfDestructFromManagedCallback_RemovedFromSystem(
 			[ValueSource(typeof(CustomUpdateManagerTests), nameof(CustomUpdateManagerTests.allActiveTogglePermutations))] ObjectToggleConfig config)
 		{
 			// Arrange
