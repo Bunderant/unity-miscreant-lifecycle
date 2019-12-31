@@ -1,8 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-namespace Miscreant.Lifecycle
+﻿namespace Miscreant.Lifecycle
 {
 	internal sealed class IntrusiveUpdateList : IntrusiveList
 	{
