@@ -123,16 +123,8 @@ namespace Miscreant.Lifecycle.RuntimeTests
 
 		public void StartUpdating()
 		{
-			_runtimeController.OnMonoBehaviourUpdate = (() =>
-			{
-				manager.RunUpdate();
-			});
-
-			_runtimeController.OnMonoBehaviourFixedUpdate = (() =>
-			{
-				manager.RunFixedUpdate();
-			});
-
+			_runtimeController.OnMonoBehaviourUpdate = manager.RunUpdate;
+			_runtimeController.OnMonoBehaviourFixedUpdate = manager.RunFixedUpdate;
 			_runtimeController.enabled = true;
 		}
 
