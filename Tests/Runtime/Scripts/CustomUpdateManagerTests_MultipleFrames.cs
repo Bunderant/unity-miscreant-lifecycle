@@ -14,7 +14,7 @@ namespace Miscreant.Lifecycle.RuntimeTests
 		[SetUp]
 		public void SetUp()
 		{
-			_environment = new FakeEnvironment(CustomUpdateManagerTests.DEFAULT_GROUP_NAME);
+			_environment = new FakeEnvironment(TestData.DEFAULT_GROUP_NAME);
 			_environment.StartUpdating();
 		}
 
@@ -27,10 +27,10 @@ namespace Miscreant.Lifecycle.RuntimeTests
 
 		[UnityTest]
 		public IEnumerator DestroyGameObject_SelfDestructFromManagedCallback_RemovedFromSystem(
-			[ValueSource(typeof(CustomUpdateManagerTests), nameof(CustomUpdateManagerTests.allActiveTogglePermutations))] ObjectToggleConfig config)
+			[ValueSource(typeof(TestData), nameof(TestData.allActiveTogglePermutations))] ObjectToggleConfig config)
 		{
 			// Arrange
-			string groupName = CustomUpdateManagerTests.DEFAULT_GROUP_NAME;
+			string groupName = TestData.DEFAULT_GROUP_NAME;
 			_environment.InstantiateManagedComponents<TestManagedUpdatesSelfDestruct>(
 				out TestManagedUpdatesSelfDestruct[] components,
 				groupName,

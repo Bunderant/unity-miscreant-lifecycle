@@ -12,7 +12,7 @@ namespace Miscreant.Lifecycle.RuntimeTests
 		[SetUp]
 		public void SetUp()
 		{
-			_environment = new FakeEnvironment(CustomUpdateManagerTests.DEFAULT_GROUP_NAME);
+			_environment = new FakeEnvironment(TestData.DEFAULT_GROUP_NAME);
 		}
 
 		[TearDown]
@@ -23,56 +23,56 @@ namespace Miscreant.Lifecycle.RuntimeTests
 		}
 
 		[Test]
-		[TestCaseSource(typeof(CustomUpdateManagerTests), nameof(CustomUpdateManagerTests.inactiveTogglePermutationsNeedGameObject))]
+		[TestCaseSource(typeof(TestData), nameof(TestData.inactiveTogglePermutationsNeedGameObject))]
 		public void TryAdd_SingleGameObjectToggledOn_CorrectFlagsAddedToSystem(ObjectToggleConfig initialConfig)
 		{
 			RunToggleTest(_environment, initialConfig, initialConfig | ObjectToggleConfig.GameObjectActive);
 		}
 
 		[Test]
-		[TestCaseSource(typeof(CustomUpdateManagerTests), nameof(CustomUpdateManagerTests.inactiveTogglePermutationsNeedComponent))]
+		[TestCaseSource(typeof(TestData), nameof(TestData.inactiveTogglePermutationsNeedComponent))]
 		public void TryAdd_SingleComponentToggledOn_CorrectFlagsAddedToSystem(ObjectToggleConfig initialConfig)
 		{
 			RunToggleTest(_environment, initialConfig, initialConfig | ObjectToggleConfig.ComponentEnabled);
 		}
 
 		[Test]
-		[TestCaseSource(typeof(CustomUpdateManagerTests), nameof(CustomUpdateManagerTests.inactiveTogglePermutationsNeedUpdate))]
+		[TestCaseSource(typeof(TestData), nameof(TestData.inactiveTogglePermutationsNeedUpdate))]
 		public void TryAdd_SingleUpdateFlagToggledOn_CorrectFlagsAddedToSystem(ObjectToggleConfig initialConfig)
 		{
 			RunToggleTest(_environment, initialConfig, initialConfig | ObjectToggleConfig.Update);
 		}
 
 		[Test]
-		[TestCaseSource(typeof(CustomUpdateManagerTests), nameof(CustomUpdateManagerTests.inactiveTogglePermutationsNeedFixedUpdate))]
+		[TestCaseSource(typeof(TestData), nameof(TestData.inactiveTogglePermutationsNeedFixedUpdate))]
 		public void TryAdd_SingleFixedUpdateFlagToggledOn_CorrectFlagsAddedToSystem(ObjectToggleConfig initialConfig)
 		{
 			RunToggleTest(_environment, initialConfig, initialConfig | ObjectToggleConfig.FixedUpdate);
 		}
 
 		[Test]
-		[TestCaseSource(typeof(CustomUpdateManagerTests), nameof(CustomUpdateManagerTests.allActiveTogglePermutations))]
+		[TestCaseSource(typeof(TestData), nameof(TestData.allActiveTogglePermutations))]
 		public void TryRemove_SingleGameObjectToggledOff_RemovedFromSystem(ObjectToggleConfig initialConfig)
 		{
 			RunToggleTest(_environment, initialConfig, initialConfig & ~ObjectToggleConfig.GameObjectActive);
 		}
 
 		[Test]
-		[TestCaseSource(typeof(CustomUpdateManagerTests), nameof(CustomUpdateManagerTests.allActiveTogglePermutations))]
+		[TestCaseSource(typeof(TestData), nameof(TestData.allActiveTogglePermutations))]
 		public void TryRemove_SingleComponentToggledOff_RemovedFromSystem(ObjectToggleConfig initialConfig)
 		{
 			RunToggleTest(_environment, initialConfig, initialConfig & ~ObjectToggleConfig.ComponentEnabled);
 		}
 
 		[Test]
-		[TestCaseSource(typeof(CustomUpdateManagerTests), nameof(CustomUpdateManagerTests.activeUpdateTogglePermutations))]
+		[TestCaseSource(typeof(TestData), nameof(TestData.activeUpdateTogglePermutations))]
 		public void TryRemove_SingleUpdateToggledOff_RemovedFromSystem(ObjectToggleConfig initialConfig)
 		{
 			RunToggleTest(_environment, initialConfig, initialConfig & ~ObjectToggleConfig.Update);
 		}
 
 		[Test]
-		[TestCaseSource(typeof(CustomUpdateManagerTests), nameof(CustomUpdateManagerTests.activeFixedUpateTogglePermutations))]
+		[TestCaseSource(typeof(TestData), nameof(TestData.activeFixedUpateTogglePermutations))]
 		public void TryRemove_SingleFixedUpdateToggledOff_RemovedFromSystem(ObjectToggleConfig initialConfig)
 		{
 			RunToggleTest(_environment, initialConfig, initialConfig & ~ObjectToggleConfig.FixedUpdate);
@@ -84,7 +84,7 @@ namespace Miscreant.Lifecycle.RuntimeTests
 			TestBasicManagedUpdatesComponent[] components;
 			env.InstantiateManagedComponents<TestBasicManagedUpdatesComponent>(
 				out components,
-				CustomUpdateManagerTests.DEFAULT_GROUP_NAME,
+				TestData.DEFAULT_GROUP_NAME,
 				initialConfig
 			);
 

@@ -29,7 +29,7 @@ namespace Miscreant.Lifecycle.RuntimeTests
 		}
 
 		[Test]
-		[TestCaseSource(typeof(CustomUpdateManagerTests), nameof(CustomUpdateManagerTests.allActiveTogglePermutations))]
+		[TestCaseSource(typeof(TestData), nameof(TestData.allActiveTogglePermutations))]
 		public void Instantiate_SingleObjectInstantiated_AddedToSystem(ObjectToggleConfig config)
 		{
 			// Arrange
@@ -49,7 +49,7 @@ namespace Miscreant.Lifecycle.RuntimeTests
 			// Act
 			environment.InstantiateManagedComponents<TestBasicManagedUpdatesComponent>(
 				out TestBasicManagedUpdatesComponent[] components,
-				CustomUpdateManagerTests.DEFAULT_GROUP_NAME,
+				TestData.DEFAULT_GROUP_NAME,
 				config
 			);
 
@@ -64,7 +64,7 @@ namespace Miscreant.Lifecycle.RuntimeTests
 		}
 
 		[Test]
-		[TestCaseSource(typeof(CustomUpdateManagerTests), nameof(CustomUpdateManagerTests.allInactiveTogglePermutations))]
+		[TestCaseSource(typeof(TestData), nameof(TestData.allInactiveTogglePermutations))]
 		public void Instantiate_SingleObjectInstantiated_NotAddedToSystem(ObjectToggleConfig config)
 		{
 			// Arrange
@@ -84,7 +84,7 @@ namespace Miscreant.Lifecycle.RuntimeTests
 			// Act
 			environment.InstantiateManagedComponents<TestBasicManagedUpdatesComponent>(
 				out TestBasicManagedUpdatesComponent[] components,
-				CustomUpdateManagerTests.DEFAULT_GROUP_NAME,
+				TestData.DEFAULT_GROUP_NAME,
 				config
 			);
 

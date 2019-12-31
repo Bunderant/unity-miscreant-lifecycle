@@ -3,10 +3,6 @@ MiscreantUtilities
 		Miscreant
 			Lifecycle
 				RuntimeTests
-					CustomUpdateManagerTests
-						Instantiate_OneBasicManagedFixedUpdateActive_AddedToPopulatedSystem
-						Instantiate_OneBasicManagedUpdateActive_AddedToPopulatedSystem
-						Instantiate_OneBasicManagedUpdateAndFixedActive_AddedToPopulatedSystem
 					CustomUpdateManagerTests_InstantiateFromEmptySystem
 						Instantiate_SingleObjectInstantiated_AddedToSystem
 							Instantiate_SingleObjectInstantiated_AddedToSystem(UpdateActiveAndEnabled)

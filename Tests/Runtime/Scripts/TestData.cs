@@ -1,14 +1,12 @@
-﻿using NUnit.Framework;
-using System;
+﻿using System;
 using System.Linq;
 using System.Collections.Generic;
 
 namespace Miscreant.Lifecycle.RuntimeTests
 {
-	using UpdateType = CustomUpdateManager.UpdateType;
 	using ObjectToggleConfig = FakeEnvironment.ObjectToggleConfig;
 
-	public sealed class CustomUpdateManagerTests
+	public static class TestData
 	{
 		public const string DEFAULT_GROUP_NAME = "Default";
 
@@ -20,7 +18,7 @@ namespace Miscreant.Lifecycle.RuntimeTests
 			ObjectToggleConfig.GameObjectActive | ObjectToggleConfig.ComponentEnabled | ObjectToggleConfig.Update | ObjectToggleConfig.FixedUpdate
 		};
 
-		internal static ObjectToggleConfig[] allInactiveTogglePermutations = CustomUpdateManagerTests.allTogglePermutations.Except(
+		internal static ObjectToggleConfig[] allInactiveTogglePermutations = allTogglePermutations.Except(
 			allActiveTogglePermutations
 		).ToArray();
 
@@ -41,110 +39,6 @@ namespace Miscreant.Lifecycle.RuntimeTests
 
 		internal static ObjectToggleConfig[] inactiveTogglePermutationsNeedFixedUpdate = allActiveTogglePermutations.Select(
 			x => { return x & ~ObjectToggleConfig.FixedUpdate; }).Distinct().ToArray();
-
-		private struct ExpectedUpdateCount
-		{
-			public int value;
-			public ExpectedUpdateCount(int value) => this.value = value;
-			public static implicit operator int(ExpectedUpdateCount count) => count.value;
-			public override string ToString() => $"{value}";
-		}
-
-		private struct ExpectedFixedUpdateCount
-		{
-			public int value;
-			public ExpectedFixedUpdateCount(int value) => this.value = value;
-			public static implicit operator int(ExpectedFixedUpdateCount count) => count.value;
-			public override string ToString() => $"{value}";
-		}
-
-		[Test]
-		public void Instantiate_OneBasicManagedUpdateActive_AddedToPopulatedSystem()
-		{
-			using (FakeEnvironment env = new FakeEnvironment(DEFAULT_GROUP_NAME))
-			{
-				env.InstantiateManagedComponents<TestBasicManagedUpdatesComponent>(
-					DEFAULT_GROUP_NAME,
-					ObjectToggleConfig.UpdateActiveAndEnabled);
-
-				RunObjectInstantiateCountValidationTest(
-					env,
-					DEFAULT_GROUP_NAME,
-					new ExpectedUpdateCount(2),
-					new ExpectedFixedUpdateCount(0),
-					ObjectToggleConfig.UpdateActiveAndEnabled
-				);
-			}
-		}
-
-		[Test]
-		public void Instantiate_OneBasicManagedFixedUpdateActive_AddedToPopulatedSystem()
-		{
-			using (FakeEnvironment env = new FakeEnvironment(DEFAULT_GROUP_NAME))
-			{
-				env.InstantiateManagedComponents<TestBasicManagedUpdatesComponent>(
-					DEFAULT_GROUP_NAME,
-					ObjectToggleConfig.FixedUpdateActiveAndEnabled);
-
-				RunObjectInstantiateCountValidationTest(
-					env,
-					DEFAULT_GROUP_NAME,
-					new ExpectedUpdateCount(0),
-					new ExpectedFixedUpdateCount(2),
-					ObjectToggleConfig.FixedUpdateActiveAndEnabled
-				);
-			}
-		}
-
-		[Test]
-		public void Instantiate_OneBasicManagedUpdateAndFixedActive_AddedToPopulatedSystem()
-		{
-			using (FakeEnvironment env = new FakeEnvironment(DEFAULT_GROUP_NAME))
-			{
-				env.InstantiateManagedComponents<TestBasicManagedUpdatesComponent>(
-					DEFAULT_GROUP_NAME,
-					ObjectToggleConfig.AllActiveAndEnabled);
-
-				RunObjectInstantiateCountValidationTest(
-					env,
-					DEFAULT_GROUP_NAME,
-					new ExpectedUpdateCount(2),
-					new ExpectedFixedUpdateCount(2),
-					ObjectToggleConfig.AllActiveAndEnabled
-				);
-			}
-		}
-
-		private static void RunObjectInstantiateCountValidationTest(
-			FakeEnvironment env,
-			string groupName,
-			ExpectedUpdateCount expectedUpdateCountAfter,
-			ExpectedFixedUpdateCount expectedFixedCountAfter,
-			params ObjectToggleConfig[] instantiatedObjectConfigSettings)
-		{
-			env.InstantiateManagedComponents<TestBasicManagedUpdatesComponent>(
-				groupName,
-				instantiatedObjectConfigSettings);
-
-			AssertGroupCountForTypeEquals(env, groupName, UpdateType.Normal, expectedUpdateCountAfter);
-			AssertGroupCountForTypeEquals(env, groupName, UpdateType.Fixed, expectedFixedCountAfter);
-		}
-
-		private static void AssertGroupCountForTypeEquals(
-			FakeEnvironment env,
-			string groupName,
-			UpdateType updateType,
-			int expectedCount)
-		{
-			int actualCount = (int)env.GetCountForGroup(groupName, updateType);
-
-			Assert.That(
-				actualCount == expectedCount,
-				$"Group \'{groupName}\' did not have the expected count for update type \'{updateType}\'.\n" +
-				$"Expected count: {expectedCount}\n" +
-				$"Actual count: {actualCount}"
-			);
-		}
 
 		/// <summary>
 		/// Creates a collection of all unique power-of-two values from an Enum type. Intended for use on types with the "Flags" attribute 

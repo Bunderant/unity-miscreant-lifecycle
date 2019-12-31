@@ -4,11 +4,11 @@
 	{
 		protected override void SetUpEnvironment()
 		{
-			environment = new FakeEnvironment(CustomUpdateManagerTests.DEFAULT_GROUP_NAME);
+			environment = new FakeEnvironment(TestData.DEFAULT_GROUP_NAME);
 
 			environment.InstantiateManagedComponents<TestBasicManagedUpdatesComponent>(
-				CustomUpdateManagerTests.DEFAULT_GROUP_NAME,
-				CustomUpdateManagerTests.allTogglePermutations
+				TestData.DEFAULT_GROUP_NAME,
+				TestData.allTogglePermutations
 			);
 		}
 	}

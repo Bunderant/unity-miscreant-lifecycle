@@ -4,7 +4,7 @@
 	{
 		protected override void SetUpEnvironment()
 		{
-			environment = new FakeEnvironment(CustomUpdateManagerTests.DEFAULT_GROUP_NAME);
+			environment = new FakeEnvironment(TestData.DEFAULT_GROUP_NAME);
 		}
 	}
 }
