@@ -9,9 +9,6 @@ namespace Miscreant.Lifecycle.RuntimeTests
 
 	public sealed class CustomUpdateManagerTests_MultipleFrames
 	{
-		// NOTE: Need to copy the field into this class since Unity Test Runner doesn't support NUnit's TestCaseSource attribute
-		private static ObjectToggleConfig[] allActiveTogglePermutations = CustomUpdateManagerTests.allActiveTogglePermutations;
-
 		private FakeEnvironment _environment;
 
 		[SetUp]
@@ -30,7 +27,7 @@ namespace Miscreant.Lifecycle.RuntimeTests
 
 		[UnityTest]
 		public IEnumerator DestroyGameObject_SelfDestructFromManagedUpdate_RemovedFromSystem(
-			[ValueSource(nameof(allActiveTogglePermutations))] ObjectToggleConfig config)
+			[ValueSource(typeof(CustomUpdateManagerTests), nameof(CustomUpdateManagerTests.allActiveTogglePermutations))] ObjectToggleConfig config)
 		{
 			// Arrange
 			string groupName = CustomUpdateManagerTests.DEFAULT_GROUP_NAME;
