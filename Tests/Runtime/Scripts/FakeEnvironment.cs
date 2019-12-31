@@ -5,7 +5,7 @@ using System.Collections.ObjectModel;
 
 using Object = UnityEngine.Object;
 
-namespace Miscreant.Utilities.Lifecycle.RuntimeTests
+namespace Miscreant.Lifecycle.RuntimeTests
 {
 	using UpdateType = CustomUpdateManager.UpdateType;
 

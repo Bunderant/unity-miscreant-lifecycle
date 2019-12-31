@@ -4,7 +4,7 @@ using UnityEngine;
 using NUnit.Framework;
 using UnityEditor.TestTools.TestRunner.Api;
 
-namespace Miscreant.Utilities.Lifecycle.EditorTests
+namespace Miscreant.Lifecycle.EditorTests
 {
 	using TestUtils;
 

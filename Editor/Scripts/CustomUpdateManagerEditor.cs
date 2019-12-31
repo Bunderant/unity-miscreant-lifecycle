@@ -3,7 +3,7 @@ using UnityEditorInternal;
 using UnityEditor;
 using System.Collections.Generic;
 
-using Miscreant.Utilities.Lifecycle;
+using Miscreant.Lifecycle;
 
 [CustomEditor(typeof(CustomUpdateManager))]
 public class CustomUpdateManagerEditor : Editor

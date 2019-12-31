@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Miscreant.Utilities.Lifecycle
+namespace Miscreant.Lifecycle
 {
 	internal sealed class IntrusiveFixedUpdateList : IntrusiveList
 	{

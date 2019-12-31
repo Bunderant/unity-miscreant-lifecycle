@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Miscreant.Utilities.Lifecycle
+namespace Miscreant.Lifecycle
 {
 	public abstract class CustomUpdateBehaviour : MonoBehaviour
 	{

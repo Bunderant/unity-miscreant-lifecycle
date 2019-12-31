@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Miscreant.Utilities.Lifecycle
+namespace Miscreant.Lifecycle
 {
 	using UpdateType = CustomUpdateManager.UpdateType;
 

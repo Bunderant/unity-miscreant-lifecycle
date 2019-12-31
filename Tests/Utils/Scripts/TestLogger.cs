@@ -5,7 +5,7 @@ using System.IO;
 using System.Text;
 using UnityEditor.TestTools.TestRunner.Api;
 
-namespace Miscreant.Utilities.Lifecycle.TestUtils
+namespace Miscreant.Lifecycle.TestUtils
 {
 	/// <summary>
 	/// Editor-only class. Logs a list of all tests each time they are run in the editor. 

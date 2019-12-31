@@ -1,59 +1,58 @@
 MiscreantUtilities
 	Miscreant.Lifecycle.RuntimeTests.dll
 		Miscreant
-			Utilities
-				Lifecycle
-					RuntimeTests
-						CustomUpdateManagerTests
-							Instantiate_OneBasicManagedFixedUpdateActive_AddedToPopulatedSystem
-							Instantiate_OneBasicManagedUpdateActive_AddedToPopulatedSystem
-							Instantiate_OneBasicManagedUpdateAndFixedActive_AddedToPopulatedSystem
-							SelfDestruct_ManagedUpdateOnlyOneInSystem
-						CustomUpdateManagerTests_InstantiateFromEmptySystem
-							Instantiate_SingleObjectInstantiatedFromEmptySystem_AddedToSystem
-								Instantiate_SingleObjectInstantiatedFromEmptySystem_AddedToSystem(UpdateActiveAndEnabled)
-								Instantiate_SingleObjectInstantiatedFromEmptySystem_AddedToSystem(FixedUpdateActiveAndEnabled)
-								Instantiate_SingleObjectInstantiatedFromEmptySystem_AddedToSystem(AllActiveAndEnabled)
-							Instantiate_SingleObjectInstantiatedFromEmptySystem_NotAddedToSystem
-								Instantiate_SingleObjectInstantiatedFromEmptySystem_NotAddedToSystem(None)
-								Instantiate_SingleObjectInstantiatedFromEmptySystem_NotAddedToSystem(GameObjectActive)
-								Instantiate_SingleObjectInstantiatedFromEmptySystem_NotAddedToSystem(ComponentEnabled)
-								Instantiate_SingleObjectInstantiatedFromEmptySystem_NotAddedToSystem(NoUpdatesActiveAndEnabled)
-								Instantiate_SingleObjectInstantiatedFromEmptySystem_NotAddedToSystem(Update)
-								Instantiate_SingleObjectInstantiatedFromEmptySystem_NotAddedToSystem(GameObjectActive, Update)
-								Instantiate_SingleObjectInstantiatedFromEmptySystem_NotAddedToSystem(ComponentEnabled, Update)
-								Instantiate_SingleObjectInstantiatedFromEmptySystem_NotAddedToSystem(FixedUpdate)
-								Instantiate_SingleObjectInstantiatedFromEmptySystem_NotAddedToSystem(GameObjectActive, FixedUpdate)
-								Instantiate_SingleObjectInstantiatedFromEmptySystem_NotAddedToSystem(ComponentEnabled, FixedUpdate)
-								Instantiate_SingleObjectInstantiatedFromEmptySystem_NotAddedToSystem(Update, FixedUpdate)
-								Instantiate_SingleObjectInstantiatedFromEmptySystem_NotAddedToSystem(GameObjectActive, Update, FixedUpdate)
-								Instantiate_SingleObjectInstantiatedFromEmptySystem_NotAddedToSystem(ComponentEnabled, Update, FixedUpdate)
-						CustomUpdateManagerTests_ToggleState
-							TryAdd_SingleComponentToggledOn_CorrectFlagsAddedToSystem
-								TryAdd_SingleComponentToggledOn_CorrectFlagsAddedToSystem(GameObjectActive, Update)
-								TryAdd_SingleComponentToggledOn_CorrectFlagsAddedToSystem(GameObjectActive, FixedUpdate)
-								TryAdd_SingleComponentToggledOn_CorrectFlagsAddedToSystem(GameObjectActive, Update, FixedUpdate)
-							TryAdd_SingleFixedUpdateFlagToggledOn_CorrectFlagsAddedToSystem
-								TryAdd_SingleFixedUpdateFlagToggledOn_CorrectFlagsAddedToSystem(UpdateActiveAndEnabled)
-								TryAdd_SingleFixedUpdateFlagToggledOn_CorrectFlagsAddedToSystem(NoUpdatesActiveAndEnabled)
-							TryAdd_SingleGameObjectToggledOn_CorrectFlagsAddedToSystem
-								TryAdd_SingleGameObjectToggledOn_CorrectFlagsAddedToSystem(ComponentEnabled, Update)
-								TryAdd_SingleGameObjectToggledOn_CorrectFlagsAddedToSystem(ComponentEnabled, FixedUpdate)
-								TryAdd_SingleGameObjectToggledOn_CorrectFlagsAddedToSystem(ComponentEnabled, Update, FixedUpdate)
-							TryAdd_SingleUpdateFlagToggledOn_CorrectFlagsAddedToSystem
-								TryAdd_SingleUpdateFlagToggledOn_CorrectFlagsAddedToSystem(NoUpdatesActiveAndEnabled)
-								TryAdd_SingleUpdateFlagToggledOn_CorrectFlagsAddedToSystem(FixedUpdateActiveAndEnabled)
-							TryRemove_SingleComponentToggledOff_RemovedFromSystem
-								TryRemove_SingleComponentToggledOff_RemovedFromSystem(UpdateActiveAndEnabled)
-								TryRemove_SingleComponentToggledOff_RemovedFromSystem(FixedUpdateActiveAndEnabled)
-								TryRemove_SingleComponentToggledOff_RemovedFromSystem(AllActiveAndEnabled)
-							TryRemove_SingleFixedUpdateToggledOff_RemovedFromSystem
-								TryRemove_SingleFixedUpdateToggledOff_RemovedFromSystem(FixedUpdateActiveAndEnabled)
-								TryRemove_SingleFixedUpdateToggledOff_RemovedFromSystem(AllActiveAndEnabled)
-							TryRemove_SingleGameObjectToggledOff_RemovedFromSystem
-								TryRemove_SingleGameObjectToggledOff_RemovedFromSystem(UpdateActiveAndEnabled)
-								TryRemove_SingleGameObjectToggledOff_RemovedFromSystem(FixedUpdateActiveAndEnabled)
-								TryRemove_SingleGameObjectToggledOff_RemovedFromSystem(AllActiveAndEnabled)
-							TryRemove_SingleUpdateToggledOff_RemovedFromSystem
-								TryRemove_SingleUpdateToggledOff_RemovedFromSystem(UpdateActiveAndEnabled)
-								TryRemove_SingleUpdateToggledOff_RemovedFromSystem(AllActiveAndEnabled)
+			Lifecycle
+				RuntimeTests
+					CustomUpdateManagerTests
+						Instantiate_OneBasicManagedFixedUpdateActive_AddedToPopulatedSystem
+						Instantiate_OneBasicManagedUpdateActive_AddedToPopulatedSystem
+						Instantiate_OneBasicManagedUpdateAndFixedActive_AddedToPopulatedSystem
+						SelfDestruct_ManagedUpdateOnlyOneInSystem
+					CustomUpdateManagerTests_InstantiateFromEmptySystem
+						Instantiate_SingleObjectInstantiatedFromEmptySystem_AddedToSystem
+							Instantiate_SingleObjectInstantiatedFromEmptySystem_AddedToSystem(UpdateActiveAndEnabled)
+							Instantiate_SingleObjectInstantiatedFromEmptySystem_AddedToSystem(FixedUpdateActiveAndEnabled)
+							Instantiate_SingleObjectInstantiatedFromEmptySystem_AddedToSystem(AllActiveAndEnabled)
+						Instantiate_SingleObjectInstantiatedFromEmptySystem_NotAddedToSystem
+							Instantiate_SingleObjectInstantiatedFromEmptySystem_NotAddedToSystem(None)
+							Instantiate_SingleObjectInstantiatedFromEmptySystem_NotAddedToSystem(GameObjectActive)
+							Instantiate_SingleObjectInstantiatedFromEmptySystem_NotAddedToSystem(ComponentEnabled)
+							Instantiate_SingleObjectInstantiatedFromEmptySystem_NotAddedToSystem(NoUpdatesActiveAndEnabled)
+							Instantiate_SingleObjectInstantiatedFromEmptySystem_NotAddedToSystem(Update)
+							Instantiate_SingleObjectInstantiatedFromEmptySystem_NotAddedToSystem(GameObjectActive, Update)
+							Instantiate_SingleObjectInstantiatedFromEmptySystem_NotAddedToSystem(ComponentEnabled, Update)
+							Instantiate_SingleObjectInstantiatedFromEmptySystem_NotAddedToSystem(FixedUpdate)
+							Instantiate_SingleObjectInstantiatedFromEmptySystem_NotAddedToSystem(GameObjectActive, FixedUpdate)
+							Instantiate_SingleObjectInstantiatedFromEmptySystem_NotAddedToSystem(ComponentEnabled, FixedUpdate)
+							Instantiate_SingleObjectInstantiatedFromEmptySystem_NotAddedToSystem(Update, FixedUpdate)
+							Instantiate_SingleObjectInstantiatedFromEmptySystem_NotAddedToSystem(GameObjectActive, Update, FixedUpdate)
+							Instantiate_SingleObjectInstantiatedFromEmptySystem_NotAddedToSystem(ComponentEnabled, Update, FixedUpdate)
+					CustomUpdateManagerTests_ToggleState
+						TryAdd_SingleComponentToggledOn_CorrectFlagsAddedToSystem
+							TryAdd_SingleComponentToggledOn_CorrectFlagsAddedToSystem(GameObjectActive, Update)
+							TryAdd_SingleComponentToggledOn_CorrectFlagsAddedToSystem(GameObjectActive, FixedUpdate)
+							TryAdd_SingleComponentToggledOn_CorrectFlagsAddedToSystem(GameObjectActive, Update, FixedUpdate)
+						TryAdd_SingleFixedUpdateFlagToggledOn_CorrectFlagsAddedToSystem
+							TryAdd_SingleFixedUpdateFlagToggledOn_CorrectFlagsAddedToSystem(UpdateActiveAndEnabled)
+							TryAdd_SingleFixedUpdateFlagToggledOn_CorrectFlagsAddedToSystem(NoUpdatesActiveAndEnabled)
+						TryAdd_SingleGameObjectToggledOn_CorrectFlagsAddedToSystem
+							TryAdd_SingleGameObjectToggledOn_CorrectFlagsAddedToSystem(ComponentEnabled, Update)
+							TryAdd_SingleGameObjectToggledOn_CorrectFlagsAddedToSystem(ComponentEnabled, FixedUpdate)
+							TryAdd_SingleGameObjectToggledOn_CorrectFlagsAddedToSystem(ComponentEnabled, Update, FixedUpdate)
+						TryAdd_SingleUpdateFlagToggledOn_CorrectFlagsAddedToSystem
+							TryAdd_SingleUpdateFlagToggledOn_CorrectFlagsAddedToSystem(NoUpdatesActiveAndEnabled)
+							TryAdd_SingleUpdateFlagToggledOn_CorrectFlagsAddedToSystem(FixedUpdateActiveAndEnabled)
+						TryRemove_SingleComponentToggledOff_RemovedFromSystem
+							TryRemove_SingleComponentToggledOff_RemovedFromSystem(UpdateActiveAndEnabled)
+							TryRemove_SingleComponentToggledOff_RemovedFromSystem(FixedUpdateActiveAndEnabled)
+							TryRemove_SingleComponentToggledOff_RemovedFromSystem(AllActiveAndEnabled)
+						TryRemove_SingleFixedUpdateToggledOff_RemovedFromSystem
+							TryRemove_SingleFixedUpdateToggledOff_RemovedFromSystem(FixedUpdateActiveAndEnabled)
+							TryRemove_SingleFixedUpdateToggledOff_RemovedFromSystem(AllActiveAndEnabled)
+						TryRemove_SingleGameObjectToggledOff_RemovedFromSystem
+							TryRemove_SingleGameObjectToggledOff_RemovedFromSystem(UpdateActiveAndEnabled)
+							TryRemove_SingleGameObjectToggledOff_RemovedFromSystem(FixedUpdateActiveAndEnabled)
+							TryRemove_SingleGameObjectToggledOff_RemovedFromSystem(AllActiveAndEnabled)
+						TryRemove_SingleUpdateToggledOff_RemovedFromSystem
+							TryRemove_SingleUpdateToggledOff_RemovedFromSystem(UpdateActiveAndEnabled)
+							TryRemove_SingleUpdateToggledOff_RemovedFromSystem(AllActiveAndEnabled)

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 
-using Miscreant.Utilities.Lifecycle;
+using Miscreant.Lifecycle;
 
 [CustomPropertyDrawer(typeof(CustomUpdateManager.Config))]
 public class CustomUpdateConfigDrawer : PropertyDrawer

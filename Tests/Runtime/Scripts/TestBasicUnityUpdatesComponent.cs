@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Miscreant.Utilities.Lifecycle.RuntimeTests
+namespace Miscreant.Lifecycle.RuntimeTests
 {
 	public sealed class TestBasicUnityUpdatesComponent : MonoBehaviour
 	{

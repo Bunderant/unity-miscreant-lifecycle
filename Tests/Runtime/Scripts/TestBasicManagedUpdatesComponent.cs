@@ -1,4 +1,4 @@
-﻿namespace Miscreant.Utilities.Lifecycle.RuntimeTests
+﻿namespace Miscreant.Lifecycle.RuntimeTests
 {
 	public sealed class TestBasicManagedUpdatesComponent : CustomUpdateBehaviour
 	{

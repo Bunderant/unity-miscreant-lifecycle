@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Miscreant.Utilities.Lifecycle
+namespace Miscreant.Lifecycle
 {
-	[CreateAssetMenu(menuName = nameof(Miscreant) + "/" + nameof(Miscreant.Utilities.Lifecycle) + "/" + nameof(CustomUpdateManager))]
+	[CreateAssetMenu(menuName = nameof(Miscreant) + "/" + nameof(Miscreant.Lifecycle) + "/" + nameof(CustomUpdateManager))]
 	public sealed class CustomUpdateManager : ScriptableObject
 	{
 		public enum UpdateType : byte

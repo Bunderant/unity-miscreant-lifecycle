@@ -1,11 +1,11 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Miscreant.Utilities.Lifecycle
+namespace Miscreant.Lifecycle
 {
 	using UpdateType = CustomUpdateManager.UpdateType;
 
-	[CreateAssetMenu(menuName = nameof(Miscreant) + "/" + nameof(Miscreant.Utilities.Lifecycle) + "/" + nameof(CustomUpdatePriority))]
+	[CreateAssetMenu(menuName = nameof(Miscreant) + "/" + nameof(Miscreant.Lifecycle) + "/" + nameof(CustomUpdatePriority))]
 	public sealed class CustomUpdatePriority : ScriptableObject
 	{
 		private IntrusiveUpdateList _updateList;

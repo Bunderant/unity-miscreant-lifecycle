@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Miscreant.Utilities.Lifecycle.RuntimeTests
+namespace Miscreant.Lifecycle.RuntimeTests
 {
 	public sealed class TestManagedUpdatesSceneController : MonoBehaviour
 	{

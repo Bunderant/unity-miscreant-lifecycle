@@ -6,7 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.TestTools;
 
-namespace Miscreant.Utilities.Lifecycle.RuntimeTests
+namespace Miscreant.Lifecycle.RuntimeTests
 {
 	using UpdateType = CustomUpdateManager.UpdateType;
 	using ObjectToggleConfig = FakeEnvironment.ObjectToggleConfig;
