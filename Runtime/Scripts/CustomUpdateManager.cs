@@ -195,69 +195,6 @@ namespace Miscreant.Lifecycle
 		}
 
 		/// <summary>
-		/// Checks that the heads and tails of all lists in the system are null for every UpdateType. 
-		/// </summary>
-		/// <returns>True if the system is empty, false otherwise.</returns>
-		public bool CheckAllGroupsEmpty()
-		{
-			bool isEmpty = true;
-
-			for (int i = 0; i < _groupCount && isEmpty; i++)
-			{
-				isEmpty &= _priorities[i].IsEmpty;
-			}
-
-			return isEmpty;
-		}
-
-		/// <summary>
-		/// Checks that the heads and tails of all Update lists are null.
-		/// </summary>
-		/// <returns>True if all Update groups are empty, false otherwise.</returns>
-		public bool CheckAllUpdateGroupsEmpty()
-		{
-			bool isEmpty = true;
-
-			for (int i = 0; i < _groupCount && isEmpty; i++)
-			{
-				isEmpty &= _priorities[i].UpdateEmpty;
-			}
-
-			return isEmpty;
-		}
-
-		/// <summary>
-		/// Checks that the heads and tails of all FixedUpdate lists are null.
-		/// </summary>
-		/// <returns>True if all FixedUpdate groups are empty, false otherwise.</returns>
-		public bool CheckAllFixedUpdateGroupsEmpty()
-		{
-			bool isEmpty = true;
-
-			for (int i = 0; i < _groupCount && isEmpty; i++)
-			{
-				isEmpty &= _priorities[i].FixedUpdateEmpty;
-			}
-
-			return isEmpty;
-		}
-
-		/// <summary>
-		/// Gets the number of elements in the whole system matching the specified UpdateType. 
-		/// </summary>
-		/// <param name="updateType">UpdateType to match.</param>
-		/// <returns>The count.</returns>
-		public ulong GetCountForAllGroups(UpdateType updateType)
-		{
-			ulong count = 0;
-			for (int i = 0; i < _groupCount; i++)
-			{
-				count += _priorities[i].GetCountForType(updateType);
-			}
-			return count;
-		}
-
-		/// <summary>
 		/// Should be called from a MonoBehaviour's Update() loop. From a GameplayController class, for example. 
 		/// </summary>
 		public void RunUpdate()
