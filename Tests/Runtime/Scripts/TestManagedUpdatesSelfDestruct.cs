@@ -32,6 +32,12 @@ namespace Miscreant.Lifecycle.RuntimeTests
 			}
 		}
 
+		[ContextMenu("Destroy after half second")]
+		public void DestroyAfterHalfSec()
+		{
+			StartCountdown(0.5f);
+		}
+
 		public void StartCountdown(float remainingTime)
 		{
 			if (remainingTime < 0)
