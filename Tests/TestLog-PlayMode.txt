@@ -41,11 +41,11 @@ MiscreantUtilities
 							Instantiate_SingleObjectInstantiated_NotAddedToSystem(Update, FixedUpdate)
 							Instantiate_SingleObjectInstantiated_NotAddedToSystem(GameObjectActive, Update, FixedUpdate)
 							Instantiate_SingleObjectInstantiated_NotAddedToSystem(ComponentEnabled, Update, FixedUpdate)
-					CustomUpdateManagerTests_MultipleFrames
-						DestroyGameObject_SelfDestructFromManagedCallback_RemovedFromSystem
-							DestroyGameObject_SelfDestructFromManagedCallback_RemovedFromSystem(UpdateActiveAndEnabled)
-							DestroyGameObject_SelfDestructFromManagedCallback_RemovedFromSystem(FixedUpdateActiveAndEnabled)
-							DestroyGameObject_SelfDestructFromManagedCallback_RemovedFromSystem(AllActiveAndEnabled)
+					CustomUpdateManagerTests_SelfDestruct
+						DestroyGameObject_SelfDestructAllOneByOneFromManagedCallbacks_AllRemovedFromSystem
+							DestroyGameObject_SelfDestructAllOneByOneFromManagedCallbacks_AllRemovedFromSystem(UpdateActiveAndEnabled)
+							DestroyGameObject_SelfDestructAllOneByOneFromManagedCallbacks_AllRemovedFromSystem(FixedUpdateActiveAndEnabled)
+							DestroyGameObject_SelfDestructAllOneByOneFromManagedCallbacks_AllRemovedFromSystem(AllActiveAndEnabled)
 					CustomUpdateManagerTests_ToggleState
 						TryAdd_SingleComponentToggledOn_CorrectFlagsAddedToSystem
 							TryAdd_SingleComponentToggledOn_CorrectFlagsAddedToSystem(GameObjectActive, Update)

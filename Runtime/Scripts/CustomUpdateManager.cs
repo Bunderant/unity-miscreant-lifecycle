@@ -317,5 +317,44 @@ namespace Miscreant.Lifecycle
 				}
 			}
 		}
+
+		/// <summary>
+		/// Scans the all priority groups to look for a component. Also validates that the component cannot appear in the
+		/// system more than once for each update type. 
+		/// </summary>
+		/// <param name="instanceId"></param>
+		/// <param name="updateFound"></param>
+		/// <param name="fixedUpdateFound"></param>
+		public void CheckSystemForComponent(int instanceId, out bool updateFound, out bool fixedUpdateFound)
+		{
+			updateFound = false;
+			fixedUpdateFound = false;
+			int referenceCount = 0;
+
+			for (int i = 0; i < _groupCount; i++)
+			{
+				CustomUpdatePriority group = _priorities[i];
+
+				referenceCount = 0;
+				group.TraverseForType(UpdateType.Normal, IncrementReferenceCountIfFound);
+				updateFound |= referenceCount == 1;
+
+				referenceCount = 0;
+				group.TraverseForType(UpdateType.Fixed, IncrementReferenceCountIfFound);
+				fixedUpdateFound |= referenceCount == 1;
+			}
+
+			void IncrementReferenceCountIfFound(CustomUpdateBehaviour current)
+			{
+				if (instanceId == current.GetInstanceID())
+				{
+					referenceCount++;
+					if (referenceCount > 1)
+					{
+						throw new DuplicateReferenceException();
+					}
+				}
+			}
+		}
 	}
 }
