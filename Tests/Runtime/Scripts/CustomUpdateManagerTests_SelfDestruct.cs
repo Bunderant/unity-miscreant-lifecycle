@@ -35,8 +35,7 @@ namespace Miscreant.Lifecycle.RuntimeTests
 				out TestManagedUpdatesSelfDestruct[] components,
 				groupName,
 				config,
-				config,
-				config
+				config // Test requires at least two components to cover different states of the callback lists
 			);
 
 			int originalComponentCount = components.Length;
