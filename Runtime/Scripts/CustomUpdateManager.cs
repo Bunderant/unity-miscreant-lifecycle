@@ -202,6 +202,7 @@ namespace Miscreant.Lifecycle
 				didFindFixedUpdate |= (instanceId == component.GetInstanceID());
 			}
 
+			// As part of the loop condition, bail out if we've already found all update types. 
 			for (int i = 0; i < _priorities.Count && !(didFindUpdate && didFindFixedUpdate); i++)
 			{
 				CustomUpdatePriority group = _priorities[i];
