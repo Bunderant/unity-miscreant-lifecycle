@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using UnityEngine;
 
 namespace Miscreant.Lifecycle
@@ -77,68 +78,16 @@ namespace Miscreant.Lifecycle
 
 		[SerializeField]
 		private List<CustomUpdatePriority> _priorities = new List<CustomUpdatePriority>();
+		internal ReadOnlyCollection<CustomUpdatePriority> Priorities;
 
-#if UNITY_EDITOR
-		/// <summary>
-		/// Class used exclusively for displaying CustomUpdateManager's runtime data in the inspector.
-		/// Kept in this file so as not to expose private variables to non-editor classes. 
-		/// </summary>
-		public class RuntimeData : ScriptableObject
+		#region ScriptableObject
+
+		private void OnEnable()
 		{
-			[SerializeField]
-			private CustomUpdatePriority[] _priorities;
-			[SerializeField]
-			private RuntimeGroup[] _updateGroups;
-			[SerializeField]
-			private RuntimeGroup[] _fixedUpdateGroups;
-
-			public void Initialize(CustomUpdateManager updateManager)
-			{
-				int priorityCount = updateManager._priorities.Count;
-
-				_priorities = new CustomUpdatePriority[priorityCount];
-				_updateGroups = new RuntimeGroup[priorityCount];
-				_fixedUpdateGroups = new RuntimeGroup[priorityCount];
-
-				for (int i = 0; i < priorityCount; i++)
-				{
-					List<CustomUpdateBehaviour> updateGroup = new List<CustomUpdateBehaviour>();
-					List<CustomUpdateBehaviour> fixedUpdateGroup = new List<CustomUpdateBehaviour>();
-
-					CustomUpdatePriority currentGroup = updateManager._priorities[i];
-
-					currentGroup.TraverseForType(
-						UpdateType.Normal,
-						(c) => { updateGroup.Add(c); }
-					);
-
-					currentGroup.TraverseForType(
-						UpdateType.Fixed,
-						(c) => { fixedUpdateGroup.Add(c); }
-					);
-
-					_priorities[i] = updateManager._priorities[i];
-					_updateGroups[i] = new RuntimeGroup(updateGroup.ToArray());
-					_fixedUpdateGroups[i] = new RuntimeGroup(fixedUpdateGroup.ToArray());
-				}
-			}
+			Priorities = new ReadOnlyCollection<CustomUpdatePriority>(_priorities);
 		}
 
-		/// <summary>
-		/// Wrapper class to keep Unity's built-in serialization happy, a workaround to serialize
-		/// nested arrays. 
-		/// </summary>
-		[System.Serializable]
-		public class RuntimeGroup
-		{
-			public CustomUpdateBehaviour[] value;
-
-			public RuntimeGroup(CustomUpdateBehaviour[] group)
-			{
-				this.value = group;
-			}
-		}
-#endif
+		#endregion
 
 		/// <summary>
 		/// This is designed for situations where the manager object along with the update groups were created at runtime. 
@@ -157,6 +106,7 @@ namespace Miscreant.Lifecycle
 			}
 
 			this._priorities = new List<CustomUpdatePriority>(priorities);
+			Priorities = new ReadOnlyCollection<CustomUpdatePriority>(Priorities);
 		}
 
 		/// <summary>
