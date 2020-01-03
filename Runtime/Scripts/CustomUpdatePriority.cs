@@ -11,13 +11,6 @@ namespace Miscreant.Lifecycle
 		private IntrusiveUpdateList _updateList;
 		private IntrusiveFixedUpdateList _fixedUpdateList;
 
-		public bool UpdateEmpty { get { return _updateList.count == 0; } }
-		public bool FixedUpdateEmpty { get { return _fixedUpdateList.count == 0; } }
-		public bool IsEmpty { get { return UpdateEmpty && FixedUpdateEmpty; } }
-
-		public uint UpdateCount { get { return _updateList.count; } }
-		public uint FixedUpdateCount { get { return _fixedUpdateList.count; } }
-
 		#region ScriptableObject Callbacks
 
 		private void OnEnable()
@@ -80,11 +73,6 @@ namespace Miscreant.Lifecycle
 		public void TraverseForType(UpdateType type, Action<CustomUpdateBehaviour> perElementAction)
 		{
 			GetListForType(type).Traverse(perElementAction);
-		}
-
-		public uint GetCountForType(UpdateType type)
-		{
-			return GetListForType(type).count;
 		}
 
 		private IntrusiveList GetListForType(UpdateType type)
