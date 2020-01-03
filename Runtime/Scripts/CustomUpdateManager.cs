@@ -182,40 +182,35 @@ namespace Miscreant.Lifecycle
 		}
 
 		/// <summary>
-		/// Scans the all priority groups to look for a component. Also validates that the component cannot appear in the
-		/// system more than once for each update type. 
+		/// Scans the all priority groups to look for a component by instance id.
 		/// </summary>
 		/// <param name="instanceId"></param>
 		/// <param name="updateFound"></param>
 		/// <param name="fixedUpdateFound"></param>
 		public void CheckSystemForComponent(int instanceId, out bool updateFound, out bool fixedUpdateFound)
 		{
-			updateFound = false;
-			fixedUpdateFound = false;
-			int referenceCount = 0;
+			bool didFindUpdate = false;
+			bool didFindFixedUpdate = false;
 
-			foreach (var group in _priorities)
+			void CheckUpdate(CustomUpdateBehaviour component)
 			{
-				referenceCount = 0;
-				group.TraverseForType(UpdateType.Normal, IncrementReferenceCountIfFound);
-				updateFound |= referenceCount == 1;
-
-				referenceCount = 0;
-				group.TraverseForType(UpdateType.Fixed, IncrementReferenceCountIfFound);
-				fixedUpdateFound |= referenceCount == 1;
+				didFindUpdate |= (instanceId == component.GetInstanceID());
 			}
 
-			void IncrementReferenceCountIfFound(CustomUpdateBehaviour current)
+			void CheckFixedUpdate(CustomUpdateBehaviour component)
 			{
-				if (instanceId == current.GetInstanceID())
-				{
-					referenceCount++;
-					if (referenceCount > 1)
-					{
-						throw new DuplicateReferenceException();
-					}
-				}
+				didFindFixedUpdate |= (instanceId == component.GetInstanceID());
 			}
+
+			for (int i = 0; i < _priorities.Count && !(didFindUpdate && didFindFixedUpdate); i++)
+			{
+				CustomUpdatePriority group = _priorities[i];
+				group.TraverseForType(UpdateType.Normal, CheckUpdate);
+				group.TraverseForType(UpdateType.Fixed, CheckFixedUpdate);
+			}
+
+			updateFound = didFindUpdate;
+			fixedUpdateFound = didFindFixedUpdate;
 		}
 	}
 }
