@@ -3,6 +3,10 @@ MiscreantUtilities
 		Miscreant
 			Lifecycle
 				RuntimeTests
+					CustomUpdateManagerTests_Initialization
+						SetUpdateGroups_CalledOnSystemWithEmptyGroupList_DoesNotThrowException
+						SetUpdateGroups_CalledOnSystemWithNonemptyGroupList_ThrowsException
+						SetUpdateGroups_CalledOnSystemWithUnassignedGroupList_DoesNotThrowException
 					CustomUpdateManagerTests_InstantiateFromEmptySystem
 						Instantiate_SingleObjectInstantiated_AddedToSystem
 							Instantiate_SingleObjectInstantiated_AddedToSystem(UpdateActiveAndEnabled)
