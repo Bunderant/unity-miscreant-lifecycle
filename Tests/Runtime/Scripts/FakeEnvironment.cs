@@ -49,7 +49,7 @@ namespace Miscreant.Lifecycle.RuntimeTests
 			priorities = new ReadOnlyDictionary<string, CustomUpdatePriority>(priorityLookup);
 
 			manager = ScriptableObject.CreateInstance<CustomUpdateManager>();
-			manager.Initialize(priorityGroups);
+			manager.SetUpdateGroups(priorityGroups);
 
 			_runtimeController = new GameObject("Runtime Controller").AddComponent<TestManagedUpdatesSceneController>();
 			_runtimeController.enabled = false;

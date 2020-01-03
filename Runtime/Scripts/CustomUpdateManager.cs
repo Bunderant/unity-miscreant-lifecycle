@@ -78,9 +78,6 @@ namespace Miscreant.Lifecycle
 		[SerializeField]
 		private List<CustomUpdatePriority> _priorities = new List<CustomUpdatePriority>();
 
-		private ushort _groupCount;
-		private bool _initialized;
-
 #if UNITY_EDITOR
 		/// <summary>
 		/// Class used exclusively for displaying CustomUpdateManager's runtime data in the inspector.
@@ -143,55 +140,23 @@ namespace Miscreant.Lifecycle
 		}
 #endif
 
-		#region ScriptableObject
-
-		private void OnEnable()
-		{
-			Initialize();
-		}
-
-		private void OnDisable()
-		{
-			_groupCount = 0;
-
-			// TODO: Miscreant: Need to define expected behavior when a manager is unloaded and the application continues. 
-
-			_initialized = false;
-		}
-
-		#endregion
-
-		private void Initialize()
-		{
-			if (_initialized)
-			{
-				return;
-			}
-
-			_groupCount = (ushort)_priorities.Count;
-			_initialized |= _groupCount > 0;
-
-			for (int i = 0; i < _groupCount; i++)
-			{
-				_priorities[i].Initialize();
-			}
-		}
-
 		/// <summary>
-		/// Can only execute successfully if the current priority list is empty. This is designed
-		/// for situations where the manager object was created at runtime. Once the manager is
-		/// initialized with a non-empty priority list, it can't be initialized with another. 
+		/// This is designed for situations where the manager object along with the update groups were created at runtime. 
+		/// Once the manager is initialized with a non-empty priority list, it can't be modified. 
 		/// </summary>
 		/// <param name="priorities">Priority groups to use with this manager</param>
-		public void Initialize(params CustomUpdatePriority[] priorities)
+		public void SetUpdateGroups(params CustomUpdatePriority[] priorities)
 		{
-			if (_initialized)
+			// TODO: Miscreant: Additional validation on passed-in groups. 
+
+			if (_priorities != null && _priorities.Count > 0)
 			{
-				return;
+				throw new Exception(
+					$"Cannot reinitialize a {nameof(CustomUpdateManager)} once its {nameof(CustomUpdatePriority)} list has already been set."
+				);
 			}
 
 			this._priorities = new List<CustomUpdatePriority>(priorities);
-			Initialize();
 		}
 
 		/// <summary>
@@ -199,9 +164,9 @@ namespace Miscreant.Lifecycle
 		/// </summary>
 		public void RunUpdate()
 		{
-			for (int i = 0; i < _groupCount; i++)
+			foreach (var group in _priorities)
 			{
-				_priorities[i].ExecuteAllForType(UpdateType.Normal);
+				group.ExecuteAllForType(UpdateType.Normal);
 			}
 		}
 
@@ -210,9 +175,9 @@ namespace Miscreant.Lifecycle
 		/// </summary>
 		public void RunFixedUpdate()
 		{
-			for (int i = 0; i < _groupCount; i++)
+			foreach (var group in _priorities)
 			{
-				_priorities[i].ExecuteAllForType(UpdateType.Fixed);
+				group.ExecuteAllForType(UpdateType.Fixed);
 			}
 		}
 
@@ -229,10 +194,8 @@ namespace Miscreant.Lifecycle
 			fixedUpdateFound = false;
 			int referenceCount = 0;
 
-			for (int i = 0; i < _groupCount; i++)
+			foreach (var group in _priorities)
 			{
-				CustomUpdatePriority group = _priorities[i];
-
 				referenceCount = 0;
 				group.TraverseForType(UpdateType.Normal, IncrementReferenceCountIfFound);
 				updateFound |= referenceCount == 1;

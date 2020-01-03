@@ -20,6 +20,12 @@ namespace Miscreant.Lifecycle
 
 		#region ScriptableObject Callbacks
 
+		private void OnEnable()
+		{
+			_updateList = new IntrusiveUpdateList();
+			_fixedUpdateList = new IntrusiveFixedUpdateList();
+		}
+
 		private void OnDisable()
 		{
 			_updateList = null;
@@ -27,25 +33,6 @@ namespace Miscreant.Lifecycle
 		}
 
 		#endregion
-
-		/// <summary>
-		/// Should only ever be called by a <see cref="CustomUpdateManager" /> ScriptableObject asset. 
-		/// Always use a the manager object to control execution order. 
-		/// </summary>
-		internal void Initialize([System.Runtime.CompilerServices.CallerMemberName] string callerName = "")
-		{
-			// TODO: Miscreant: Need to make sure the calling object is the right type, as well. 
-			if (!string.Equals(callerName, nameof(CustomUpdateManager.Initialize)))
-			{
-				Debug.LogError(
-					$"Can't set priority outside the {nameof(CustomUpdateManager.Initialize)} " +
-					$"method of {nameof(CustomUpdateManager)}",
-					this
-				);
-			}
-			_updateList = new IntrusiveUpdateList();
-			_fixedUpdateList = new IntrusiveFixedUpdateList();
-		}
 
 		/// <summary>
 		/// Add a CustomUpdateBehaviour to the group. ONLY invoke from its OnEnable callback, or by setting the
