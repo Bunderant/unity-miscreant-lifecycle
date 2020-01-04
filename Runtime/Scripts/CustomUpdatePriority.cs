@@ -84,7 +84,7 @@ namespace Miscreant.Lifecycle
 				case UpdateType.Fixed:
 					return _fixedUpdateList;
 				default:
-					throw new InvalidUpdateTypeException(type);
+					throw new NotImplementedException($"Unsupported {nameof(UpdateType)}: {type}");
 			}
 		}
 
