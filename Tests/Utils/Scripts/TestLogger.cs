@@ -16,7 +16,7 @@ namespace Miscreant.Lifecycle.TestUtils
 		{
 			if (!Directory.Exists(directoryPath))
 			{
-				throw new DirectoryNotFoundException("Directory not found at the specified path: " + directoryPath);
+				Directory.CreateDirectory(directoryPath);
 			}
 
 			string logText = GenerateLogStringForTestNode(rootNode);

@@ -134,12 +134,12 @@ namespace Miscreant.Lifecycle.RuntimeTests
 		{
 			StopUpdating();
 
-			Object.Destroy(_runtimeController.gameObject);
-			Object.Destroy(manager);
+			Object.DestroyImmediate(_runtimeController.gameObject);
+			Object.DestroyImmediate(manager);
 
 			foreach (var kvp in priorities)
 			{
-				Object.Destroy(kvp.Value);
+				Object.DestroyImmediate(kvp.Value);
 			}
 		}
 	}
