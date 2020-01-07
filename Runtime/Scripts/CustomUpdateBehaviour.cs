@@ -5,7 +5,65 @@ namespace Miscreant.Lifecycle
 {
 	public abstract class CustomUpdateBehaviour : MonoBehaviour
 	{
-		public CustomUpdateManager.Config updateConfig = new CustomUpdateManager.Config(true, true);
+		[Serializable]
+		public struct Config
+		{
+			[SerializeField]
+			private ManagedExecutionGroup _executionGroup;
+			public ManagedExecutionGroup ExecutionGroup { get { return _executionGroup; } }
+
+			[SerializeField]
+			private bool _update;
+			public bool update
+			{
+				get { return _update; }
+				set { SetValue(ref _update, value); }
+			}
+
+			[SerializeField]
+			private bool _fixedUpdate;
+			public bool fixedUpdate
+			{
+				get { return _fixedUpdate; }
+				set { SetValue(ref _fixedUpdate, value); }
+			}
+
+			[NonSerialized]
+			public Action<bool> valueChangedAction;
+
+			public Config(bool update, bool fixedUpdate)
+			{
+				this._executionGroup = null;
+
+				this._update = update;
+				this._fixedUpdate = fixedUpdate;
+
+				this.valueChangedAction = null;
+			}
+
+			public Config(ManagedExecutionGroup executionGroup, bool update, bool fixedUpdate)
+			{
+				this._executionGroup = executionGroup;
+
+				this._update = update;
+				this._fixedUpdate = fixedUpdate;
+
+				this.valueChangedAction = null;
+			}
+
+			private void SetValue(ref bool originalValue, bool newValue)
+			{
+				bool changed = originalValue != newValue;
+				originalValue = newValue;
+
+				if (changed && valueChangedAction != null)
+				{
+					valueChangedAction.Invoke(newValue);
+				}
+			}
+		}
+
+		public Config updateConfig = new Config(true, true);
 
 		/// <summary>
         /// Previous update link. ONLY modify from IntrusiveList or its subclasses. 
@@ -38,7 +96,7 @@ namespace Miscreant.Lifecycle
 		internal bool ShouldFixedUpdate { get { return _isActiveAndEnabled && updateConfig.fixedUpdate; } }
 
 		public static T Create<T>(
-			CustomUpdateManager.Config config, bool gameObjectActive, bool componentEnabled, Transform parent = null
+			Config config, bool gameObjectActive, bool componentEnabled, Transform parent = null
 			) where T : CustomUpdateBehaviour
 		{
 			var gameObject = new GameObject();

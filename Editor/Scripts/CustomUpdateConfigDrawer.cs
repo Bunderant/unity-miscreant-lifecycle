@@ -3,7 +3,7 @@ using UnityEditor;
 
 using Miscreant.Lifecycle;
 
-[CustomPropertyDrawer(typeof(CustomUpdateManager.Config))]
+[CustomPropertyDrawer(typeof(CustomUpdateBehaviour.Config))]
 public class CustomUpdateConfigDrawer : PropertyDrawer
 {
 	public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)

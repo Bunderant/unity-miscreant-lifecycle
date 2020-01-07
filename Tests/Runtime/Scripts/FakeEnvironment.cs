@@ -7,8 +7,6 @@ using Object = UnityEngine.Object;
 
 namespace Miscreant.Lifecycle.RuntimeTests
 {
-	using UpdateType = CustomUpdateManager.UpdateType;
-
 	public sealed class FakeEnvironment : IDisposable
 	{
 		[Flags]
@@ -98,7 +96,7 @@ namespace Miscreant.Lifecycle.RuntimeTests
 			Transform parent = null) where T : CustomUpdateBehaviour
 		{
 			return CustomUpdateBehaviour.Create<T>(
-				new CustomUpdateManager.Config(
+				new CustomUpdateBehaviour.Config(
 					group,
 					config.HasFlag(ObjectToggleConfig.Update),
 					config.HasFlag(ObjectToggleConfig.FixedUpdate)),
