@@ -12,9 +12,9 @@ namespace Miscreant.Lifecycle.Editor
 	{
 		private CustomUpdateManager _target;
 		private CustomUpdateManager_RuntimeDisplayData _latestData;
-		private ReorderableList _priorityList;
+		private ReorderableList _executionGroups;
 
-		private List<CustomUpdatePriority> _lastSavedPriorities;
+		private List<ManagedExecutionGroup> _lastSavedExecutionGroups;
 		private bool _isDirty;
 
 		private bool[] _runtimeGroupVisibility;
@@ -34,26 +34,26 @@ namespace Miscreant.Lifecycle.Editor
 		private void OnEnable()
 		{
 			_target = (CustomUpdateManager)target;
-			_priorityList = new ReorderableList(
+			_executionGroups = new ReorderableList(
 				serializedObject,
-				serializedObject.FindProperty("_priorities"),
+				serializedObject.FindProperty(nameof(_executionGroups)),
 				true,
 				true,
 				true,
 				true
 			);
 
-			_priorityList.drawHeaderCallback = (
+			_executionGroups.drawHeaderCallback = (
 				rect =>
 				{
 					EditorGUI.LabelField(rect, "Execution Order", EditorStyles.boldLabel);
 				}
 			);
 
-			_priorityList.drawElementCallback = (
+			_executionGroups.drawElementCallback = (
 				(Rect rect, int index, bool isActive, bool isFocused) =>
 				{
-					var element = _priorityList.serializedProperty.GetArrayElementAtIndex(index);
+					var element = _executionGroups.serializedProperty.GetArrayElementAtIndex(index);
 					EditorGUI.ObjectField(
 						new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight),
 						element,
@@ -62,17 +62,17 @@ namespace Miscreant.Lifecycle.Editor
 				}
 			);
 
-			_priorityList.onChangedCallback = (
+			_executionGroups.onChangedCallback = (
 				rect =>
 				{
 					_isDirty = true;
 				}
 			);
 
-			SetLastSavedPrioritiesToCurrent();
+			SetLastSavedExecutionOrderToCurrent();
 
-			_runtimeGroupVisibility = new bool[_priorityList.count];
-			_runtimeGroupScrollPositions = new Vector2[_priorityList.count];
+			_runtimeGroupVisibility = new bool[_executionGroups.count];
+			_runtimeGroupScrollPositions = new Vector2[_executionGroups.count];
 
 			_latestData = ScriptableObject.CreateInstance<CustomUpdateManager_RuntimeDisplayData>();
 
@@ -84,7 +84,7 @@ namespace Miscreant.Lifecycle.Editor
 			if (_isDirty)
 			{
 				serializedObject.Update();
-				SetCurrentPrioritiesToLastSaved();
+				SetCurrentExecutionOrderToLastSaved();
 				serializedObject.ApplyModifiedProperties();
 			}
 
@@ -105,7 +105,7 @@ namespace Miscreant.Lifecycle.Editor
 
 			EditorGUI.BeginDisabledGroup(Application.isPlaying);
 			{
-				_priorityList.DoLayoutList();
+				_executionGroups.DoLayoutList();
 
 				if (_isDirty)
 				{
@@ -113,9 +113,9 @@ namespace Miscreant.Lifecycle.Editor
 					GUILayout.BeginHorizontal();
 
 					if (GUILayout.Button("Apply"))
-						SetLastSavedPrioritiesToCurrent();
+						SetLastSavedExecutionOrderToCurrent();
 					if (GUILayout.Button("Revert"))
-						SetCurrentPrioritiesToLastSaved();
+						SetCurrentExecutionOrderToLastSaved();
 
 					GUILayout.EndHorizontal();
 				}
@@ -139,20 +139,20 @@ namespace Miscreant.Lifecycle.Editor
 
 			if (Application.isPlaying)
 			{
-				DisplayRuntimePriorityLists();
+				DisplayRuntimeExecutionGroupLists();
 			}
 
 			serializedObject.ApplyModifiedProperties();
 		}
 
-		private void DisplayRuntimePriorityLists()
+		private void DisplayRuntimeExecutionGroupLists()
 		{
 			_latestData.Initialize(_target);
 			var so = new SerializedObject(_latestData);
 
 			_selectedTabIndex = GUILayout.Toolbar(_selectedTabIndex, _tabNames);
 			DrawGroupCollection(
-				so.FindProperty("_priorities"),
+				so.FindProperty(nameof(_executionGroups)),
 				so.FindProperty(_tabPropertyNameLookup[_selectedTabIndex])
 			);
 		}
@@ -160,36 +160,30 @@ namespace Miscreant.Lifecycle.Editor
 		/// <summary>
 		/// Cleanly displays the runtime objects registered in the system.
 		/// </summary>
-		/// <param name="priorities"></param>
-		/// <param name="groups"></param>
-		private void DrawGroupCollection(SerializedProperty priorities, SerializedProperty groups, int maxVisibleElementsPerGroup = 16)
+		/// <param name="executionGroups"></param>
+		/// <param name="groupsForSelectedType"></param>
+		private void DrawGroupCollection(SerializedProperty executionGroups, SerializedProperty groupsForSelectedType, int maxVisibleElementsPerGroup = 16)
 		{
-			Debug.Assert(
-				priorities.arraySize == groups.arraySize,
-				"Number of priority groups should always match the number of update groups. Something is terribly wrong.",
-				this
-			);
-
 			EditorGUI.indentLevel++;
 
-			var priorityGroupCount = priorities.arraySize;
-			for (int priorityIndex = 0; priorityIndex < priorityGroupCount; priorityIndex++)
+			int groupCount = executionGroups.arraySize;
+			for (int groupIndex = 0; groupIndex < groupCount; groupIndex++)
 			{
-				var priorityName = priorities.GetArrayElementAtIndex(priorityIndex).objectReferenceValue.name;
-				var currentGroup = groups.GetArrayElementAtIndex(priorityIndex).FindPropertyRelative("value");
-				var currentGroupSize = currentGroup.arraySize;
+				string groupName = executionGroups.GetArrayElementAtIndex(groupIndex).objectReferenceValue.name;
+				SerializedProperty currentGroup = groupsForSelectedType.GetArrayElementAtIndex(groupIndex).FindPropertyRelative("value");
+				int currentGroupSize = currentGroup.arraySize;
 
-				if (_runtimeGroupVisibility[priorityIndex] = EditorGUILayout.Foldout(
-					_runtimeGroupVisibility[priorityIndex],
-					priorityName,
+				if (_runtimeGroupVisibility[groupIndex] = EditorGUILayout.Foldout(
+					_runtimeGroupVisibility[groupIndex],
+					groupName,
 					currentGroupSize != 0,
 					EditorStyles.foldout))
 				{
 					bool scrollViewShowing = currentGroupSize > maxVisibleElementsPerGroup;
 					if (scrollViewShowing)
 					{
-						_runtimeGroupScrollPositions[priorityIndex] = EditorGUILayout.BeginScrollView(
-							_runtimeGroupScrollPositions[priorityIndex],
+						_runtimeGroupScrollPositions[groupIndex] = EditorGUILayout.BeginScrollView(
+							_runtimeGroupScrollPositions[groupIndex],
 							GUILayout.Height((EditorGUIUtility.singleLineHeight + 2) * (maxVisibleElementsPerGroup))
 						);
 					}
@@ -209,24 +203,24 @@ namespace Miscreant.Lifecycle.Editor
 			EditorGUI.indentLevel--;
 		}
 
-		private void SetLastSavedPrioritiesToCurrent()
+		private void SetLastSavedExecutionOrderToCurrent()
 		{
-			int originalSize = _priorityList.serializedProperty.arraySize;
-			_lastSavedPriorities = new List<CustomUpdatePriority>(originalSize);
+			int originalSize = _executionGroups.serializedProperty.arraySize;
+			_lastSavedExecutionGroups = new List<ManagedExecutionGroup>(originalSize);
 			for (int i = 0; i < originalSize; i++)
 			{
-				_lastSavedPriorities.Add((CustomUpdatePriority)_priorityList.serializedProperty.GetArrayElementAtIndex(i).objectReferenceValue);
+				_lastSavedExecutionGroups.Add((ManagedExecutionGroup)_executionGroups.serializedProperty.GetArrayElementAtIndex(i).objectReferenceValue);
 			}
 
 			_isDirty = false;
 		}
 
-		private void SetCurrentPrioritiesToLastSaved()
+		private void SetCurrentExecutionOrderToLastSaved()
 		{
-			_priorityList.serializedProperty.arraySize = _lastSavedPriorities.Count;
-			for (int i = 0; i < _lastSavedPriorities.Count; i++)
+			_executionGroups.serializedProperty.arraySize = _lastSavedExecutionGroups.Count;
+			for (int i = 0; i < _lastSavedExecutionGroups.Count; i++)
 			{
-				_priorityList.serializedProperty.GetArrayElementAtIndex(i).objectReferenceValue = _lastSavedPriorities[i];
+				_executionGroups.serializedProperty.GetArrayElementAtIndex(i).objectReferenceValue = _lastSavedExecutionGroups[i];
 			}
 
 			_isDirty = false;

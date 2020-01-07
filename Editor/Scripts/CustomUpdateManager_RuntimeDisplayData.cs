@@ -11,7 +11,7 @@ namespace Miscreant.Lifecycle.Editor
 	public class CustomUpdateManager_RuntimeDisplayData : ScriptableObject
 	{
 		[SerializeField]
-		private CustomUpdatePriority[] _priorities;
+		private ManagedExecutionGroup[] _executionGroups;
 		[SerializeField]
 		private RuntimeGroup[] _updateGroups;
 		[SerializeField]
@@ -33,18 +33,18 @@ namespace Miscreant.Lifecycle.Editor
 
 		public void Initialize(CustomUpdateManager updateManager)
 		{
-			int priorityCount = updateManager.Priorities.Count;
+			int groupCount = updateManager.ExecutionGroups.Count;
 
-			_priorities = new CustomUpdatePriority[priorityCount];
-			_updateGroups = new RuntimeGroup[priorityCount];
-			_fixedUpdateGroups = new RuntimeGroup[priorityCount];
+			_executionGroups = new ManagedExecutionGroup[groupCount];
+			_updateGroups = new RuntimeGroup[groupCount];
+			_fixedUpdateGroups = new RuntimeGroup[groupCount];
 
-			for (int i = 0; i < priorityCount; i++)
+			for (int i = 0; i < groupCount; i++)
 			{
 				List<CustomUpdateBehaviour> updateList = new List<CustomUpdateBehaviour>();
 				List<CustomUpdateBehaviour> fixedUpdateList = new List<CustomUpdateBehaviour>();
 
-				CustomUpdatePriority currentGroup = updateManager.Priorities[i];
+				ManagedExecutionGroup currentGroup = updateManager.ExecutionGroups[i];
 
 				currentGroup.TraverseForType(
 					UpdateType.Normal,
@@ -56,7 +56,7 @@ namespace Miscreant.Lifecycle.Editor
 					(c) => { fixedUpdateList.Add(c); }
 				);
 
-				_priorities[i] = currentGroup;
+				_executionGroups[i] = currentGroup;
 				_updateGroups[i] = new RuntimeGroup(updateList.ToArray());
 				_fixedUpdateGroups[i] = new RuntimeGroup(fixedUpdateList.ToArray());
 			}

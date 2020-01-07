@@ -27,29 +27,29 @@ namespace Miscreant.Lifecycle.RuntimeTests
 		}
 
 		public readonly CustomUpdateManager manager;
-		public readonly ReadOnlyDictionary<string, CustomUpdatePriority> priorities;
+		public readonly ReadOnlyDictionary<string, ManagedExecutionGroup> executionGroups;
 		private readonly TestManagedUpdatesSceneController _runtimeController;
 
-		public FakeEnvironment(params string[] priorityGroupNames)
+		public FakeEnvironment(params string[] executionGroupNames)
 		{
-			int groupCount = priorityGroupNames.Length;
+			int groupCount = executionGroupNames.Length;
 
 			if (groupCount == 0)
 			{
-				throw new System.ArgumentException("Fake environment must have at least one priority group.");
+				throw new System.ArgumentException($"{nameof(FakeEnvironment)} must have at least one execution group.");
 			}
 
-			var priorityGroups = new CustomUpdatePriority[groupCount];
-			var priorityLookup = new Dictionary<string, CustomUpdatePriority>(groupCount);
+			var executionGroups = new ManagedExecutionGroup[groupCount];
+			var groupLookup = new Dictionary<string, ManagedExecutionGroup>(groupCount);
 			for (int i = 0; i < groupCount; i++)
 			{
-				var currentGroup = priorityGroups[i] = ScriptableObject.CreateInstance<CustomUpdatePriority>();
-				priorityLookup.Add(priorityGroupNames[i], currentGroup);
+				var currentGroup = executionGroups[i] = ScriptableObject.CreateInstance<ManagedExecutionGroup>();
+				groupLookup.Add(executionGroupNames[i], currentGroup);
 			}
-			priorities = new ReadOnlyDictionary<string, CustomUpdatePriority>(priorityLookup);
+			this.executionGroups = new ReadOnlyDictionary<string, ManagedExecutionGroup>(groupLookup);
 
 			manager = ScriptableObject.CreateInstance<CustomUpdateManager>();
-			manager.SetUpdateGroups(priorityGroups);
+			manager.SetUpdateGroups(executionGroups);
 
 			_runtimeController = new GameObject("Runtime Controller").AddComponent<TestManagedUpdatesSceneController>();
 			_runtimeController.enabled = false;
@@ -68,7 +68,7 @@ namespace Miscreant.Lifecycle.RuntimeTests
 
 		public void InstantiateManagedComponents<T>(string groupName, params ObjectToggleConfig[] toggleConfig) where T : CustomUpdateBehaviour
 		{
-			CustomUpdatePriority group = priorities[groupName];
+			ManagedExecutionGroup group = executionGroups[groupName];
 			Transform containerTransform = _runtimeController.transform;
 
 			foreach (ObjectToggleConfig config in toggleConfig)
@@ -82,7 +82,7 @@ namespace Miscreant.Lifecycle.RuntimeTests
 			string groupName,
 			params ObjectToggleConfig[] toggleConfig) where T : CustomUpdateBehaviour
 		{
-			CustomUpdatePriority group = priorities[groupName];
+			ManagedExecutionGroup group = executionGroups[groupName];
 			Transform containerTransform = _runtimeController.transform;
 
 			components = new T[toggleConfig.Length];
@@ -93,7 +93,7 @@ namespace Miscreant.Lifecycle.RuntimeTests
 		}
 
 		private T InstantiateManagedUpdateGameObject<T>(
-			CustomUpdatePriority group,
+			ManagedExecutionGroup group,
 			ObjectToggleConfig config,
 			Transform parent = null) where T : CustomUpdateBehaviour
 		{
@@ -137,7 +137,7 @@ namespace Miscreant.Lifecycle.RuntimeTests
 			Object.DestroyImmediate(_runtimeController.gameObject);
 			Object.DestroyImmediate(manager);
 
-			foreach (var kvp in priorities)
+			foreach (var kvp in executionGroups)
 			{
 				Object.DestroyImmediate(kvp.Value);
 			}

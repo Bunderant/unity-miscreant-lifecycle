@@ -12,11 +12,11 @@ namespace Miscreant.Lifecycle.RuntimeTests
 
 			Assert.DoesNotThrow(
 				() => {
-					manager.SetUpdateGroups(new CustomUpdatePriority[] {
-						ScriptableObject.CreateInstance<CustomUpdatePriority>()
+					manager.SetUpdateGroups(new ManagedExecutionGroup[] {
+						ScriptableObject.CreateInstance<ManagedExecutionGroup>()
 					});
 				},
-				"Should be able to set priority groups on a manager that has an unassigned list."
+				"Should be able to set execution groups on a manager that has an unassigned list."
 			);
 		}
 
@@ -24,15 +24,15 @@ namespace Miscreant.Lifecycle.RuntimeTests
 		public void SetUpdateGroups_CalledOnSystemWithEmptyGroupList_DoesNotThrowException()
 		{
 			var manager = ScriptableObject.CreateInstance<CustomUpdateManager>();
-			manager.SetUpdateGroups(new CustomUpdatePriority[0]);
+			manager.SetUpdateGroups(new ManagedExecutionGroup[0]);
 
 			Assert.DoesNotThrow(
 				() =>  {
-					manager.SetUpdateGroups(new CustomUpdatePriority[] {
-						ScriptableObject.CreateInstance<CustomUpdatePriority>()
+					manager.SetUpdateGroups(new ManagedExecutionGroup[] {
+						ScriptableObject.CreateInstance<ManagedExecutionGroup>()
 					});
 				},
-				"Should be able to set priority groups on a manager that has an empty list."
+				"Should be able to set execution groups on a manager that has an empty list."
 			);
 		}
 
@@ -40,18 +40,18 @@ namespace Miscreant.Lifecycle.RuntimeTests
 		public void SetUpdateGroups_CalledOnSystemWithNonemptyGroupList_ThrowsException()
 		{
 			var manager = ScriptableObject.CreateInstance<CustomUpdateManager>();
-			manager.SetUpdateGroups(new CustomUpdatePriority[] {
-				ScriptableObject.CreateInstance<CustomUpdatePriority>()
+			manager.SetUpdateGroups(new ManagedExecutionGroup[] {
+				ScriptableObject.CreateInstance<ManagedExecutionGroup>()
 			});
 
 			Assert.That(
 				() => {
-					manager.SetUpdateGroups(new CustomUpdatePriority[] {
-						ScriptableObject.CreateInstance<CustomUpdatePriority>()
+					manager.SetUpdateGroups(new ManagedExecutionGroup[] {
+						ScriptableObject.CreateInstance<ManagedExecutionGroup>()
 					});
 				},
 				Throws.Exception,
-				"Should NOT be able to set priority groups on a manager that already has groups assigned."
+				"Should NOT be able to set execution groups on a manager that already has groups assigned."
 			);
 		}
 	}

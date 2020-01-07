@@ -67,7 +67,7 @@ namespace Miscreant.Lifecycle
 		{
 			_isActiveAndEnabled = true;
 
-			updateConfig.PriorityGroup.TryRegister(this);
+			updateConfig.ExecutionGroup.TryRegister(this);
 			updateConfig.valueChangedAction = HandleUpdateModeChanged;
 		}
 
@@ -78,7 +78,7 @@ namespace Miscreant.Lifecycle
 		{
 			_isActiveAndEnabled = false;
 			
-			updateConfig.PriorityGroup.TryUnregister(this);
+			updateConfig.ExecutionGroup.TryUnregister(this);
 			updateConfig.valueChangedAction = null;
 		}
 
@@ -88,11 +88,11 @@ namespace Miscreant.Lifecycle
 		{
 			if (becameEnabled)
 			{
-				updateConfig.PriorityGroup.TryRegister(this);
+				updateConfig.ExecutionGroup.TryRegister(this);
 			}
 			else
 			{
-				updateConfig.PriorityGroup.TryUnregister(this);
+				updateConfig.ExecutionGroup.TryUnregister(this);
 			}
 		}
 

@@ -5,8 +5,8 @@ namespace Miscreant.Lifecycle
 {
 	using UpdateType = CustomUpdateManager.UpdateType;
 
-	[CreateAssetMenu(menuName = nameof(Miscreant) + "/" + nameof(Miscreant.Lifecycle) + "/" + nameof(CustomUpdatePriority))]
-	public sealed class CustomUpdatePriority : ScriptableObject
+	[CreateAssetMenu(menuName = nameof(Miscreant) + "/" + nameof(Miscreant.Lifecycle) + "/" + nameof(ManagedExecutionGroup))]
+	public sealed class ManagedExecutionGroup : ScriptableObject
 	{
 		private IntrusiveUpdateList _updateList;
 		private IntrusiveFixedUpdateList _fixedUpdateList;
@@ -36,7 +36,7 @@ namespace Miscreant.Lifecycle
 		/// <param name="component">The component to try adding to this group's lists.</param>
 		public void TryRegister(CustomUpdateBehaviour component)
 		{
-			// TODO: Miscreant: For a "strict" mode, should check to make sure this is actually the given component's priority group. 
+			// TODO: Miscreant: For a "strict" mode, should check to make sure this is actually the given component's execution group. 
 
 			// TODO: Miscreant: avoid calling properties here, just pass the registration flags in as parameters as a micro-optimization. 
 			if (component.ShouldUpdate)
@@ -57,7 +57,7 @@ namespace Miscreant.Lifecycle
 		/// <param name="component">The component to try removing from this group's lists.</param>
 		public void TryUnregister(CustomUpdateBehaviour component)
 		{
-			// TODO: Miscreant: For a "strict" mode, should check to make sure this is actually the given component's priority group. 
+			// TODO: Miscreant: For a "strict" mode, should check to make sure this is actually the given component's execution group. 
 
 			// TODO: Miscreant: avoid calling properties here, just pass the registration flags in as parameters as a micro-optimization. 
 			if (!component.ShouldUpdate)

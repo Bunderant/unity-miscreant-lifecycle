@@ -22,8 +22,8 @@ namespace Miscreant.Lifecycle
 		public struct Config
 		{
 			[SerializeField]
-			private CustomUpdatePriority _priorityGroup;
-			public CustomUpdatePriority PriorityGroup { get { return _priorityGroup; } }
+			private ManagedExecutionGroup _executionGroup;
+			public ManagedExecutionGroup ExecutionGroup { get { return _executionGroup; } }
 
 			[SerializeField]
 			private bool _update;
@@ -46,7 +46,7 @@ namespace Miscreant.Lifecycle
 
 			public Config(bool update, bool fixedUpdate)
 			{
-				this._priorityGroup = null;
+				this._executionGroup = null;
 
 				this._update = update;
 				this._fixedUpdate = fixedUpdate;
@@ -54,9 +54,9 @@ namespace Miscreant.Lifecycle
 				this.valueChangedAction = null;
 			}
 
-			public Config(CustomUpdatePriority priorityGroup, bool update, bool fixedUpdate)
+			public Config(ManagedExecutionGroup executionGroup, bool update, bool fixedUpdate)
 			{
-				this._priorityGroup = priorityGroup;
+				this._executionGroup = executionGroup;
 
 				this._update = update;
 				this._fixedUpdate = fixedUpdate;
@@ -77,36 +77,36 @@ namespace Miscreant.Lifecycle
 		}
 
 		[SerializeField]
-		private List<CustomUpdatePriority> _priorities = new List<CustomUpdatePriority>();
-		internal ReadOnlyCollection<CustomUpdatePriority> Priorities;
+		private List<ManagedExecutionGroup> _executionGroups = new List<ManagedExecutionGroup>();
+		internal ReadOnlyCollection<ManagedExecutionGroup> ExecutionGroups;
 
 		#region ScriptableObject
 
 		private void OnEnable()
 		{
-			Priorities = new ReadOnlyCollection<CustomUpdatePriority>(_priorities);
+			ExecutionGroups = new ReadOnlyCollection<ManagedExecutionGroup>(_executionGroups);
 		}
 
 		#endregion
 
 		/// <summary>
-		/// This is designed for situations where the manager object along with the update groups were created at runtime. 
-		/// Once the manager is initialized with a non-empty priority list, it can't be modified. 
+		/// This is designed for situations where the manager object along with the execution groups were created at runtime. 
+		/// Once the manager is initialized with a non-empty group list, it can't be modified. 
 		/// </summary>
-		/// <param name="priorities">Priority groups to use with this manager</param>
-		public void SetUpdateGroups(params CustomUpdatePriority[] priorities)
+		/// <param name="executionGroups">Execution groups to use with this manager</param>
+		public void SetUpdateGroups(params ManagedExecutionGroup[] executionGroups)
 		{
 			// TODO: Miscreant: Additional validation on passed-in groups. 
 
-			if (_priorities != null && _priorities.Count > 0)
+			if (_executionGroups != null && _executionGroups.Count > 0)
 			{
 				throw new Exception(
-					$"Cannot reinitialize a {nameof(CustomUpdateManager)} once its {nameof(CustomUpdatePriority)} list has already been set."
+					$"Cannot reinitialize a {nameof(CustomUpdateManager)} once its {nameof(ManagedExecutionGroup)} list has already been set."
 				);
 			}
 
-			this._priorities = new List<CustomUpdatePriority>(priorities);
-			Priorities = new ReadOnlyCollection<CustomUpdatePriority>(Priorities);
+			this._executionGroups = new List<ManagedExecutionGroup>(executionGroups);
+			ExecutionGroups = new ReadOnlyCollection<ManagedExecutionGroup>(ExecutionGroups);
 		}
 
 		/// <summary>
@@ -114,7 +114,7 @@ namespace Miscreant.Lifecycle
 		/// </summary>
 		public void RunUpdate()
 		{
-			foreach (var group in _priorities)
+			foreach (var group in _executionGroups)
 			{
 				group.ExecuteAllForType(UpdateType.Normal);
 			}
@@ -125,14 +125,14 @@ namespace Miscreant.Lifecycle
 		/// </summary>
 		public void RunFixedUpdate()
 		{
-			foreach (var group in _priorities)
+			foreach (var group in _executionGroups)
 			{
 				group.ExecuteAllForType(UpdateType.Fixed);
 			}
 		}
 
 		/// <summary>
-		/// Scans the all priority groups to look for a component by instance id.
+		/// Scans the all execution groups to look for a component by instance id.
 		/// </summary>
 		/// <param name="instanceId"></param>
 		/// <param name="updateFound"></param>
@@ -153,9 +153,9 @@ namespace Miscreant.Lifecycle
 			}
 
 			// As part of the loop condition, bail out if we've already found all update types. 
-			for (int i = 0; i < _priorities.Count && !(didFindUpdate && didFindFixedUpdate); i++)
+			for (int i = 0; i < _executionGroups.Count && !(didFindUpdate && didFindFixedUpdate); i++)
 			{
-				CustomUpdatePriority group = _priorities[i];
+				ManagedExecutionGroup group = _executionGroups[i];
 				group.TraverseForType(UpdateType.Normal, CheckUpdate);
 				group.TraverseForType(UpdateType.Fixed, CheckFixedUpdate);
 			}
