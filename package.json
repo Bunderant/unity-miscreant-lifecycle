@@ -1,7 +1,7 @@
 {
 	"name": "com.miscreant.lifecycle",
 	"version": "0.0.1",
-	"displayName": "Miscreant - Managed Update System",
+	"displayName": "Miscreant - Lifecycle",
 	"description": "Managed update loops for granular control and better performance, while adhering to the GameObject/Component workflow.",
 	"unity": "2019.3",
 	"keywords": [
@@ -15,5 +15,8 @@
 	"author": {
 		"name": "Mark Agne",
 		"url": "http://markagne.com"
+	},
+	"dependencies": {
+		"com.unity.test-framework.performance": "2.0.3-preview"
 	}
 }
