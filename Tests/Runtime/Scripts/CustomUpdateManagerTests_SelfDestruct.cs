@@ -75,7 +75,7 @@ namespace Miscreant.Lifecycle.RuntimeTests
 
 			foreach (var id in componentInstanceIds)
 			{
-				_environment.manager.CheckSystemForComponent(
+				_environment.system.FindComponent(
 					id,
 					out bool updateFound,
 					out bool fixedUpdateFound
@@ -87,7 +87,7 @@ namespace Miscreant.Lifecycle.RuntimeTests
 
 			Assert.That(
 				noUpdatesFound && noFixedUpdatesFound,
-				"At least one component did not successfully self-destruct and remove itself from the update manager:\n" +
+				"At least one component did not successfully self-destruct and remove itself from the execution system:\n" +
 				$"Updates found? {!noUpdatesFound}\n" +
 				$"FixedUpdates found? {!noFixedUpdatesFound}"
 			);

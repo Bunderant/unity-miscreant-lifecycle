@@ -99,10 +99,10 @@ namespace Miscreant.Lifecycle.RuntimeTests
 			env.SetToggleConfig(component, finalConfig);
 
 			// Assert
-			env.manager.CheckSystemForComponent(component.GetInstanceID(), out bool updateFound, out bool fixedUpdateFound);
+			env.system.FindComponent(component.GetInstanceID(), out bool updateFound, out bool fixedUpdateFound);
 			Assert.That(
 				(updateExpectedFinal == updateFound) && (fixedUpdateExpectedFinal == fixedUpdateFound),
-				$"Configuration's expected state was not reflected in the manager.\n" +
+				$"Configuration's expected state was not reflected in the system.\n" +
 					$"Update Expected/Result: {updateExpectedFinal}/{updateFound}\n" +
 					$"FixedUpdate Expected/Result: {fixedUpdateExpectedFinal}/{fixedUpdateFound}"
 			);

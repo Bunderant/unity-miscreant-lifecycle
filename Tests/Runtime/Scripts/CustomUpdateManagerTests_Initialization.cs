@@ -5,19 +5,19 @@ namespace Miscreant.Lifecycle.RuntimeTests
 {
 	public class CustomUpdateManagerTests_Initialization
 	{
-		private CustomUpdateManager _manager;
+		private ManagedExecutionSystem _system;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_manager = ScriptableObject.CreateInstance<CustomUpdateManager>();
+			_system = ScriptableObject.CreateInstance<ManagedExecutionSystem>();
 		}
 
 		[TearDown]
 		public void TearDown()
 		{
-			Object.Destroy(_manager);
-			_manager = null;
+			Object.Destroy(_system);
+			_system = null;
 		}
 
 		[Test]
@@ -25,44 +25,44 @@ namespace Miscreant.Lifecycle.RuntimeTests
 		{
 			Assert.DoesNotThrow(
 				() => {
-					_manager.SetExecutionGroups(new ManagedExecutionGroup[] {
+					_system.SetExecutionGroups(new ManagedExecutionGroup[] {
 						ScriptableObject.CreateInstance<ManagedExecutionGroup>()
 					});
 				},
-				"Should be able to set execution groups on a manager that has an unassigned list."
+				"Should be able to set execution groups on a system that has an unassigned list."
 			);
 		}
 
 		[Test]
 		public void SetUpdateGroups_CalledOnSystemWithEmptyGroupList_DoesNotThrowException()
 		{
-			_manager.SetExecutionGroups(new ManagedExecutionGroup[0]);
+			_system.SetExecutionGroups(new ManagedExecutionGroup[0]);
 
 			Assert.DoesNotThrow(
 				() =>  {
-					_manager.SetExecutionGroups(new ManagedExecutionGroup[] {
+					_system.SetExecutionGroups(new ManagedExecutionGroup[] {
 						ScriptableObject.CreateInstance<ManagedExecutionGroup>()
 					});
 				},
-				"Should be able to set execution groups on a manager that has an empty list."
+				"Should be able to set execution groups on a system that has an empty list."
 			);
 		}
 
 		[Test]
 		public void SetUpdateGroups_CalledOnSystemWithNonemptyGroupList_ThrowsException()
 		{
-			_manager.SetExecutionGroups(new ManagedExecutionGroup[] {
+			_system.SetExecutionGroups(new ManagedExecutionGroup[] {
 				ScriptableObject.CreateInstance<ManagedExecutionGroup>()
 			});
 
 			Assert.That(
 				() => {
-					_manager.SetExecutionGroups(new ManagedExecutionGroup[] {
+					_system.SetExecutionGroups(new ManagedExecutionGroup[] {
 						ScriptableObject.CreateInstance<ManagedExecutionGroup>()
 					});
 				},
 				Throws.Exception,
-				"Should NOT be able to set execution groups on a manager that already has groups assigned."
+				"Should NOT be able to set execution groups on a system that already has groups assigned."
 			);
 		}
 	}

@@ -5,8 +5,8 @@ using UnityEngine;
 
 namespace Miscreant.Lifecycle
 {
-	[CreateAssetMenu(menuName = nameof(Miscreant) + "/" + nameof(Miscreant.Lifecycle) + "/" + nameof(CustomUpdateManager))]
-	public sealed class CustomUpdateManager : ScriptableObject
+	[CreateAssetMenu(menuName = nameof(Miscreant) + "/" + nameof(Miscreant.Lifecycle) + "/" + nameof(ManagedExecutionSystem))]
+	public sealed class ManagedExecutionSystem : ScriptableObject
 	{
 		public enum UpdateType : byte
 		{
@@ -29,10 +29,10 @@ namespace Miscreant.Lifecycle
 		#endregion
 
 		/// <summary>
-		/// This is designed for situations where the manager object along with the execution groups were created at runtime. 
-		/// Once the manager is initialized with a non-empty group list, it can't be modified. 
+		/// This is designed for situations where the system along with its execution groups were created at runtime. 
+		/// Once the system is initialized with a non-empty group list, it can't be modified. 
 		/// </summary>
-		/// <param name="executionGroups">Execution groups to use with this manager</param>
+		/// <param name="executionGroups">Execution groups to use with this system.</param>
 		public void SetExecutionGroups(params ManagedExecutionGroup[] executionGroups)
 		{
 			// TODO: Miscreant: Additional validation on passed-in groups. 
@@ -40,7 +40,7 @@ namespace Miscreant.Lifecycle
 			if (_executionGroups != null && _executionGroups.Count > 0)
 			{
 				throw new Exception(
-					$"Cannot reinitialize a {nameof(CustomUpdateManager)} once its {nameof(ManagedExecutionGroup)} list has already been set."
+					$"Cannot reinitialize a {nameof(ManagedExecutionSystem)} once its {nameof(ManagedExecutionGroup)} list has already been set."
 				);
 			}
 
@@ -76,7 +76,7 @@ namespace Miscreant.Lifecycle
 		/// <param name="instanceId"></param>
 		/// <param name="updateFound"></param>
 		/// <param name="fixedUpdateFound"></param>
-		public void CheckSystemForComponent(int instanceId, out bool updateFound, out bool fixedUpdateFound)
+		public void FindComponent(int instanceId, out bool updateFound, out bool fixedUpdateFound)
 		{
 			bool didFindUpdate = false;
 			bool didFindFixedUpdate = false;

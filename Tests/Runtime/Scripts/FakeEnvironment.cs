@@ -24,7 +24,7 @@ namespace Miscreant.Lifecycle.RuntimeTests
 			NoUpdatesActiveAndEnabled = GameObjectActive | ComponentEnabled
 		}
 
-		public readonly CustomUpdateManager manager;
+		public readonly ManagedExecutionSystem system;
 		public readonly ReadOnlyDictionary<string, ManagedExecutionGroup> executionGroups;
 		private readonly TestManagedUpdatesSceneController _runtimeController;
 
@@ -46,8 +46,8 @@ namespace Miscreant.Lifecycle.RuntimeTests
 			}
 			this.executionGroups = new ReadOnlyDictionary<string, ManagedExecutionGroup>(groupLookup);
 
-			manager = ScriptableObject.CreateInstance<CustomUpdateManager>();
-			manager.SetExecutionGroups(executionGroups);
+			system = ScriptableObject.CreateInstance<ManagedExecutionSystem>();
+			system.SetExecutionGroups(executionGroups);
 
 			_runtimeController = new GameObject("Runtime Controller").AddComponent<TestManagedUpdatesSceneController>();
 			_runtimeController.enabled = false;
@@ -116,8 +116,8 @@ namespace Miscreant.Lifecycle.RuntimeTests
 
 		public void StartUpdating()
 		{
-			_runtimeController.OnMonoBehaviourUpdate = manager.RunUpdate;
-			_runtimeController.OnMonoBehaviourFixedUpdate = manager.RunFixedUpdate;
+			_runtimeController.OnMonoBehaviourUpdate = system.RunUpdate;
+			_runtimeController.OnMonoBehaviourFixedUpdate = system.RunFixedUpdate;
 			_runtimeController.enabled = true;
 		}
 
@@ -133,7 +133,7 @@ namespace Miscreant.Lifecycle.RuntimeTests
 			StopUpdating();
 
 			Object.DestroyImmediate(_runtimeController.gameObject);
-			Object.DestroyImmediate(manager);
+			Object.DestroyImmediate(system);
 
 			foreach (var kvp in executionGroups)
 			{

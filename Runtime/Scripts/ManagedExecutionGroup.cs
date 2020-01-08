@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Miscreant.Lifecycle
 {
-	using UpdateType = CustomUpdateManager.UpdateType;
+	using UpdateType = ManagedExecutionSystem.UpdateType;
 
 	[CreateAssetMenu(menuName = nameof(Miscreant) + "/" + nameof(Miscreant.Lifecycle) + "/" + nameof(ManagedExecutionGroup))]
 	public sealed class ManagedExecutionGroup : ScriptableObject

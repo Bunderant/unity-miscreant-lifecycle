@@ -3,10 +3,10 @@ using UnityEngine;
 
 namespace Miscreant.Lifecycle.Editor
 {
-	using UpdateType = CustomUpdateManager.UpdateType;
+	using UpdateType = ManagedExecutionSystem.UpdateType;
 
 	/// <summary>
-	/// Class used exclusively for displaying CustomUpdateManager's runtime data in the inspector.
+	/// Class used exclusively for displaying execution system's runtime data in the inspector.
 	/// </summary>
 	public class CustomUpdateManager_RuntimeDisplayData : ScriptableObject
 	{
@@ -31,9 +31,9 @@ namespace Miscreant.Lifecycle.Editor
 			}
 		}
 
-		public void Initialize(CustomUpdateManager updateManager)
+		public void Initialize(ManagedExecutionSystem system)
 		{
-			int groupCount = updateManager.ExecutionGroups.Count;
+			int groupCount = system.ExecutionGroups.Count;
 
 			_executionGroups = new ManagedExecutionGroup[groupCount];
 			_updateGroups = new RuntimeGroup[groupCount];
@@ -44,7 +44,7 @@ namespace Miscreant.Lifecycle.Editor
 				List<ManagedUpdatesBehaviour> updateList = new List<ManagedUpdatesBehaviour>();
 				List<ManagedUpdatesBehaviour> fixedUpdateList = new List<ManagedUpdatesBehaviour>();
 
-				ManagedExecutionGroup currentGroup = updateManager.ExecutionGroups[i];
+				ManagedExecutionGroup currentGroup = system.ExecutionGroups[i];
 
 				currentGroup.TraverseForType(
 					UpdateType.Normal,

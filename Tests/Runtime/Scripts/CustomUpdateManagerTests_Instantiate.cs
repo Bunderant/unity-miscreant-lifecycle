@@ -54,10 +54,10 @@ namespace Miscreant.Lifecycle.RuntimeTests
 			);
 
 			// Assert
-			environment.manager.CheckSystemForComponent(components[0].GetInstanceID(), out bool updateFound, out bool fixedUpdateFound);
+			environment.system.FindComponent(components[0].GetInstanceID(), out bool updateFound, out bool fixedUpdateFound);
 			Assert.That(
 				(updateExpected == updateFound) && (fixedUpdateExpected == fixedUpdateFound),
-				$"Instantiated component should have at least one update callback registered with the manager, matching what was expected.\n" +
+				$"Instantiated component should have at least one update callback registered with the system, matching what was expected.\n" +
 					$"Update Expected/Result: {updateExpected}/{updateFound}\n" +
 					$"FixedUpdate Expected/Result: {fixedUpdateExpected}/{fixedUpdateFound}"
 			);
@@ -89,10 +89,10 @@ namespace Miscreant.Lifecycle.RuntimeTests
 			);
 
 			// Assert
-			environment.manager.CheckSystemForComponent(components[0].GetInstanceID(), out bool updateFound, out bool fixedUpdateFound);
+			environment.system.FindComponent(components[0].GetInstanceID(), out bool updateFound, out bool fixedUpdateFound);
 			Assert.That(
 				(updateExpected == updateFound) && (fixedUpdateExpected == fixedUpdateFound),
-				$"Instantiated component should not have any update callbacks registered with the manager.\n" +
+				$"Instantiated component should not have any update callbacks registered with the system.\n" +
 					$"Update Expected/Result: {updateExpected}/{updateFound}\n" +
 					$"FixedUpdate Expected/Result: {fixedUpdateExpected}/{fixedUpdateFound}"
 			);

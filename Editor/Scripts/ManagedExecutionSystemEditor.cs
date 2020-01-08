@@ -7,10 +7,10 @@ namespace Miscreant.Lifecycle.Editor
 {
 	using Editor = UnityEditor.Editor;
 
-	[CustomEditor(typeof(CustomUpdateManager))]
-	public class CustomUpdateManagerEditor : Editor
+	[CustomEditor(typeof(ManagedExecutionSystem))]
+	public class ManagedExecutionSystemEditor : Editor
 	{
-		private CustomUpdateManager _target;
+		private ManagedExecutionSystem _target;
 		private CustomUpdateManager_RuntimeDisplayData _latestData;
 		private ReorderableList _executionGroups;
 
@@ -33,7 +33,7 @@ namespace Miscreant.Lifecycle.Editor
 
 		private void OnEnable()
 		{
-			_target = (CustomUpdateManager)target;
+			_target = (ManagedExecutionSystem)target;
 			_executionGroups = new ReorderableList(
 				serializedObject,
 				serializedObject.FindProperty(nameof(_executionGroups)),
