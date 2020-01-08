@@ -1,6 +1,4 @@
-﻿#if !ENABLE_IL2CPP
-
-using System;
+﻿using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -20,6 +18,11 @@ namespace Miscreant.Lifecycle.RuntimeTests
 			50000
 		};
 
+		private IEnumerator RunPerformanceMeasurement()
+		{
+			yield return Measure.Frames().WarmupCount(WARMUP_FRAMES).MeasurementCount(MEASURED_FRAMES).Run();
+		}
+
 		[UnityTest]
 		[Performance]
 		public IEnumerator AllUpdates_Unmanaged([ValueSource(nameof(_sizes))] int size)
@@ -36,7 +39,7 @@ namespace Miscreant.Lifecycle.RuntimeTests
 				go.transform.SetParent(container);
 			}
 
-			yield return Measure.Frames().WarmupCount(WARMUP_FRAMES).MeasurementCount(MEASURED_FRAMES).Run();
+			yield return RunPerformanceMeasurement();
 
 			GameObject.DestroyImmediate(container.gameObject);
 		}
@@ -65,10 +68,8 @@ namespace Miscreant.Lifecycle.RuntimeTests
 
 				env.StartUpdating();
 
-				yield return Measure.Frames().WarmupCount(WARMUP_FRAMES).MeasurementCount(MEASURED_FRAMES).Run();
+				yield return RunPerformanceMeasurement();
 			}
 		}
 	}
 }
-
-#endif
