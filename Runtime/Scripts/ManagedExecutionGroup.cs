@@ -34,7 +34,7 @@ namespace Miscreant.Lifecycle
 		/// Does nothing if the component isn't active and enabled, or the update config flags are all false. 
 		/// </summary>
 		/// <param name="component">The component to try adding to this group's lists.</param>
-		public void TryRegister(CustomUpdateBehaviour component)
+		public void TryRegister(ManagedUpdatesBehaviour component)
 		{
 			// TODO: Miscreant: For a "strict" mode, should check to make sure this is actually the given component's execution group. 
 
@@ -55,7 +55,7 @@ namespace Miscreant.Lifecycle
 		/// Does nothing if the component is not already registered with the group. 
 		/// </summary>
 		/// <param name="component">The component to try removing from this group's lists.</param>
-		public void TryUnregister(CustomUpdateBehaviour component)
+		public void TryUnregister(ManagedUpdatesBehaviour component)
 		{
 			// TODO: Miscreant: For a "strict" mode, should check to make sure this is actually the given component's execution group. 
 
@@ -70,7 +70,7 @@ namespace Miscreant.Lifecycle
 			}
 		}
 
-		public void TraverseForType(UpdateType type, Action<CustomUpdateBehaviour> perElementAction)
+		public void TraverseForType(UpdateType type, Action<ManagedUpdatesBehaviour> perElementAction)
 		{
 			GetListForType(type).Traverse(perElementAction);
 		}

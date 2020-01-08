@@ -12,7 +12,7 @@
 			current = current.nextFixedUpdate;
 		}
 
-		internal override void AddToTail(CustomUpdateBehaviour component)
+		internal override void AddToTail(ManagedUpdatesBehaviour component)
 		{
 			if (!ReferenceEquals(component.nextFixedUpdate, null) || !ReferenceEquals(component.previousFixedUpdate, null))
 			{
@@ -31,7 +31,7 @@
 			Add(component, head.previousFixedUpdate, head);
 		}
 
-		private void Add(CustomUpdateBehaviour node, CustomUpdateBehaviour prev, CustomUpdateBehaviour next)
+		private void Add(ManagedUpdatesBehaviour node, ManagedUpdatesBehaviour prev, ManagedUpdatesBehaviour next)
 		{
 			node.nextFixedUpdate = next;
 			node.previousFixedUpdate = prev;
@@ -40,7 +40,7 @@
 			prev.nextFixedUpdate = node;
 		}
 
-		internal override void Remove(CustomUpdateBehaviour component)
+		internal override void Remove(ManagedUpdatesBehaviour component)
 		{
 			// Only need to check one of the link references. Since the lists are circular, if one of these refs is null, both must be null. 
 			if (ReferenceEquals(component.nextFixedUpdate, null))

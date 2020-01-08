@@ -81,12 +81,12 @@ namespace Miscreant.Lifecycle
 			bool didFindUpdate = false;
 			bool didFindFixedUpdate = false;
 
-			void CheckUpdate(CustomUpdateBehaviour component)
+			void CheckUpdate(ManagedUpdatesBehaviour component)
 			{
 				didFindUpdate |= (instanceId == component.GetInstanceID());
 			}
 
-			void CheckFixedUpdate(CustomUpdateBehaviour component)
+			void CheckFixedUpdate(ManagedUpdatesBehaviour component)
 			{
 				didFindFixedUpdate |= (instanceId == component.GetInstanceID());
 			}

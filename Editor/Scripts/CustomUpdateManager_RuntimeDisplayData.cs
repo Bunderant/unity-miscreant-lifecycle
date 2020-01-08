@@ -23,9 +23,9 @@ namespace Miscreant.Lifecycle.Editor
 		[System.Serializable]
 		public class RuntimeGroup
 		{
-			public CustomUpdateBehaviour[] value;
+			public ManagedUpdatesBehaviour[] value;
 
-			public RuntimeGroup(CustomUpdateBehaviour[] group)
+			public RuntimeGroup(ManagedUpdatesBehaviour[] group)
 			{
 				this.value = group;
 			}
@@ -41,8 +41,8 @@ namespace Miscreant.Lifecycle.Editor
 
 			for (int i = 0; i < groupCount; i++)
 			{
-				List<CustomUpdateBehaviour> updateList = new List<CustomUpdateBehaviour>();
-				List<CustomUpdateBehaviour> fixedUpdateList = new List<CustomUpdateBehaviour>();
+				List<ManagedUpdatesBehaviour> updateList = new List<ManagedUpdatesBehaviour>();
+				List<ManagedUpdatesBehaviour> fixedUpdateList = new List<ManagedUpdatesBehaviour>();
 
 				ManagedExecutionGroup currentGroup = updateManager.ExecutionGroups[i];
 

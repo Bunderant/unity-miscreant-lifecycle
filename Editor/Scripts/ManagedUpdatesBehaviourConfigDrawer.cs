@@ -3,8 +3,8 @@ using UnityEditor;
 
 namespace Miscreant.Lifecycle.Editor
 {
-	[CustomPropertyDrawer(typeof(CustomUpdateBehaviour.Config))]
-	public class CustomUpdateConfigDrawer : PropertyDrawer
+	[CustomPropertyDrawer(typeof(ManagedUpdatesBehaviour.Config))]
+	public class ManagedUpdatesBehaviourConfigDrawer : PropertyDrawer
 	{
 		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
 		{
@@ -41,7 +41,7 @@ namespace Miscreant.Lifecycle.Editor
 
 					foreach (var selection in selectedObjects)
 					{
-						var updateBehaviour = selection as CustomUpdateBehaviour;
+						var updateBehaviour = selection as ManagedUpdatesBehaviour;
 						if (updateBehaviour != null)
 						{
 							updateBehaviour.updateConfig.valueChangedAction?.Invoke(becameActive);

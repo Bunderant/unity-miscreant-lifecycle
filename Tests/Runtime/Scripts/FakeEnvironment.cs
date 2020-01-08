@@ -64,7 +64,7 @@ namespace Miscreant.Lifecycle.RuntimeTests
 			);
 		}
 
-		public void InstantiateManagedComponents<T>(string groupName, params ObjectToggleConfig[] toggleConfig) where T : CustomUpdateBehaviour
+		public void InstantiateManagedComponents<T>(string groupName, params ObjectToggleConfig[] toggleConfig) where T : ManagedUpdatesBehaviour
 		{
 			ManagedExecutionGroup group = executionGroups[groupName];
 			Transform containerTransform = _runtimeController.transform;
@@ -78,7 +78,7 @@ namespace Miscreant.Lifecycle.RuntimeTests
 		public void InstantiateManagedComponents<T>(
 			out T[] components,
 			string groupName,
-			params ObjectToggleConfig[] toggleConfig) where T : CustomUpdateBehaviour
+			params ObjectToggleConfig[] toggleConfig) where T : ManagedUpdatesBehaviour
 		{
 			ManagedExecutionGroup group = executionGroups[groupName];
 			Transform containerTransform = _runtimeController.transform;
@@ -93,10 +93,10 @@ namespace Miscreant.Lifecycle.RuntimeTests
 		private T InstantiateManagedUpdateGameObject<T>(
 			ManagedExecutionGroup group,
 			ObjectToggleConfig config,
-			Transform parent = null) where T : CustomUpdateBehaviour
+			Transform parent = null) where T : ManagedUpdatesBehaviour
 		{
-			return CustomUpdateBehaviour.Create<T>(
-				new CustomUpdateBehaviour.Config(
+			return ManagedUpdatesBehaviour.Create<T>(
+				new ManagedUpdatesBehaviour.Config(
 					group,
 					config.HasFlag(ObjectToggleConfig.Update),
 					config.HasFlag(ObjectToggleConfig.FixedUpdate)),
@@ -106,7 +106,7 @@ namespace Miscreant.Lifecycle.RuntimeTests
 			);
 		}
 
-		public void SetToggleConfig(CustomUpdateBehaviour component, ObjectToggleConfig toggleConfig)
+		public void SetToggleConfig(ManagedUpdatesBehaviour component, ObjectToggleConfig toggleConfig)
 		{
 			component.gameObject.SetActive(toggleConfig.HasFlag(ObjectToggleConfig.GameObjectActive));
 			component.enabled = toggleConfig.HasFlag(ObjectToggleConfig.ComponentEnabled);

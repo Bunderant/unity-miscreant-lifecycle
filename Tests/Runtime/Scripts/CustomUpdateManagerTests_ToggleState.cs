@@ -95,7 +95,7 @@ namespace Miscreant.Lifecycle.RuntimeTests
 			);
 
 			// Act
-			CustomUpdateBehaviour component = components[0];
+			ManagedUpdatesBehaviour component = components[0];
 			env.SetToggleConfig(component, finalConfig);
 
 			// Assert

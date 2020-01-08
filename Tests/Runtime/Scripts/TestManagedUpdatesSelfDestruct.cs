@@ -4,7 +4,7 @@ using UnityEngine.Events;
 
 namespace Miscreant.Lifecycle.RuntimeTests
 {
-	public sealed class TestManagedUpdatesSelfDestruct : CustomUpdateBehaviour
+	public sealed class TestManagedUpdatesSelfDestruct : ManagedUpdatesBehaviour
 	{
 		public UnityEvent OnSelfDestruct = new UnityEvent();
 		public const float DEFAULT_COUNTDOWN_DURATION = 0.5f;

@@ -1,6 +1,6 @@
 ﻿namespace Miscreant.Lifecycle.RuntimeTests
 {
-	public sealed class TestBasicManagedUpdatesComponent : CustomUpdateBehaviour
+	public sealed class TestBasicManagedUpdatesComponent : ManagedUpdatesBehaviour
 	{
 		public override void ManagedUpdate()
 		{

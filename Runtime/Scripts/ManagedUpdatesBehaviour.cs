@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Miscreant.Lifecycle
 {
-	public abstract class CustomUpdateBehaviour : MonoBehaviour
+	public abstract class ManagedUpdatesBehaviour : MonoBehaviour
 	{
 		[Serializable]
 		public struct Config
@@ -69,23 +69,23 @@ namespace Miscreant.Lifecycle
         /// Previous update link. ONLY modify from IntrusiveList or its subclasses. 
         /// </summary>
 		[NonSerialized]
-		internal CustomUpdateBehaviour previousUpdate;
+		internal ManagedUpdatesBehaviour previousUpdate;
 		/// <summary>
         /// Next update link. ONLY modify from IntrusiveList or its subclasses. 
         /// </summary>
 		[NonSerialized]
-		internal CustomUpdateBehaviour nextUpdate;
+		internal ManagedUpdatesBehaviour nextUpdate;
 
 		[NonSerialized]
 		/// <summary>
         /// Previous FIXED update link. ONLY modify from IntrusiveList or its subclasses. 
         /// </summary>
-		internal CustomUpdateBehaviour previousFixedUpdate;
+		internal ManagedUpdatesBehaviour previousFixedUpdate;
 		[NonSerialized]
 		/// <summary>
         /// Next FIXED update link. ONLY modify from IntrusiveList or its subclasses. 
         /// </summary>
-		internal CustomUpdateBehaviour nextFixedUpdate;
+		internal ManagedUpdatesBehaviour nextFixedUpdate;
 
 		// State Tracking
 		/// <summary>
@@ -97,7 +97,7 @@ namespace Miscreant.Lifecycle
 
 		public static T Create<T>(
 			Config config, bool gameObjectActive, bool componentEnabled, Transform parent = null
-			) where T : CustomUpdateBehaviour
+			) where T : ManagedUpdatesBehaviour
 		{
 			var gameObject = new GameObject();
 			gameObject.transform.SetParent(parent);

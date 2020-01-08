@@ -4,10 +4,10 @@ namespace Miscreant.Lifecycle
 {
 	internal abstract class IntrusiveList
 	{
-		public CustomUpdateBehaviour head = null;
+		public ManagedUpdatesBehaviour head = null;
 		public uint count = 0;
 
-		protected CustomUpdateBehaviour current;
+		protected ManagedUpdatesBehaviour current;
 
 		public void ExecuteAll()
 		{
@@ -25,7 +25,7 @@ namespace Miscreant.Lifecycle
 			current = null;
 		}
 
-		public void Traverse(Action<CustomUpdateBehaviour> perElementAction)
+		public void Traverse(Action<ManagedUpdatesBehaviour> perElementAction)
 		{
 			if (count == 0)
 			{
@@ -44,7 +44,7 @@ namespace Miscreant.Lifecycle
 		protected abstract void ExecuteCurrent();
 		protected abstract void Advance();
 
-		internal abstract void AddToTail(CustomUpdateBehaviour component);
-		internal abstract void Remove(CustomUpdateBehaviour component);
+		internal abstract void AddToTail(ManagedUpdatesBehaviour component);
+		internal abstract void Remove(ManagedUpdatesBehaviour component);
 	}
 }
