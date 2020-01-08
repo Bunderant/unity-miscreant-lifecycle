@@ -33,7 +33,7 @@ namespace Miscreant.Lifecycle
 		/// Once the manager is initialized with a non-empty group list, it can't be modified. 
 		/// </summary>
 		/// <param name="executionGroups">Execution groups to use with this manager</param>
-		public void SetUpdateGroups(params ManagedExecutionGroup[] executionGroups)
+		public void SetExecutionGroups(params ManagedExecutionGroup[] executionGroups)
 		{
 			// TODO: Miscreant: Additional validation on passed-in groups. 
 

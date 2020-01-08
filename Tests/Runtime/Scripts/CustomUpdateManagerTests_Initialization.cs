@@ -5,14 +5,27 @@ namespace Miscreant.Lifecycle.RuntimeTests
 {
 	public class CustomUpdateManagerTests_Initialization
 	{
+		private CustomUpdateManager _manager;
+
+		[SetUp]
+		public void SetUp()
+		{
+			_manager = ScriptableObject.CreateInstance<CustomUpdateManager>();
+		}
+
+		[TearDown]
+		public void TearDown()
+		{
+			Object.Destroy(_manager);
+			_manager = null;
+		}
+
 		[Test]
 		public void SetUpdateGroups_CalledOnSystemWithUnassignedGroupList_DoesNotThrowException()
 		{
-			var manager = ScriptableObject.CreateInstance<CustomUpdateManager>();
-
 			Assert.DoesNotThrow(
 				() => {
-					manager.SetUpdateGroups(new ManagedExecutionGroup[] {
+					_manager.SetExecutionGroups(new ManagedExecutionGroup[] {
 						ScriptableObject.CreateInstance<ManagedExecutionGroup>()
 					});
 				},
@@ -23,12 +36,11 @@ namespace Miscreant.Lifecycle.RuntimeTests
 		[Test]
 		public void SetUpdateGroups_CalledOnSystemWithEmptyGroupList_DoesNotThrowException()
 		{
-			var manager = ScriptableObject.CreateInstance<CustomUpdateManager>();
-			manager.SetUpdateGroups(new ManagedExecutionGroup[0]);
+			_manager.SetExecutionGroups(new ManagedExecutionGroup[0]);
 
 			Assert.DoesNotThrow(
 				() =>  {
-					manager.SetUpdateGroups(new ManagedExecutionGroup[] {
+					_manager.SetExecutionGroups(new ManagedExecutionGroup[] {
 						ScriptableObject.CreateInstance<ManagedExecutionGroup>()
 					});
 				},
@@ -39,14 +51,13 @@ namespace Miscreant.Lifecycle.RuntimeTests
 		[Test]
 		public void SetUpdateGroups_CalledOnSystemWithNonemptyGroupList_ThrowsException()
 		{
-			var manager = ScriptableObject.CreateInstance<CustomUpdateManager>();
-			manager.SetUpdateGroups(new ManagedExecutionGroup[] {
+			_manager.SetExecutionGroups(new ManagedExecutionGroup[] {
 				ScriptableObject.CreateInstance<ManagedExecutionGroup>()
 			});
 
 			Assert.That(
 				() => {
-					manager.SetUpdateGroups(new ManagedExecutionGroup[] {
+					_manager.SetExecutionGroups(new ManagedExecutionGroup[] {
 						ScriptableObject.CreateInstance<ManagedExecutionGroup>()
 					});
 				},

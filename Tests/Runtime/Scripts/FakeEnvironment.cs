@@ -47,7 +47,7 @@ namespace Miscreant.Lifecycle.RuntimeTests
 			this.executionGroups = new ReadOnlyDictionary<string, ManagedExecutionGroup>(groupLookup);
 
 			manager = ScriptableObject.CreateInstance<CustomUpdateManager>();
-			manager.SetUpdateGroups(executionGroups);
+			manager.SetExecutionGroups(executionGroups);
 
 			_runtimeController = new GameObject("Runtime Controller").AddComponent<TestManagedUpdatesSceneController>();
 			_runtimeController.enabled = false;
