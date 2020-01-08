@@ -5,7 +5,7 @@ namespace Miscreant.Lifecycle.RuntimeTests
 {
 	using ObjectToggleConfig = FakeEnvironment.ObjectToggleConfig;
 
-	public sealed class CustomUpdateManagerTests_ToggleState
+	public sealed class ManagedExecutionSystemTests_ToggleState
 	{
 		private FakeEnvironment _environment;
 

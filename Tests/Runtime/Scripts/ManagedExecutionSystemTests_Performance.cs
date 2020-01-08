@@ -9,7 +9,7 @@ using Unity.PerformanceTesting;
 
 namespace Miscreant.Lifecycle.RuntimeTests
 {
-	public sealed class CustomUpdateManagerTests_Performance
+	public sealed class ManagedExecutionSystemTests_Performance
 	{
 		private const int WARMUP_FRAMES = 60;
 		private const int MEASURED_FRAMES = 30;

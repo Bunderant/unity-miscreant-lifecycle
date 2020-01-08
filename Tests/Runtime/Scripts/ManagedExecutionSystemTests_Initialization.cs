@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace Miscreant.Lifecycle.RuntimeTests
 {
-	public class CustomUpdateManagerTests_Initialization
+	public class ManagedExecutionSystemTests_Initialization
 	{
 		private ManagedExecutionSystem _system;
 

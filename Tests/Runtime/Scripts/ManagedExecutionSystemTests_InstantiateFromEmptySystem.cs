@@ -1,6 +1,6 @@
 ﻿namespace Miscreant.Lifecycle.RuntimeTests
 {
-	public sealed class CustomUpdateManagerTests_InstantiateFromEmptySystem : CustomUpdateManagerTests_Instantiate
+	public sealed class ManagedExecutionSystemTests_InstantiateFromEmptySystem : ManagedExecutionSystemTests_Instantiate
 	{
 		protected override void SetUpEnvironment()
 		{

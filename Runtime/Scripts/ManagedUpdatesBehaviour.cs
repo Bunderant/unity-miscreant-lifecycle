@@ -165,4 +165,3 @@ namespace Miscreant.Lifecycle
 		public virtual void ManagedFixedUpdate() { }
 	}
 }
-

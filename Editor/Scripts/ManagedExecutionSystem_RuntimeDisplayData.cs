@@ -8,7 +8,7 @@ namespace Miscreant.Lifecycle.Editor
 	/// <summary>
 	/// Class used exclusively for displaying execution system's runtime data in the inspector.
 	/// </summary>
-	public class CustomUpdateManager_RuntimeDisplayData : ScriptableObject
+	public class ManagedExecutionSystem_RuntimeDisplayData : ScriptableObject
 	{
 		[SerializeField]
 		private ManagedExecutionGroup[] _executionGroups;

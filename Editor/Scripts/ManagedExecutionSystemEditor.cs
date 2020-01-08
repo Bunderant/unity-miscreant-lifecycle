@@ -11,7 +11,7 @@ namespace Miscreant.Lifecycle.Editor
 	public class ManagedExecutionSystemEditor : Editor
 	{
 		private ManagedExecutionSystem _target;
-		private CustomUpdateManager_RuntimeDisplayData _latestData;
+		private ManagedExecutionSystem_RuntimeDisplayData _latestData;
 		private ReorderableList _executionGroups;
 
 		private List<ManagedExecutionGroup> _lastSavedExecutionGroups;
@@ -74,7 +74,7 @@ namespace Miscreant.Lifecycle.Editor
 			_runtimeGroupVisibility = new bool[_executionGroups.count];
 			_runtimeGroupScrollPositions = new Vector2[_executionGroups.count];
 
-			_latestData = ScriptableObject.CreateInstance<CustomUpdateManager_RuntimeDisplayData>();
+			_latestData = ScriptableObject.CreateInstance<ManagedExecutionSystem_RuntimeDisplayData>();
 
 			EditorApplication.update += OnUpdate;
 		}
