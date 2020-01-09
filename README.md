@@ -39,14 +39,3 @@ If you'd like to use the Test Runner to verify basic functionality on your targe
 ```
 
 Now, all of the tests for this project should appear in the Test Runner window.
-
-As of version 2.0.3-preview, Unity's Performance Testing Extension (a dependency in this project) has some reflection-related assembly stripping bugs. To run performance tests in builds, you'll need to prevent stripping of the associated assemblies via your project's **link.xml** file. If you don't have one, create it under your **Assets** directory, then add this: 
-
-```
-<linker>
-	<assembly fullname="Unity.PerformanceTesting" preserve="all"/>
-	<assembly fullname="Newtonsoft.Json" preserve="all"/>
-</linker>
-```
-
-Now, you should be able to run performance tests in your builds. For more information on Unity's performance testing framework, [take a look here](https://docs.unity3d.com/Packages/com.unity.test-framework.performance@2.0/manual/index.html "Official Unity Docs").
