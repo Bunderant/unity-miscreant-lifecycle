@@ -18,7 +18,7 @@ As of now, this requires at least Unity 2019.3.0. Given the likely use case of o
 
 ## Installation
 
-To add this to your Unity project, copy [the repo's URL](https://github.com/Bunderant/unity-miscreant-lifecycle.git) and add it via the '+' icon in Unity's Package Manager window. 
+To add this to your Unity project, copy the repo's URL (https://github.com/Bunderant/unity-miscreant-lifecycle.git) and add it via the '+' icon in Unity's Package Manager window. 
 
 ## Testing
 
