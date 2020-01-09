@@ -22,7 +22,7 @@ To add this to your Unity project, copy the repo's URL (https://github.com/Bunde
 
 ## Testing
 
-If you'd like to use the Test Runner to verify basic functionality on your target platforms, navigate to your project's **Packages** directory (same level as **Assets**), then open **manifest.json**. After the `dependencies` object, insert a `testables` array containing **com.miscreant.lifecycle**. Your manifest should look something like this:
+If you'd like to use the Test Runner to verify basic functionality on your target platforms, navigate to your project's **Packages** directory (same level as **Assets**), then open **manifest.json**. After the `dependencies` object, insert a `testables` array containing `com.miscreant.lifecycle`. Your manifest should look something like this:
 
 ```
 {
