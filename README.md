@@ -10,7 +10,7 @@ Given the emergence of Unity's "Data Oriented Tech Stack" (DOTS), that's a very 
 
 If you have an existing project with thousands of updating components, this may be a good fit if your application's performance is CPU bound and you've found yourself micro-optimizing to shave fractions of milliseconds off your frame time. 
 
-This may also be a good fit if your project requires different execution orders for groups of Components of the same type. The system requires that each instance of a Component using it be assigned a group reference, which is implemented as a ScriptableObject. The manager provides a reorderable list inspector to specify the execution order of the groups it will process.  
+This may also be a good fit if your project requires different execution orders for groups of Components of the same type. Each instance of a Component must have an execution group assigned, which are implemented as ScriptableObjects. The system provides a reorderable list inspector to specify the execution order of the groups it will process.  
 
 ## Supported Unity Versions
 
@@ -18,7 +18,11 @@ As of now, this requires at least Unity 2019.3.0. Given the likely use case of o
 
 ## Installation
 
-To add this to your Unity project, copy the repo's URL (https://github.com/Bunderant/unity-miscreant-lifecycle.git) and add it via the '+' icon in Unity's Package Manager window. If you'd like to use the Test Runner to verify basic functionality on your target platforms, navigate to your project's "Packages" directory (same level as Assets), then open "manifest.json". After the "dependencies" object, insert a "testables" array containing "com.miscreant.lifecycle". Your manifest should look something like this:
+To add this to your Unity project, copy [the repo's URL](https://github.com/Bunderant/unity-miscreant-lifecycle.git) and add it via the '+' icon in Unity's Package Manager window. 
+
+## Testing
+
+If you'd like to use the Test Runner to verify basic functionality on your target platforms, navigate to your project's **Packages** directory (same level as **Assets**), then open **manifest.json**. After the `dependencies` object, insert a `testables` array containing **com.miscreant.lifecycle**. Your manifest should look something like this:
 
 ```
 {
@@ -34,4 +38,15 @@ To add this to your Unity project, copy the repo's URL (https://github.com/Bunde
 }
 ```
 
-Now, all of the tests for this project should appear in the Test Runner window. Note that the performance tests aren't currently supported in IL2CPP builds. 
+Now, all of the tests for this project should appear in the Test Runner window.
+
+As of version 2.0.3-preview, Unity's Performance Testing Extension (a dependency in this project) has some reflection-related assembly stripping bugs. To run performance tests in builds, you'll need to prevent stripping of the associated assemblies via your project's **link.xml** file. If you don't have one, create it under your **Assets** directory, then add this: 
+
+```
+<linker>
+	<assembly fullname="Unity.PerformanceTesting" preserve="all"/>
+	<assembly fullname="Newtonsoft.Json" preserve="all"/>
+</linker>
+```
+
+Now, you should be able to run performance tests in your builds. For more information on Unity's performance testing framework, [take a look here](https://docs.unity3d.com/Packages/com.unity.test-framework.performance@2.0/manual/index.html "Official Unity Docs").
