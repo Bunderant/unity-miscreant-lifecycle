@@ -1,4 +1,4 @@
-# Managed Update System
+# Managed Execution System
 
 (Disclaimer: this project is in-development, so beware if using in a production environment. That said, as of v0.1.0, the runtime assembly has 100% test coverage, and I'll be making sure that's the case for any future releases as well.)
 
