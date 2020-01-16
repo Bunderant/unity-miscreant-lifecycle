@@ -45,15 +45,6 @@ MiscreantUtilities
 							Instantiate_SingleObjectInstantiated_NotAddedToSystem(Update, FixedUpdate)
 							Instantiate_SingleObjectInstantiated_NotAddedToSystem(GameObjectActive, Update, FixedUpdate)
 							Instantiate_SingleObjectInstantiated_NotAddedToSystem(ComponentEnabled, Update, FixedUpdate)
-					ManagedExecutionSystemTests_Performance
-						AllUpdates_Managed
-							AllUpdates_Managed(1000)
-							AllUpdates_Managed(10000)
-							AllUpdates_Managed(50000)
-						AllUpdates_Unmanaged
-							AllUpdates_Unmanaged(1000)
-							AllUpdates_Unmanaged(10000)
-							AllUpdates_Unmanaged(50000)
 					ManagedExecutionSystemTests_SelfDestruct
 						DestroyGameObject_SelfDestructAllOneByOneFromManagedCallbacks_AllRemovedFromSystem
 							DestroyGameObject_SelfDestructAllOneByOneFromManagedCallbacks_AllRemovedFromSystem(UpdateActiveAndEnabled)
