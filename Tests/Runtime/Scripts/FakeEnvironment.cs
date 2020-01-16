@@ -16,12 +16,7 @@ namespace Miscreant.Lifecycle.RuntimeTests
 			GameObjectActive	= 1 << 0,
 			ComponentEnabled	= 1 << 1,
 			Update				= 1 << 2,
-			FixedUpdate			= 1 << 3,
-
-			AllActiveAndEnabled = GameObjectActive | ComponentEnabled | Update | FixedUpdate,
-			UpdateActiveAndEnabled = AllActiveAndEnabled & ~FixedUpdate,
-			FixedUpdateActiveAndEnabled = AllActiveAndEnabled & ~Update,
-			NoUpdatesActiveAndEnabled = GameObjectActive | ComponentEnabled
+			FixedUpdate			= 1 << 3
 		}
 
 		public readonly ManagedExecutionSystem system;

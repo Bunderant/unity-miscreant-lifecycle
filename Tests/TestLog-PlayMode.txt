@@ -9,14 +9,14 @@ MiscreantUtilities
 						SetUpdateGroups_CalledOnSystemWithUnassignedGroupList_DoesNotThrowException
 					ManagedExecutionSystemTests_InstantiateFromEmptySystem
 						Instantiate_SingleObjectInstantiated_AddedToSystem
-							Instantiate_SingleObjectInstantiated_AddedToSystem(UpdateActiveAndEnabled)
-							Instantiate_SingleObjectInstantiated_AddedToSystem(FixedUpdateActiveAndEnabled)
-							Instantiate_SingleObjectInstantiated_AddedToSystem(AllActiveAndEnabled)
+							Instantiate_SingleObjectInstantiated_AddedToSystem(GameObjectActive, ComponentEnabled, Update)
+							Instantiate_SingleObjectInstantiated_AddedToSystem(GameObjectActive, ComponentEnabled, FixedUpdate)
+							Instantiate_SingleObjectInstantiated_AddedToSystem(GameObjectActive, ComponentEnabled, Update, FixedUpdate)
 						Instantiate_SingleObjectInstantiated_NotAddedToSystem
 							Instantiate_SingleObjectInstantiated_NotAddedToSystem(None)
 							Instantiate_SingleObjectInstantiated_NotAddedToSystem(GameObjectActive)
 							Instantiate_SingleObjectInstantiated_NotAddedToSystem(ComponentEnabled)
-							Instantiate_SingleObjectInstantiated_NotAddedToSystem(NoUpdatesActiveAndEnabled)
+							Instantiate_SingleObjectInstantiated_NotAddedToSystem(GameObjectActive, ComponentEnabled)
 							Instantiate_SingleObjectInstantiated_NotAddedToSystem(Update)
 							Instantiate_SingleObjectInstantiated_NotAddedToSystem(GameObjectActive, Update)
 							Instantiate_SingleObjectInstantiated_NotAddedToSystem(ComponentEnabled, Update)
@@ -28,14 +28,14 @@ MiscreantUtilities
 							Instantiate_SingleObjectInstantiated_NotAddedToSystem(ComponentEnabled, Update, FixedUpdate)
 					ManagedExecutionSystemTests_InstantiateFromPopulatedSystem
 						Instantiate_SingleObjectInstantiated_AddedToSystem
-							Instantiate_SingleObjectInstantiated_AddedToSystem(UpdateActiveAndEnabled)
-							Instantiate_SingleObjectInstantiated_AddedToSystem(FixedUpdateActiveAndEnabled)
-							Instantiate_SingleObjectInstantiated_AddedToSystem(AllActiveAndEnabled)
+							Instantiate_SingleObjectInstantiated_AddedToSystem(GameObjectActive, ComponentEnabled, Update)
+							Instantiate_SingleObjectInstantiated_AddedToSystem(GameObjectActive, ComponentEnabled, FixedUpdate)
+							Instantiate_SingleObjectInstantiated_AddedToSystem(GameObjectActive, ComponentEnabled, Update, FixedUpdate)
 						Instantiate_SingleObjectInstantiated_NotAddedToSystem
 							Instantiate_SingleObjectInstantiated_NotAddedToSystem(None)
 							Instantiate_SingleObjectInstantiated_NotAddedToSystem(GameObjectActive)
 							Instantiate_SingleObjectInstantiated_NotAddedToSystem(ComponentEnabled)
-							Instantiate_SingleObjectInstantiated_NotAddedToSystem(NoUpdatesActiveAndEnabled)
+							Instantiate_SingleObjectInstantiated_NotAddedToSystem(GameObjectActive, ComponentEnabled)
 							Instantiate_SingleObjectInstantiated_NotAddedToSystem(Update)
 							Instantiate_SingleObjectInstantiated_NotAddedToSystem(GameObjectActive, Update)
 							Instantiate_SingleObjectInstantiated_NotAddedToSystem(ComponentEnabled, Update)
@@ -47,35 +47,35 @@ MiscreantUtilities
 							Instantiate_SingleObjectInstantiated_NotAddedToSystem(ComponentEnabled, Update, FixedUpdate)
 					ManagedExecutionSystemTests_SelfDestruct
 						DestroyGameObject_SelfDestructAllOneByOneFromManagedCallbacks_AllRemovedFromSystem
-							DestroyGameObject_SelfDestructAllOneByOneFromManagedCallbacks_AllRemovedFromSystem(UpdateActiveAndEnabled)
-							DestroyGameObject_SelfDestructAllOneByOneFromManagedCallbacks_AllRemovedFromSystem(FixedUpdateActiveAndEnabled)
-							DestroyGameObject_SelfDestructAllOneByOneFromManagedCallbacks_AllRemovedFromSystem(AllActiveAndEnabled)
+							DestroyGameObject_SelfDestructAllOneByOneFromManagedCallbacks_AllRemovedFromSystem(GameObjectActive, ComponentEnabled, Update)
+							DestroyGameObject_SelfDestructAllOneByOneFromManagedCallbacks_AllRemovedFromSystem(GameObjectActive, ComponentEnabled, FixedUpdate)
+							DestroyGameObject_SelfDestructAllOneByOneFromManagedCallbacks_AllRemovedFromSystem(GameObjectActive, ComponentEnabled, Update, FixedUpdate)
 					ManagedExecutionSystemTests_ToggleState
 						TryAdd_SingleComponentToggledOn_CorrectFlagsAddedToSystem
 							TryAdd_SingleComponentToggledOn_CorrectFlagsAddedToSystem(GameObjectActive, Update)
 							TryAdd_SingleComponentToggledOn_CorrectFlagsAddedToSystem(GameObjectActive, FixedUpdate)
 							TryAdd_SingleComponentToggledOn_CorrectFlagsAddedToSystem(GameObjectActive, Update, FixedUpdate)
 						TryAdd_SingleFixedUpdateFlagToggledOn_CorrectFlagsAddedToSystem
-							TryAdd_SingleFixedUpdateFlagToggledOn_CorrectFlagsAddedToSystem(UpdateActiveAndEnabled)
-							TryAdd_SingleFixedUpdateFlagToggledOn_CorrectFlagsAddedToSystem(NoUpdatesActiveAndEnabled)
+							TryAdd_SingleFixedUpdateFlagToggledOn_CorrectFlagsAddedToSystem(GameObjectActive, ComponentEnabled, Update)
+							TryAdd_SingleFixedUpdateFlagToggledOn_CorrectFlagsAddedToSystem(GameObjectActive, ComponentEnabled)
 						TryAdd_SingleGameObjectToggledOn_CorrectFlagsAddedToSystem
 							TryAdd_SingleGameObjectToggledOn_CorrectFlagsAddedToSystem(ComponentEnabled, Update)
 							TryAdd_SingleGameObjectToggledOn_CorrectFlagsAddedToSystem(ComponentEnabled, FixedUpdate)
 							TryAdd_SingleGameObjectToggledOn_CorrectFlagsAddedToSystem(ComponentEnabled, Update, FixedUpdate)
 						TryAdd_SingleUpdateFlagToggledOn_CorrectFlagsAddedToSystem
-							TryAdd_SingleUpdateFlagToggledOn_CorrectFlagsAddedToSystem(NoUpdatesActiveAndEnabled)
-							TryAdd_SingleUpdateFlagToggledOn_CorrectFlagsAddedToSystem(FixedUpdateActiveAndEnabled)
+							TryAdd_SingleUpdateFlagToggledOn_CorrectFlagsAddedToSystem(GameObjectActive, ComponentEnabled)
+							TryAdd_SingleUpdateFlagToggledOn_CorrectFlagsAddedToSystem(GameObjectActive, ComponentEnabled, FixedUpdate)
 						TryRemove_SingleComponentToggledOff_RemovedFromSystem
-							TryRemove_SingleComponentToggledOff_RemovedFromSystem(UpdateActiveAndEnabled)
-							TryRemove_SingleComponentToggledOff_RemovedFromSystem(FixedUpdateActiveAndEnabled)
-							TryRemove_SingleComponentToggledOff_RemovedFromSystem(AllActiveAndEnabled)
+							TryRemove_SingleComponentToggledOff_RemovedFromSystem(GameObjectActive, ComponentEnabled, Update)
+							TryRemove_SingleComponentToggledOff_RemovedFromSystem(GameObjectActive, ComponentEnabled, FixedUpdate)
+							TryRemove_SingleComponentToggledOff_RemovedFromSystem(GameObjectActive, ComponentEnabled, Update, FixedUpdate)
 						TryRemove_SingleFixedUpdateToggledOff_RemovedFromSystem
-							TryRemove_SingleFixedUpdateToggledOff_RemovedFromSystem(FixedUpdateActiveAndEnabled)
-							TryRemove_SingleFixedUpdateToggledOff_RemovedFromSystem(AllActiveAndEnabled)
+							TryRemove_SingleFixedUpdateToggledOff_RemovedFromSystem(GameObjectActive, ComponentEnabled, FixedUpdate)
+							TryRemove_SingleFixedUpdateToggledOff_RemovedFromSystem(GameObjectActive, ComponentEnabled, Update, FixedUpdate)
 						TryRemove_SingleGameObjectToggledOff_RemovedFromSystem
-							TryRemove_SingleGameObjectToggledOff_RemovedFromSystem(UpdateActiveAndEnabled)
-							TryRemove_SingleGameObjectToggledOff_RemovedFromSystem(FixedUpdateActiveAndEnabled)
-							TryRemove_SingleGameObjectToggledOff_RemovedFromSystem(AllActiveAndEnabled)
+							TryRemove_SingleGameObjectToggledOff_RemovedFromSystem(GameObjectActive, ComponentEnabled, Update)
+							TryRemove_SingleGameObjectToggledOff_RemovedFromSystem(GameObjectActive, ComponentEnabled, FixedUpdate)
+							TryRemove_SingleGameObjectToggledOff_RemovedFromSystem(GameObjectActive, ComponentEnabled, Update, FixedUpdate)
 						TryRemove_SingleUpdateToggledOff_RemovedFromSystem
-							TryRemove_SingleUpdateToggledOff_RemovedFromSystem(UpdateActiveAndEnabled)
-							TryRemove_SingleUpdateToggledOff_RemovedFromSystem(AllActiveAndEnabled)
+							TryRemove_SingleUpdateToggledOff_RemovedFromSystem(GameObjectActive, ComponentEnabled, Update)
+							TryRemove_SingleUpdateToggledOff_RemovedFromSystem(GameObjectActive, ComponentEnabled, Update, FixedUpdate)
