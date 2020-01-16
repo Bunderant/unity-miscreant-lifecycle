@@ -7,44 +7,43 @@ MiscreantUtilities
 						SetUpdateGroups_CalledOnSystemWithEmptyGroupList_DoesNotThrowException
 						SetUpdateGroups_CalledOnSystemWithNonemptyGroupList_ThrowsException
 						SetUpdateGroups_CalledOnSystemWithUnassignedGroupList_DoesNotThrowException
-					ManagedExecutionSystemTests_InstantiateFromEmptySystem
-						Instantiate_SingleObjectInstantiated_AddedToSystem
-							Instantiate_SingleObjectInstantiated_AddedToSystem(GameObjectActive, ComponentEnabled, Update)
-							Instantiate_SingleObjectInstantiated_AddedToSystem(GameObjectActive, ComponentEnabled, FixedUpdate)
-							Instantiate_SingleObjectInstantiated_AddedToSystem(GameObjectActive, ComponentEnabled, Update, FixedUpdate)
-						Instantiate_SingleObjectInstantiated_NotAddedToSystem
-							Instantiate_SingleObjectInstantiated_NotAddedToSystem(None)
-							Instantiate_SingleObjectInstantiated_NotAddedToSystem(GameObjectActive)
-							Instantiate_SingleObjectInstantiated_NotAddedToSystem(ComponentEnabled)
-							Instantiate_SingleObjectInstantiated_NotAddedToSystem(GameObjectActive, ComponentEnabled)
-							Instantiate_SingleObjectInstantiated_NotAddedToSystem(Update)
-							Instantiate_SingleObjectInstantiated_NotAddedToSystem(GameObjectActive, Update)
-							Instantiate_SingleObjectInstantiated_NotAddedToSystem(ComponentEnabled, Update)
-							Instantiate_SingleObjectInstantiated_NotAddedToSystem(FixedUpdate)
-							Instantiate_SingleObjectInstantiated_NotAddedToSystem(GameObjectActive, FixedUpdate)
-							Instantiate_SingleObjectInstantiated_NotAddedToSystem(ComponentEnabled, FixedUpdate)
-							Instantiate_SingleObjectInstantiated_NotAddedToSystem(Update, FixedUpdate)
-							Instantiate_SingleObjectInstantiated_NotAddedToSystem(GameObjectActive, Update, FixedUpdate)
-							Instantiate_SingleObjectInstantiated_NotAddedToSystem(ComponentEnabled, Update, FixedUpdate)
-					ManagedExecutionSystemTests_InstantiateFromPopulatedSystem
-						Instantiate_SingleObjectInstantiated_AddedToSystem
-							Instantiate_SingleObjectInstantiated_AddedToSystem(GameObjectActive, ComponentEnabled, Update)
-							Instantiate_SingleObjectInstantiated_AddedToSystem(GameObjectActive, ComponentEnabled, FixedUpdate)
-							Instantiate_SingleObjectInstantiated_AddedToSystem(GameObjectActive, ComponentEnabled, Update, FixedUpdate)
-						Instantiate_SingleObjectInstantiated_NotAddedToSystem
-							Instantiate_SingleObjectInstantiated_NotAddedToSystem(None)
-							Instantiate_SingleObjectInstantiated_NotAddedToSystem(GameObjectActive)
-							Instantiate_SingleObjectInstantiated_NotAddedToSystem(ComponentEnabled)
-							Instantiate_SingleObjectInstantiated_NotAddedToSystem(GameObjectActive, ComponentEnabled)
-							Instantiate_SingleObjectInstantiated_NotAddedToSystem(Update)
-							Instantiate_SingleObjectInstantiated_NotAddedToSystem(GameObjectActive, Update)
-							Instantiate_SingleObjectInstantiated_NotAddedToSystem(ComponentEnabled, Update)
-							Instantiate_SingleObjectInstantiated_NotAddedToSystem(FixedUpdate)
-							Instantiate_SingleObjectInstantiated_NotAddedToSystem(GameObjectActive, FixedUpdate)
-							Instantiate_SingleObjectInstantiated_NotAddedToSystem(ComponentEnabled, FixedUpdate)
-							Instantiate_SingleObjectInstantiated_NotAddedToSystem(Update, FixedUpdate)
-							Instantiate_SingleObjectInstantiated_NotAddedToSystem(GameObjectActive, Update, FixedUpdate)
-							Instantiate_SingleObjectInstantiated_NotAddedToSystem(ComponentEnabled, Update, FixedUpdate)
+					ManagedExecutionSystemTests_Instantiate
+						Instantiate_SingleObjectInstantiatedFromEmpty_AddedToSystem
+							Instantiate_SingleObjectInstantiatedFromEmpty_AddedToSystem(GameObjectActive, ComponentEnabled, Update)
+							Instantiate_SingleObjectInstantiatedFromEmpty_AddedToSystem(GameObjectActive, ComponentEnabled, FixedUpdate)
+							Instantiate_SingleObjectInstantiatedFromEmpty_AddedToSystem(GameObjectActive, ComponentEnabled, Update, FixedUpdate)
+						Instantiate_SingleObjectInstantiatedFromEmpty_NotAddedToSystem
+							Instantiate_SingleObjectInstantiatedFromEmpty_NotAddedToSystem(None)
+							Instantiate_SingleObjectInstantiatedFromEmpty_NotAddedToSystem(GameObjectActive)
+							Instantiate_SingleObjectInstantiatedFromEmpty_NotAddedToSystem(ComponentEnabled)
+							Instantiate_SingleObjectInstantiatedFromEmpty_NotAddedToSystem(GameObjectActive, ComponentEnabled)
+							Instantiate_SingleObjectInstantiatedFromEmpty_NotAddedToSystem(Update)
+							Instantiate_SingleObjectInstantiatedFromEmpty_NotAddedToSystem(GameObjectActive, Update)
+							Instantiate_SingleObjectInstantiatedFromEmpty_NotAddedToSystem(ComponentEnabled, Update)
+							Instantiate_SingleObjectInstantiatedFromEmpty_NotAddedToSystem(FixedUpdate)
+							Instantiate_SingleObjectInstantiatedFromEmpty_NotAddedToSystem(GameObjectActive, FixedUpdate)
+							Instantiate_SingleObjectInstantiatedFromEmpty_NotAddedToSystem(ComponentEnabled, FixedUpdate)
+							Instantiate_SingleObjectInstantiatedFromEmpty_NotAddedToSystem(Update, FixedUpdate)
+							Instantiate_SingleObjectInstantiatedFromEmpty_NotAddedToSystem(GameObjectActive, Update, FixedUpdate)
+							Instantiate_SingleObjectInstantiatedFromEmpty_NotAddedToSystem(ComponentEnabled, Update, FixedUpdate)
+						Instantiate_SingleObjectInstantiatedFromPopulated_AddedToSystem
+							Instantiate_SingleObjectInstantiatedFromPopulated_AddedToSystem(GameObjectActive, ComponentEnabled, Update)
+							Instantiate_SingleObjectInstantiatedFromPopulated_AddedToSystem(GameObjectActive, ComponentEnabled, FixedUpdate)
+							Instantiate_SingleObjectInstantiatedFromPopulated_AddedToSystem(GameObjectActive, ComponentEnabled, Update, FixedUpdate)
+						Instantiate_SingleObjectInstantiatedFromPopulated_NotAddedToSystem
+							Instantiate_SingleObjectInstantiatedFromPopulated_NotAddedToSystem(None)
+							Instantiate_SingleObjectInstantiatedFromPopulated_NotAddedToSystem(GameObjectActive)
+							Instantiate_SingleObjectInstantiatedFromPopulated_NotAddedToSystem(ComponentEnabled)
+							Instantiate_SingleObjectInstantiatedFromPopulated_NotAddedToSystem(GameObjectActive, ComponentEnabled)
+							Instantiate_SingleObjectInstantiatedFromPopulated_NotAddedToSystem(Update)
+							Instantiate_SingleObjectInstantiatedFromPopulated_NotAddedToSystem(GameObjectActive, Update)
+							Instantiate_SingleObjectInstantiatedFromPopulated_NotAddedToSystem(ComponentEnabled, Update)
+							Instantiate_SingleObjectInstantiatedFromPopulated_NotAddedToSystem(FixedUpdate)
+							Instantiate_SingleObjectInstantiatedFromPopulated_NotAddedToSystem(GameObjectActive, FixedUpdate)
+							Instantiate_SingleObjectInstantiatedFromPopulated_NotAddedToSystem(ComponentEnabled, FixedUpdate)
+							Instantiate_SingleObjectInstantiatedFromPopulated_NotAddedToSystem(Update, FixedUpdate)
+							Instantiate_SingleObjectInstantiatedFromPopulated_NotAddedToSystem(GameObjectActive, Update, FixedUpdate)
+							Instantiate_SingleObjectInstantiatedFromPopulated_NotAddedToSystem(ComponentEnabled, Update, FixedUpdate)
 					ManagedExecutionSystemTests_SelfDestruct
 						DestroyGameObject_SelfDestructAllOneByOneFromManagedCallbacks_AllRemovedFromSystem
 							DestroyGameObject_SelfDestructAllOneByOneFromManagedCallbacks_AllRemovedFromSystem(GameObjectActive, ComponentEnabled, Update)

@@ -5,34 +5,36 @@ namespace Miscreant.Lifecycle.RuntimeTests
 {
 	using ObjectToggleConfig = FakeEnvironment.ObjectToggleConfig;
 
-	public abstract class ManagedExecutionSystemTests_Instantiate
+	public sealed class ManagedExecutionSystemTests_Instantiate
 	{
-		protected FakeEnvironment environment;
+		private FakeEnvironment _environment;
 
 		[SetUp]
 		public void SetUp()
 		{
-			SetUpEnvironment();
+			_environment = new FakeEnvironment(TestData.DEFAULT_GROUP_NAME);
 		}
 
 		[TearDown]
 		public void TearDown()
 		{
-			TearDownEnvironment();
+			_environment.Dispose();
+			_environment = null;
 		}
 
-		protected abstract void SetUpEnvironment();
-		private void TearDownEnvironment()
+		private void PopulateEnvironment()
 		{
-			environment.Dispose();
-			environment = null;
+			_environment.InstantiateManagedComponents<TestBasicManagedUpdatesComponent>(
+				TestData.DEFAULT_GROUP_NAME,
+				TestData.allTogglePermutations
+			);
 		}
 
 		[Test]
 		[TestCaseSource(typeof(TestData), nameof(TestData.allActiveTogglePermutations))]
-		public void Instantiate_SingleObjectInstantiated_AddedToSystem(ObjectToggleConfig config)
+		public void Instantiate_SingleObjectInstantiatedFromEmpty_AddedToSystem(ObjectToggleConfig config)
 		{
-			// Arrange
+			// Validatate test case input
 			FakeEnvironment.GetExpectedUpdateFlagsFromConfig(
 				config,
 				out bool updateExpected,
@@ -47,14 +49,14 @@ namespace Miscreant.Lifecycle.RuntimeTests
 			}
 
 			// Act
-			environment.InstantiateManagedComponents<TestBasicManagedUpdatesComponent>(
+			_environment.InstantiateManagedComponents<TestBasicManagedUpdatesComponent>(
 				out TestBasicManagedUpdatesComponent[] components,
 				TestData.DEFAULT_GROUP_NAME,
 				config
 			);
 
 			// Assert
-			environment.system.FindComponent(components[0].GetInstanceID(), out bool updateFound, out bool fixedUpdateFound);
+			_environment.system.FindComponent(components[0].GetInstanceID(), out bool updateFound, out bool fixedUpdateFound);
 			Assert.That(
 				(updateExpected == updateFound) && (fixedUpdateExpected == fixedUpdateFound),
 				$"Instantiated component should have at least one update callback registered with the system, matching what was expected.\n" +
@@ -65,9 +67,9 @@ namespace Miscreant.Lifecycle.RuntimeTests
 
 		[Test]
 		[TestCaseSource(typeof(TestData), nameof(TestData.allInactiveTogglePermutations))]
-		public void Instantiate_SingleObjectInstantiated_NotAddedToSystem(ObjectToggleConfig config)
+		public void Instantiate_SingleObjectInstantiatedFromEmpty_NotAddedToSystem(ObjectToggleConfig config)
 		{
-			// Arrange
+			// Validate test case input
 			FakeEnvironment.GetExpectedUpdateFlagsFromConfig(
 				config,
 				out bool updateExpected,
@@ -82,14 +84,90 @@ namespace Miscreant.Lifecycle.RuntimeTests
 			}
 
 			// Act
-			environment.InstantiateManagedComponents<TestBasicManagedUpdatesComponent>(
+			_environment.InstantiateManagedComponents<TestBasicManagedUpdatesComponent>(
 				out TestBasicManagedUpdatesComponent[] components,
 				TestData.DEFAULT_GROUP_NAME,
 				config
 			);
 
 			// Assert
-			environment.system.FindComponent(components[0].GetInstanceID(), out bool updateFound, out bool fixedUpdateFound);
+			_environment.system.FindComponent(components[0].GetInstanceID(), out bool updateFound, out bool fixedUpdateFound);
+			Assert.That(
+				(updateExpected == updateFound) && (fixedUpdateExpected == fixedUpdateFound),
+				$"Instantiated component should not have any update callbacks registered with the system.\n" +
+					$"Update Expected/Result: {updateExpected}/{updateFound}\n" +
+					$"FixedUpdate Expected/Result: {fixedUpdateExpected}/{fixedUpdateFound}"
+			);
+		}
+
+		[Test]
+		[TestCaseSource(typeof(TestData), nameof(TestData.allActiveTogglePermutations))]
+		public void Instantiate_SingleObjectInstantiatedFromPopulated_AddedToSystem(ObjectToggleConfig config)
+		{
+			// Validatate test case input
+			FakeEnvironment.GetExpectedUpdateFlagsFromConfig(
+				config,
+				out bool updateExpected,
+				out bool fixedUpdateExpected
+			);
+
+			if (!(updateExpected || fixedUpdateExpected))
+			{
+				throw new ArgumentException(
+					"Invalid input for test. Config must be expected to have at least one type of update callback registered:\n" + config
+				);
+			}
+
+			// Arrange
+			PopulateEnvironment();
+
+			// Act
+			_environment.InstantiateManagedComponents<TestBasicManagedUpdatesComponent>(
+				out TestBasicManagedUpdatesComponent[] components,
+				TestData.DEFAULT_GROUP_NAME,
+				config
+			);
+
+			// Assert
+			_environment.system.FindComponent(components[0].GetInstanceID(), out bool updateFound, out bool fixedUpdateFound);
+			Assert.That(
+				(updateExpected == updateFound) && (fixedUpdateExpected == fixedUpdateFound),
+				$"Instantiated component should have at least one update callback registered with the system, matching what was expected.\n" +
+					$"Update Expected/Result: {updateExpected}/{updateFound}\n" +
+					$"FixedUpdate Expected/Result: {fixedUpdateExpected}/{fixedUpdateFound}"
+			);
+		}
+
+		[Test]
+		[TestCaseSource(typeof(TestData), nameof(TestData.allInactiveTogglePermutations))]
+		public void Instantiate_SingleObjectInstantiatedFromPopulated_NotAddedToSystem(ObjectToggleConfig config)
+		{
+			// Validatate test case input
+			FakeEnvironment.GetExpectedUpdateFlagsFromConfig(
+				config,
+				out bool updateExpected,
+				out bool fixedUpdateExpected
+			);
+
+			if (updateExpected || fixedUpdateExpected)
+			{
+				throw new ArgumentException(
+					"Invalid input for test. Config must specify NONE of the update callbacks to be registered:\n" + config
+				);
+			}
+
+			// Arrange
+			PopulateEnvironment();
+
+			// Act
+			_environment.InstantiateManagedComponents<TestBasicManagedUpdatesComponent>(
+				out TestBasicManagedUpdatesComponent[] components,
+				TestData.DEFAULT_GROUP_NAME,
+				config
+			);
+
+			// Assert
+			_environment.system.FindComponent(components[0].GetInstanceID(), out bool updateFound, out bool fixedUpdateFound);
 			Assert.That(
 				(updateExpected == updateFound) && (fixedUpdateExpected == fixedUpdateFound),
 				$"Instantiated component should not have any update callbacks registered with the system.\n" +
