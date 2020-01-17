@@ -1,13 +1,12 @@
 {
   "name": "com.miscreant.lifecycle",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "displayName": "Miscreant - Lifecycle",
-  "description": "This is a simple wrapper for Unity's built-in MonoBehaviour Update and FixedUpdate callbacks. More efficient, with granular control over execution order.",
+  "description": "This is a simple wrapper for Unity's built-in MonoBehaviour Update and FixedUpdate callbacks, providing granular control over their execution order.",
   "unity": "2019.3",
   "keywords": [
-	"optimization",
-	"execution",
-	"execution order",
+    "execution",
+    "execution order",
     "update",
     "fixed update",
     "late update",
