@@ -14,7 +14,7 @@ This will be a good fit if your project requires different execution orders for 
 
 Each instance of a Component must have an execution group assigned (implemented as ScriptableObject assets). Each "system" (also a ScriptableObject implementation) provides a reorderable list inspector to specify the execution order of the groups it will iterate over. In Play Mode, you'll have a live view of all Components registered with the system. 
 
-Component configuration is implemented via a custom property drawer, so it will be easy to preserve its functionality if you're migrating existing components with custom inspectors to utilize this system. 
+Component configuration is implemented via a custom property drawer, so it will be easy to preserve functionality if you're migrating existing components with custom inspectors into this system. The sole purpose of the property drawer is to trigger subscribing/unsubscribing from the associated execution group when the update and fixed update flags are toggled in the inspector. 
 
 ## Supported Unity Versions
 
@@ -22,7 +22,7 @@ As of now, this requires at least Unity 2019.3.0. However, I'll be looking into 
 
 ## Installation
 
-To add this to your Unity project, copy the repo's URL (https://github.com/Bunderant/unity-miscreant-lifecycle.git) and add it via the '+' icon in Unity's Package Manager window. 
+To add this to your Unity project, copy the repo's URL (https://github.com/Bunderant/unity-miscreant-lifecycle.git) followed by "#v\[MAJOR.MINOR.PATCH\]" and add it via the '+' icon in Unity's Package Manager window. Check **Releases** for the latest stable version. 
 
 ## Testing
 
